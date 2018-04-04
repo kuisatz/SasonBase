@@ -1,0 +1,19 @@
+﻿using Antibiotic.Database.Field;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SasonBase.Sason.Models.ReportModels
+{
+    public class ReportData_SERVISSTOKLAR : SasonBase.Sason.Tables.Table_SERVISSTOKLAR.RawItem
+    {
+        decimal ID                                      { get; set; }
+
+        [DbTargetField("KOD")] public string Kod        { get; set; }
+        [DbTargetField("AD")] public string Ad          { get; set; }
+
+
+    }
+}

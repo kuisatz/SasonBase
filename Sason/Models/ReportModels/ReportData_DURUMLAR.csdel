@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SasonBase.Sason.Models.ReportModels
+{
+    public class ReportData_DURUMLAR : SasonBase.Sason.Tables.Table_DURUMLAR.RawItem
+    {
+        public decimal  ID      { get; set; }
+        public string   KOD     { get; set; }
+
+        //[JsonIgnore] public override bool _checked { get => base._checked; set => base._checked = value; }
+        //[JsonIgnore] public override bool _deletable { get => base._deletable; set => base._deletable = value; }
+        //[JsonIgnore] public override bool _old { get => base._old; set => base._old = value; }
+    }
+}

@@ -1,0 +1,20 @@
+﻿using Antibiotic.Database.Relation.Attributes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SasonBase.Sason.Models.ReportModels
+{
+    public class ReportData_SERVISISMISLEMMALZEMELER : SasonBase.Sason.Tables.Table_SERVISISMISLEMMALZEMELER.RawItem
+    {
+        decimal ID                      { get; set; }
+        decimal SERVISISEMIRISLEMID     { get; set; }
+        decimal SERVISSTOKID            { get; set; }
+
+        [ReadOnlyRelation]
+        [RelationCondition("SERVISSTOKID","ID")]
+        public ReportData_SERVISSTOKLAR ServisStok { get; set; }
+    }
+}

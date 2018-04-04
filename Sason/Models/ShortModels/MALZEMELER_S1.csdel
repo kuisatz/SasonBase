@@ -1,0 +1,47 @@
+﻿using Antibiotic.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SasonBase.Sason.Models.ShortModels
+{
+    public class MALZEMELER_S1 : Tables.Table_MALZEMELER.RawItem
+    {
+        public decimal ID { get; set; }
+        public string KOD { get; set; }
+        public string GKOD { get; set; }
+
+
+
+        public class CONTAINER : Antibiotic.Collections.ListContainer<MALZEMELER_S1>
+        {
+            Dictionary<Decimal, MALZEMELER_S1> dict = new Dictionary<Decimal, MALZEMELER_S1>();
+            Dictionary<string, MALZEMELER_S1> kodDict = new Dictionary<string, MALZEMELER_S1>();
+
+            public CONTAINER() { }
+            public CONTAINER(IEnumerable<MALZEMELER_S1> items) : base(items) { }
+
+            #region Indexers
+            public MALZEMELER_S1 this[Decimal ID]
+            {
+                get { return dict.find(ID); }
+            }
+
+            public MALZEMELER_S1 this[string kod]
+            {
+                get { return kodDict.find(kod.removeTrChars()); }
+            }
+            #endregion
+
+            protected override void OnBeforeInsert(MALZEMELER_S1 item, ref bool cancel)
+            {
+                dict.set(item.ID, item, out cancel);
+                if (!cancel)
+                    kodDict.set(item.KOD.removeTrChars(), item);
+            }
+        }
+
+    }
+}

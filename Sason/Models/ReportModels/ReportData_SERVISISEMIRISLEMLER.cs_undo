@@ -1,0 +1,22 @@
+﻿using Antibiotic.Database.Field;
+using Antibiotic.Database.Relation.Attributes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SasonBase.Sason.Models.ReportModels
+{
+    public class ReportData_SERVISISEMIRISLEMLER : SasonBase.Sason.Tables.Table_SERVISISEMIRISLEMLER.RawItem
+    {
+        decimal ID                  { get; set; }
+        decimal SERVISISEMIRID      { get; set; }
+
+        [DbTargetField("ACIKLAMA")] public string Aciklama { get; set; }
+
+        [ReadOnlyRelation]
+        [RelationCondition("ID", "SERVISISEMIRISLEMID")]
+        public List<ReportData_SERVISISMISLEMMALZEMELER> IsEmirIslemMalzemeler { get; set; }
+    }
+}

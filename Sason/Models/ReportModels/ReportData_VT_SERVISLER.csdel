@@ -1,0 +1,28 @@
+﻿using Antibiotic.Database.Field;
+using Antibiotic.Database.Relation.Attributes;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SasonBase.Sason.Models.ReportModels
+{
+    /// <summary>
+    /// Herhangi Bir Property'nin Adını, Tipini Değiştirme veya Silme. Ekleme Yapabilirsin. Çünkü Bu Model     **  L O G O  Fatura Entegrasyon Tarafında Kullanılıyor. Servisin Bilgisi Amaçlı **
+    /// </summary>
+    public class ReportData_VT_SERVISLER : SasonBase.Sason.Views.View_VT_SERVISLER.RawItem
+    {
+        decimal DURUMID { get; set; } 
+        string DILKOD { get; set; }
+
+        [DbTargetField("SERVISID")]
+        public decimal ServisId { get; set; }
+        [DbTargetField("VARLIKAD")]
+        public string ServisAdi { get; set; }
+        [DbTargetField("VERGINO")]
+        public string VergiNo { get; set; }
+        [DbTargetField("VERGIDAIREAD")]
+        public string VergiDairesiAdi { get; set; }
+    }
+}

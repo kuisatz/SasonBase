@@ -1,0 +1,85 @@
+﻿using Antibiotic.Database.Field;
+using Antibiotic.Database.Index;
+using Antibiotic.Database.Row;
+using Antibiotic.Database.Table;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SasonBase.Sason.Tables
+{
+    [Guid("8504CDAA-7F20-4B19-9742-A9B7B66D55AC")]
+    [DbTableInfo(Antibiotic.Database.Connectors.TableTypes.Table, "TPDKSHRK", "Sason.Tables", "Pdks Hareket Tablosu")]
+    [DbField(1, "ID", typeof(Decimal), null, DbFieldFlags.AutoIncrement, 22, 0, 0, "AUTO")]
+    [DbField(2, "FTABLE", typeof(String), null, DbFieldFlags.SmartTable, 50, 50, 0, "SMART_TABLE")]
+    [DbField(3, "FKEY1", typeof(Decimal), null, DbFieldFlags.SmartField, 22, 0, 0, "SMART_FIELD")]
+    [DbField(4, "FKEY2", typeof(Decimal), null, DbFieldFlags.SmartField, 22, 0, 0, "SMART_FIELD")]
+    [DbField(5, "FKEY3", typeof(Decimal), null, DbFieldFlags.SmartField, 22, 0, 0, "SMART_FIELD")]
+    [DbField(6, "FKEY4", typeof(Decimal), null, DbFieldFlags.SmartField, 22, 0, 0, "SMART_FIELD")]
+    [DbField(7, "FKEY5", typeof(Decimal), null, DbFieldFlags.SmartField, 22, 0, 0, "SMART_FIELD")]
+    [DbField(8, "FCODE", typeof(String), null, DbFieldFlags.SmartField, 50, 50, 0, "SMART_FIELD")]
+    [DbField(9, "FDATE1", typeof(DateTime), null, DbFieldFlags.Nullable, 7, 0, 0, "")]
+    [DbField(10, "FDATE2", typeof(DateTime), null, DbFieldFlags.Nullable, 7, 0, 0, "")]
+    [DbField(11, "FTYPE", typeof(Int32), null, DbFieldFlags.Nullable, 4, 10, 0, "")]
+    [DbField(12, "FFLAG", typeof(Int32), null, DbFieldFlags.Nullable, 4, 10, 0, "")]
+    [DbField(13, "FORDER", typeof(Int32), null, DbFieldFlags.Nullable, 4, 10, 0, "")]
+    [DbField(14, "FINT1", typeof(Int32), null, DbFieldFlags.Nullable, 4, 10, 0, "")]
+    [DbField(15, "FINT2", typeof(Int32), null, DbFieldFlags.Nullable, 4, 10, 0, "")]
+    [DbField(16, "FLONG", typeof(Int64), null, DbFieldFlags.Nullable, 8, 19, 0, "")]
+    [DbField(20, "FNOTE", typeof(String), null, DbFieldFlags.Nullable | DbFieldFlags.UnlimitedSize | DbFieldFlags.Unicode, 2147483646, 1073741823, 0, "")]
+    [DbIndex("PK_TPDKSHRK", DbIndexType.PrimaryKey, DbIndexFlags.Clustered | DbIndexFlags.Unique, new string[] { "ID" })]
+    [DbIndex("IX_TPDKSHRK", DbIndexType.Index, DbIndexFlags.Unique, new string[] { "FTABLE", "FKEY1", "FKEY2", "FKEY3", "FKEY4", "FKEY5", "FCODE" })]
+    public abstract class Table_TPDKSHRK : DbTable
+    {
+        [Serializable()]
+        [DbTableType(typeof(Table_TPDKSHRK))]
+        public abstract class RawItem : ItemRawModel
+        {
+        }
+        [Serializable()]
+        public abstract class ProtectedItem : RawItem
+        {
+            protected virtual Decimal ID { get; set; }
+            protected virtual String FTABLE { get; set; }
+            protected virtual Decimal FKEY1 { get; set; }
+            protected virtual Decimal FKEY2 { get; set; }
+            protected virtual Decimal FKEY3 { get; set; }
+            protected virtual Decimal FKEY4 { get; set; }
+            protected virtual Decimal FKEY5 { get; set; }
+            protected virtual String FCODE { get; set; }
+            protected virtual DateTime FDATE1 { get; set; }
+            protected virtual DateTime FDATE2 { get; set; }
+            protected virtual Int32 FTYPE { get; set; }
+            protected virtual Int32 FFLAG { get; set; }
+            protected virtual Int32 FORDER { get; set; }
+            protected virtual Int32 FINT1 { get; set; }
+            protected virtual Int32 FINT2 { get; set; }
+            protected virtual Int64 FLONG { get; set; }
+            protected virtual String FNOTE { get; set; }
+        }
+        [Serializable()]
+        public abstract class PublicItem : RawItem
+        {
+            public virtual Decimal ID { get; set; }
+            public virtual String FTABLE { get; set; }
+            public virtual Decimal FKEY1 { get; set; }
+            public virtual Decimal FKEY2 { get; set; }
+            public virtual Decimal FKEY3 { get; set; }
+            public virtual Decimal FKEY4 { get; set; }
+            public virtual Decimal FKEY5 { get; set; }
+            public virtual String FCODE { get; set; }
+            public virtual DateTime FDATE1 { get; set; }
+            public virtual DateTime FDATE2 { get; set; }
+            public virtual Int32 FTYPE { get; set; }
+            public virtual Int32 FFLAG { get; set; }
+            public virtual Int32 FORDER { get; set; }
+            public virtual Int32 FINT1 { get; set; }
+            public virtual Int32 FINT2 { get; set; }
+            public virtual Int64 FLONG { get; set; }
+            public virtual String FNOTE { get; set; }
+        }
+    }
+}

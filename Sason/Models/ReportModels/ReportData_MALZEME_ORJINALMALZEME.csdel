@@ -1,0 +1,20 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SasonBase.Sason.Models.ReportModels
+{
+    public class ReportData_SHORT_MALZEME : SasonBase.Sason.Tables.Table_MALZEMELER.RawItem
+    {
+        protected Decimal ID { get; set; }
+        public String KOD { get; set; }
+        public String GKOD { get; set; }
+        protected Decimal ONCEKIMALZEMEID { get; set; }
+        protected Decimal ORJINALMALZEMEID { get; set; }
+
+
+
+    }
+}

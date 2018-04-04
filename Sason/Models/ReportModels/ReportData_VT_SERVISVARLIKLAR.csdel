@@ -1,0 +1,48 @@
+﻿using Antibiotic.Database.Field;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SasonBase.Sason.Models.ReportModels
+{
+    public class ReportData_VT_SERVISVARLIKLAR : SasonBase.Sason.Views.View_VT_SERVISVARLIKLAR.RawItem
+    {
+        decimal SERVISVARLIKID      { get; set; }
+        string  DILKOD              { get; set; }
+        decimal SERVISID            { get; set; }
+        decimal VARLIKID            { get; set; }
+
+        [DbTargetField("AD")]
+        public string Adi { get; set; }
+        [DbTargetField("VARLIKTIPAD")]
+        public string VarlikTipAdi { get; set; }
+
+        [DbTargetField("ODEMETIPAD")]
+        public string OdemeTipi { get; set; }
+
+        [DbTargetField("VERGIDAIREAD")]
+        public string VergiDairesi { get; set; }
+        [DbTargetField("VERGINO")]
+        public string VergiNo { get; set; }
+        [DbTargetField("VERGIDAIREILAD")]
+        public string VergiDairesiIl { get; set; }
+
+        [DbTargetField("VARLIKADRES")]
+        public string Adres { get; set; }
+        [DbTargetField("VARLIKULKEIDAD")]
+        public string UlkeAdi { get; set; }
+        [DbTargetField("VARLIKILIDAD")]
+        public string SehirAdi { get; set; }
+        [DbTargetField("VARLIKILCEIDAD")]
+        public string IlceAdi { get; set; }
+
+        [DbTargetField("VARLIKEFATURA")] public bool EFaturaMusterisi { get; set; }
+        [DbTargetField("VARLIKEFATURAADRES")] public string EFaturaAdresi { get; set; }
+
+        [DbTargetField("VARLIKTELEFON")] public string Telefon { get; set; }
+        [DbTargetField("VARLIKEPOSTA")] public string Email { get; set; }
+        [DbTargetField("VARLIKFAX")] public string Fax { get; set; }
+    }
+}

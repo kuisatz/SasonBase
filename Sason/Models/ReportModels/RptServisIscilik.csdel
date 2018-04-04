@@ -1,0 +1,23 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SasonBase.Sason.Models.ReportModels
+{
+    public class RptServisIscilik : SasonBase.Sason.Tables.Table_SERVISISCILIKLER.RawItem
+    {
+        protected virtual Decimal ID { get; set; }
+        public String KOD { get; set; }
+        //protected virtual Decimal FIYAT { get; set; }
+        //protected virtual Decimal PARABIRIMID { get; set; }
+        protected virtual Decimal SUREGUN { get; set; }
+        protected virtual Decimal SURESAAT { get; set; }
+        protected virtual Decimal SUREDK { get; set; }
+        //protected virtual Decimal SERVISISCILIKGRUPID { get; set; }
+        protected virtual Decimal SERVISID { get; set; }
+        //protected virtual Decimal DURUMID { get; set; }
+        //protected virtual Decimal AW { get; set; }
+    }
+}

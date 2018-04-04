@@ -1,0 +1,25 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace SasonBase.Sason.Models.ReportModels
+{
+    public class RptIscilikler : SasonBase.Sason.Tables.Table_ISCILIKLER.RawItem
+    {
+        protected virtual Decimal ID { get; set; }
+        //protected virtual Decimal ISCILIKARACSINIFID { get; set; }
+        //protected virtual Decimal ISCILIKARACVARYANTID { get; set; }
+        //protected virtual Decimal ISCILIKNESNEID { get; set; }
+        //protected virtual Decimal ISCILIKUYGULAMAID { get; set; }
+        //protected virtual Decimal ISCILIKKONUMID { get; set; }
+        //protected virtual Decimal ISCILIKMONTAJDURUMID { get; set; }
+        //protected virtual Decimal ISCILIKFAALIYETID { get; set; }
+        //protected virtual Decimal ISCILIKTIPID { get; set; }
+        //protected virtual String MIKTAR { get; set; }
+        //protected virtual DateTime DTARIH { get; set; }
+        //protected virtual Decimal DURUMID { get; set; }
+        //protected virtual Decimal AKSIYON { get; set; }
+    }
+}
