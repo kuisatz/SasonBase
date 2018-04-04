@@ -74,19 +74,19 @@ namespace SasonBase.Reports.Sason.Merkez
             decimal selectedServisId = ServisIds.first().toString("0").cto<decimal>();
             string servisIdQuery = $" = {selectedServisId}";
             string dateQuery = "";
-           
+
 
 #if DEBUG
-            
+
             selectedServisId = ServisId;
             servisIdQuery = $"=  {selectedServisId}";
 #endif
 
-                  if (ServisIds.isNotEmpty())
-                         servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
-                     else
-                         servisIdQuery = $" > 1 ";
-             
+            //if (ServisIds.isNotEmpty())
+            //    servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
+            //else
+            //    servisIdQuery = $" > 1 ";
+
 
             StartDate = StartDate.startOfDay();
             FinishDate = FinishDate.endOfDay();

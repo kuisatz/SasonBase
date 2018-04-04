@@ -91,6 +91,7 @@
     <Compile Include="Reports\Sason\Merkez\MrkzAracGirisSayilari01.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzMusteriVelinimet.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzTest001.cs" />
+    <Compile Include="Reports\Sason\Merkez\MrkzYdkPrcFlytRprListe.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzYdkPrcFlytRpr.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzYdkPrcFlytRpr2.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzYdkPrcFlytRpr1.cs" />
