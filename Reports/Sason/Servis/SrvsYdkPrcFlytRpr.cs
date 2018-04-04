@@ -393,9 +393,7 @@ namespace SasonBase.Reports.Sason.Servis
                                                             --when 7 then sum(TUTAR)
                                                             WHEN 7 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
                                                             -- when 8 then sum(TUTAR)
-                                                            WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                              -- when 9 then sum(TUTAR)
-                                                            WHEN 9 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
+                                                            WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END                                                            
                                                         end
                                             end
                                     when 'DAHILI' then
@@ -407,9 +405,7 @@ namespace SasonBase.Reports.Sason.Servis
                                                             -- when 7 then sum(TUTAR)
                                                             WHEN 7 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
                                                             -- when 8 then sum(TUTAR)
-                                                            WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                             -- when 9 then sum(TUTAR)
-                                                            WHEN 9 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
+                                                            WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END                                                           
                                                     end
                                               end
                                 end as uukko,
