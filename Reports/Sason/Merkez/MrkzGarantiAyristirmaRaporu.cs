@@ -12,12 +12,12 @@ namespace SasonBase.Reports.Sason.Merkez
     /// <summary>
     /// Merkez Yedek Parça Faaliyet Raporu
     /// </summary>
-    public class MrkzAyristirmaRaporu : Base.SasonMerkezReporter
+    public class MrkzGarantiAyristirmaRaporu : Base.SasonMerkezReporter
     {
-        public MrkzAyristirmaRaporu()
+        public MrkzGarantiAyristirmaRaporu()
         {
-            Text = "Detaylı Ayrıştırma Raporu";
-            SubjectCode = "MrkzAyristirmaRaporu";
+            Text = "Garanti Detay Raporu";
+            SubjectCode = "MrkzGarantiAyristirmaRaporu";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
@@ -26,7 +26,7 @@ namespace SasonBase.Reports.Sason.Merkez
             AddParameter(new ReporterParameter() { Name = "param_sase_no", Text = "Şase No" }.CreateTextBox("İsteğe Bağlı Şase No. Girebilirsiniz"));
             Disabled = false;
         }
-        public MrkzAyristirmaRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
+        public MrkzGarantiAyristirmaRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
             base.ServisId = servisId;
             this.StartDate = startDate;
@@ -158,8 +158,9 @@ namespace SasonBase.Reports.Sason.Merkez
                 inner join sason.lovturler c ON a.turid = C.ID
                 inner join servisvarlikruhsatlar d ON a.saseno = d.saseno
                 WHERE A.KAYITTARIH BETWEEN '{dateQuery}' 
-                        AND a.SERVISID  {servisIdQuery}   
-                        AND (a.saseno = NVL ('{SaseNo}', a.saseno)) 
+                        AND a.SERVISID  {servisIdQuery} 
+                        AND (A.AYRISTIRMATIPAD != 'HARICI' AND A.AYRISTIRMATIPAD != 'DAHILI') 
+                        
                 ORDER BY a.SERVISID, A.KAYITTARIH desc 
                 ")                          
                 .GetDataTable(mr)
