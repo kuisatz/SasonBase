@@ -80,6 +80,7 @@
     <Compile Include="Reports\Models\RptTeknisyenHareket.cs" />
     <Compile Include="Reports\Reporter.cs" />
     <Compile Include="Reports\Sason\Enums.cs" />
+    <Compile Include="Reports\Sason\Merkez\MrkzBakimGecmisi.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzGarantiAyristirmaRaporu.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzAyristirmaRaporu.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzDetayliYedekParca.cs" />

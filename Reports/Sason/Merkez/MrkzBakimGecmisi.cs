@@ -12,11 +12,11 @@ namespace SasonBase.Reports.Sason.Merkez
     /// <summary>
     /// Merkez Yedek Parça Faaliyet Raporu
     /// </summary>
-    public class MrkzGarantiAyristirmaRaporu : Base.SasonMerkezReporter
+    public class MrkzBakimGecmisi : Base.SasonMerkezReporter
     {
-        public MrkzGarantiAyristirmaRaporu()
+        public MrkzBakimGecmisi()
         {
-            Text = "Garanti Detay Raporu";
+            Text = "Bakım Geçmişi";
             SubjectCode = "MrkzGarantiAyristirmaRaporu";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
@@ -26,7 +26,7 @@ namespace SasonBase.Reports.Sason.Merkez
             AddParameter(new ReporterParameter() { Name = "param_sase_no", Text = "Şase No" }.CreateTextBox("İsteğe Bağlı Şase No. Girebilirsiniz"));
             Disabled = false;
         }
-        public MrkzGarantiAyristirmaRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
+        public MrkzBakimGecmisi(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
             base.ServisId = servisId;
             this.StartDate = startDate;
@@ -84,16 +84,16 @@ namespace SasonBase.Reports.Sason.Merkez
             string dateQuery = "";
 
 #if DEBUG
-            //  selectedServisId = ServisId;
-            //  servisIdQuery = $"  {selectedServisId}";
+            selectedServisId = ServisId;
+            servisIdQuery = $"  {selectedServisId}";
 #endif
 
 
-              //if (ServisIds.isNotEmpty())
-              //     servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
-              // else
-              //     servisIdQuery = $" > 1 ";
-  
+            //if (ServisIds.isNotEmpty())
+            //    servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
+            //else
+            //    servisIdQuery = $" > 1 ";
+
 
             StartDate = StartDate.startOfDay(); 
             FinishDate = FinishDate.endOfDay();
@@ -101,67 +101,36 @@ namespace SasonBase.Reports.Sason.Merkez
 
             MethodReturn mr = new MethodReturn(); 
                 List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"  
-                SELECT  a.DURUMID,
-                       a.ISORTAKAD,
-                       a.ID,
-                       a.SERVISID,
-                       a.HASHSERVISID,
-                       a.FATURANO,
-                       a.ISEMIRNO,
-                       a.SIRANO,
-                       a.AYRISTIRMATIPAD,
-                       a.MALZEMEKOD,
-                       a.MALZEMEAD,
-                       a.TURID,
-                       a.ARIZAKODU,
-                       to_char(a.TAMAMLANMATARIH,'dd/mm/yyyy') as TAMAMLANMATARIH,
-                       to_char(a.KAYITTARIH,'dd/mm/yyyy') as KAYITTARIH,
-                       a.KM,
-                       a.KUR,
-                       a.ARACTIPAD,
-                       a.MODELNO,
-                       a.FIRSTREGDATE,
-                       a.ISEMIRTUTAR,
-                       a.SASENO,
-                       a.ISEMIRTIPID,
-                       a.PDFKDV,
-                       a.PDFONAYGENELTOPLAM,
-                       a.PDFMATRAH,
-                       a.AD,
-                       a.CLAIMSTATUS,
-                       a.FATURAID,
-                       a.MIKTAR,
-                       a.TUTAR,
-                       a.BRUTTUTAR,
-                       a.DURUM,
-                       a.SERVISSTOKTURAD,
-                       a.URETICI,
-                       a.ATUTAR,
-                       a.PDFISLETIMUCRETI,
-                       a.PDFITEMID,
-                       a.PDFTOPLAM,
-                       a.VERGINO,
-                       a.ORJINALKOD,
-                       a.ORTALAMAMALIYET,
-                       a.INDIRIMORAN,
-                       a.TFATTOPLAM,
-                        to_char(a.ICMALTARIHI,'dd/mm/yyyy') as ICMALTARIHI,
-                       a.ICMALKUR,
-                       a.SERVISSTOKTURID,
-                        B.KOD, 
-                        c.ack , 
-                        '{StartDate}' as bastar, 
-                        '{FinishDate}'  as bittar,
-                        to_char(d.ilktesciltarihi,'dd/mm/yyyy') as ilktesciltarihi
-                FROM SASON.RP_ISEMIRLER a 
-                inner join sason.isemirtipler b ON a.durumid = b.id
-                inner join sason.lovturler c ON a.turid = C.ID
-                inner join servisvarlikruhsatlar d ON a.saseno = d.saseno
-                WHERE A.KAYITTARIH BETWEEN '{dateQuery}' 
-                        AND a.SERVISID  {servisIdQuery} 
-                        AND (A.AYRISTIRMATIPAD != 'HARICI' AND A.AYRISTIRMATIPAD != 'DAHILI') 
-                        AND (a.saseno = NVL ('{SaseNo}', a.saseno)) 
-                ORDER BY a.SERVISID, A.KAYITTARIH desc 
+                        SELECT E.SASENO,
+                               E.KAYITTARIH,
+                               E.TAMAMLANMATARIH,
+                               E.KM,
+                               E.ENDEKS as LITRE,
+                               E.SAAT,
+                               E.TBITISTARIHI,
+                               T.ISORTAKAD,
+                               BAKIMTOPLU as BAKIM_NO,
+                               case 
+                                when BAKIMSTATU =1 then  'TAM' 
+                                when BAKIMSTATU =0 then 'EKSIK' 
+                                else 'HATALI' end as BAKIMSTATU
+
+                            FROM SERVISISEMIRLER E,
+                                 SERVISISEMIRISLEMLER I,
+                                 VT_SERVISLER T 
+
+                            WHERE  E.KAYITTARIH BETWEEN '{dateQuery}' 
+                               and E.ID = I.SERVISISEMIRID 
+                               and ISEMIRTIPID =1 
+                               and (E.SASENO = NVL ('{SaseNo}', E.SASENO)) 
+                               and T.SERVISID = E.SERVISID
+                               and E.SERVISID {servisIdQuery}
+                               and T.DILKOD='Turkish'
+                               and E.TAMAMLANMATARIH is not null
+                               and BAKIMTOPLU is not null
+                               and E.TEKNIKOLARAKTAMAMLA = 1
+                            ORDER BY E.SERVISID, E.KAYITTARIH desc
+
                 ")                          
                 .GetDataTable(mr)
                 .ToModels();
