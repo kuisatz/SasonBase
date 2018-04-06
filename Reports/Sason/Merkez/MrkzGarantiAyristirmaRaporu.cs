@@ -160,7 +160,7 @@ namespace SasonBase.Reports.Sason.Merkez
                 WHERE A.KAYITTARIH BETWEEN '{dateQuery}' 
                         AND a.SERVISID  {servisIdQuery} 
                         AND (A.AYRISTIRMATIPAD != 'HARICI' AND A.AYRISTIRMATIPAD != 'DAHILI') 
-                        AND (a.saseno = NVL ('{SaseNo}', a.saseno)) 
+                        
                 ORDER BY a.SERVISID, A.KAYITTARIH desc 
                 ")                          
                 .GetDataTable(mr)
