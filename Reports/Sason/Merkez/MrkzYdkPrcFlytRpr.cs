@@ -22,8 +22,8 @@ namespace SasonBase.Reports.Sason.Merkez
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
-            AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
-            Disabled = true;
+            AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(false));
+            Disabled = false;
         }
         public MrkzYdkPrcFlytRpr(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {

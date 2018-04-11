@@ -18,7 +18,7 @@ namespace SasonBase.Reports.Sason.Merkez
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
-            Disabled = false;
+            Disabled = true;
         }
         public MrkzYdkPrcHareket(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {

@@ -12,7 +12,7 @@ namespace SasonBase.Reports.Sason.Merkez
         public MrkzMusteriVelinimet02()
         {
             Text = "Müşteri Velinimetimizdir (R01)";
-            Disabled = false;
+            Disabled = true;
         }
     }
 }

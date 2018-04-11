@@ -75,8 +75,15 @@ namespace SasonBase.Reports.Sason.Servis
                     --siotelfax.TELEFONNO MUSTERI_TELEFON,
                     isemir.MUSTERIAD MUSTERI_KISI_AD, isemir.MUSTERITELEFON MUSTERI_KISI_TELEFON,
                     kontak.AD KONTAK_AD, KONTAK.NO KONTAK_TELEFON, KONTAK.EPOSTA KONTAK_EPOSTA, KONTAK.SERVISISORTAKKONTAKTIPAD KONTAK_TIP, KONTAK.EPOSTAIZIN KONTAK_IZIN_EPOSTA, KONTAK.ARAMAIZIN KONTAK_IZIN_TELEFONARAMA, KONTAK.SMSIZIN KONTAK_IZIN_SMS,
-                    aracbilgiler.saseno ARAC_SASENO, aracbilgiler.aractur ARAC_TUR, aracbilgiler.plaka ARAC_PLAKA
-
+                    aracbilgiler.saseno ARAC_SASENO, aracbilgiler.aractur ARAC_TUR, aracbilgiler.plaka ARAC_PLAKA,
+                    (SELECT 
+                      CASE bx.isemirtipid  
+                        WHEN 1 then 'Evet' 
+                        WHEN 5 then 'Evet' 
+                        ELSE 'Hayır' end    
+                        FROM servisisemirler ax                  
+                        LEFT JOIN servisisemirislemler bx on bx.isemirtipid in (1,5) and bx.servisisemirid = ax.id  
+                            WHERE ax.isemirno = ISEMIR.ISEMIRNO and rownum <2 ) as bakimmi   
                 from (select * from servisisemirler where trunc(kayittarih) between {{startDate}} and {{finishDate}} and servisid = {ServisId} {hizmetYeriIdQuery} ) isemir
                 left join vt_servisler servis on servis.dilkod = 'Turkish' and servis.servisid = isemir.servisid
                 --left join servisisemirler isemir on trunc(ISEMIR.KAYITTARIH) = tarihler.tarih and isemir.servisid = servis.servisid

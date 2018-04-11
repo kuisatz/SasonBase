@@ -16,14 +16,14 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzYdkPrcFlytRprListe()
         {
-            Text = "Yedek Parça Faliyet Raporu";
+            Text = "Yedek Parça Faliyet Raporu (Liste)";
             SubjectCode = "MrkzYdkPrcFlytRprListe";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
-            Disabled = false;
+            Disabled = false ;
         }
         public MrkzYdkPrcFlytRprListe(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
@@ -82,11 +82,11 @@ namespace SasonBase.Reports.Sason.Merkez
             servisIdQuery = $"=  {selectedServisId}";
 #endif
 
-            //if (ServisIds.isNotEmpty())
-            //    servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
-            //else
-            //    servisIdQuery = $" > 1 ";
-
+            if (ServisIds.isNotEmpty())
+                servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
+            else
+                servisIdQuery = $" > 1 ";
+ 
 
             StartDate = StartDate.startOfDay();
             FinishDate = FinishDate.endOfDay();
@@ -96,7 +96,7 @@ namespace SasonBase.Reports.Sason.Merkez
             List<ReportData> reportDataSource = new List<ReportData>();
             //     List<QueryResult> queryResults = AppPool.EbaTestConnector.CreateQuery($@"
             QueryResult qr = new QueryResult();
-
+            /*
             #region query1
             //QueryResult qr = new QueryResult();
             List<QueryResultStok> queryStok = AppPool.EbaTestConnector.CreateQuery($@"
@@ -186,6 +186,7 @@ namespace SasonBase.Reports.Sason.Merkez
             .GetDataTable(mr)
             .ToModels<QueryResultStok>();
             #endregion
+            
 
             ReportData reportData = new ReportData();
             reportData.queryrStk = queryStok;
@@ -197,17 +198,19 @@ namespace SasonBase.Reports.Sason.Merkez
             decimal stok_myx = Convert.ToDecimal((reportData.queryrStk[0].STOK_MY).toString() ) ;
             decimal stok_yansanayix = Convert.ToDecimal((reportData.queryrStk[0].STOK_YANSANAYI).toString() );
             decimal stok_toplamx = Convert.ToDecimal((reportData.queryrStk[0].STOK_TOPLAM).toString() );
+            */ 
+
             #region query2
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"                 
-            SELECT  {ServisId}  as servisid1,    
-                (Select ISORTAKAD FROM vt_servisler servis where  servis.dilkod = 'Turkish' and servis.servisid  {servisIdQuery}  and rownum < 2)  as servisad, 
-            ---------- stok
-                ROUND (NVL(replace('{stok_toplamx}','.',','),'0'),2) as stok_toplam, 
-                ROUND (NVL(replace('{stok_oesx}','.',','),'0'),2)  as stok_oes,
-                ROUND (NVL(replace('{stok_oeMx}','.',','),'0'),2)  as stok_oeM,
-                ROUND (NVL(replace('{stok_essanayix}','.',','),'0'),2)  as stok_essanayi,
-                ROUND (NVL(replace('{stok_myx}','.',','),'0'),2)  as stok_my,
-                ROUND (NVL(replace('{stok_yansanayix}','.',','),'0'),2)  as stok_yansanayi,  
+            SELECT servisid, (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = dsf.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
+                  (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = dsf.servisid   )  as servisad,
+            ---------- stok 
+                stok.stok_toplam, 
+                stok.stok_oes,
+                stok.stok_oeM,
+                stok.stok_essanayi,
+                stok.stok_my,
+                stok.stok_yansanayi,
                 servisicioem,
                 servisicioes,
                 servisiciesdeger,
@@ -216,7 +219,6 @@ namespace SasonBase.Reports.Sason.Merkez
                 servisiciuygunparca,
                 servisiciucretliuygunparca,
                 servisicigaranti,
-
                 servisicioem2el,
                 servisicioes2el,
                 servisiciesdeger2el,
@@ -251,7 +253,7 @@ namespace SasonBase.Reports.Sason.Merkez
                
 
                 FROM (
-                    SELECT distinct
+                    SELECT distinct servisid,  
                     ---- servis içi   --  isemirtipi != 6 olanlar  burada olacak olmayanlar  asagıya eklenecek
                         sum(NVL(servisicioem,0)) as servisicioem,
                         sum(NVL(servisicioes,0)) as servisicioes,
@@ -293,7 +295,7 @@ namespace SasonBase.Reports.Sason.Merkez
                         sum(NVL(BAKIMPAKETI,0)) as BAKIMPAKETI  ,
                         sum(nvl(uukko,0)) as uukko
                    FROM (
-                        SELECT distinct
+                        SELECT distinct servisid,
                             SERVISSTOKTURID,
                             case BELGETURU
                                 when 'İş Emri' then
@@ -589,11 +591,102 @@ namespace SasonBase.Reports.Sason.Merkez
                                 t.tarih BETWEEN '{dateQuery}' 
 
                     ) rpt
-                    group by  SERVISSTOKTURID,BELGETURU,AYRISTIRMATIPAD,ISEMIRTIPI ,ISCILIK_PARCA
+                    group by  SERVISSTOKTURID,BELGETURU,AYRISTIRMATIPAD,ISEMIRTIPI ,ISCILIK_PARCA ,servisid
                 ) ert
+            group by servisid 
             ) dsf
 
-            group by  --- stok_oes,  stok_oeM, stok_essanayi, stok_my, stok_yansanayi, stok_toplam,
+            inner join (
+               select    HSERVISID,
+                        sum(nvl(stok_oes,0)) as stok_oes,
+                        sum(nvl(stok_oeM,0)) as stok_oeM,
+                        sum(nvl(stok_essanayi,0)) as stok_essanayi,
+                        sum(nvl(stok_my,0)) as stok_my,
+                        
+                           sum(nvl(stok_yag,0)) as stok_yag,
+                        sum(nvl(stok_yansanayi,0)) as stok_yansanayi, 
+                        sum(nvl(stok_yag,0) + nvl(stok_oes,0) +nvl(stok_oeM,0) + nvl(stok_essanayi,0) + nvl(stok_my,0) +nvl(stok_yansanayi,0)) as stok_toplam
+                      FROM (
+                     
+                      
+                      SELECT   asd.HSERVISID, 
+                                
+                                case asd.SERVISSTOKTURID 
+                                        when 1 then  sum(nvl(asd.ORTALAMAMALIYET,0) * asd.STOKMIKTAR)  
+                                     end   as stok_oem,
+                                case asd.SERVISSTOKTURID 
+                                        when 6 then  sum(nvl(asd.ORTALAMAMALIYET,0)*asd.STOKMIKTAR)  
+                                     end   as stok_yag,
+                                case asd.SERVISSTOKTURID  
+                                        when 7 then  sum(nvl(asd.ORTALAMAMALIYET,0) * asd.STOKMIKTAR)                               
+                                     end   as stok_oes,  
+                                case asd.SERVISSTOKTURID  
+                                        when 8 then  sum(nvl(asd.ORTALAMAMALIYET,0)*asd.STOKMIKTAR)  
+                                     end   as stok_essanayi, 
+                                case asd.SERVISSTOKTURID  
+                                        when 9 then  sum(nvl(asd.ORTALAMAMALIYET,0)*asd.STOKMIKTAR)  
+                                     end   as stok_yansanayi,              
+                                case asd.SERVISSTOKTURID  
+                                        when 11 then sum(nvl(asd.ORTALAMAMALIYET,0) *asd.STOKMIKTAR) 
+                                     end   as stok_my
+                              FROM( 
+                            
+                SELECT 
+                       a.kod tur,p.fiyat,
+                       p.ID,
+                       p.HSERVISID,
+                       p.servisstokturid, 
+                       P.INDFIYAT EUROINDFIYAT,
+                       P.FIYAT EUROLISTEFIYAT,
+                       P.ORTALAMAMALIYET ORTALAMAMALIYET,
+                       p.STOKMIKTAR
+                 
+                  FROM(SELECT servisstokturid,
+                               a.id,
+                               a.servisid hservisid,
+                               a.kod,
+                               C.STOKMIKTAR,
+                               r.ad BIRIMAD,
+                               kurlar_pkg.servisstokfiyatgetir(a.id, 2, TRUNC(SYSDATE))
+                                  fiyat,
+                               KURLAR_PKG.STOKFIYATINDGETIR(a.id,
+                                                             2,
+                                                             2,
+                                                             1,
+                                                             0)
+                                  indfiyat,
+                               kurlar_pkg.ORTALAMAMALIYET(a.id) ortalamamaliyet,
+                               d.ad SERVISDEPOAD,
+                               p.ad SERVISDEPOrafAD,
+                               a.ad
+                          FROM(SELECT DISTINCT servisstokid
+                                  FROM sason.servisstokhareketdetaylar) h,
+                               sason.servisstoklar a,
+                               sason.vt_genelstok c,
+                               sason.vw_birimler r,
+                               sason.servisdepolar d,
+                               sason.servisdeporaflar p
+                         WHERE     h.servisstokid = a.id
+                               AND A.ID = C.SERVISSTOKID
+                               AND C.STOKMIKTAR <> 0
+                               AND a.servisid = c.servisid
+                               AND r.dilkod = 'Turkish'
+                               AND A.SERVISDEPOID = d.id(+)
+                               AND a.servisdeporafid = p.id(+)
+                               AND r.id = a.birimid) p,
+                       servisstokturler a
+                 WHERE p.servisstokturid = a.id AND p.HSERVISID {servisIdQuery} 
+                 ) asd   
+                 group by  asd.SERVISSTOKTURID ,asd.HSERVISID 
+              ) asasd 
+              group  by asasd.HSERVISID 
+            
+            
+            ) stok on  servisid = STOK.HSERVISID  
+
+  
+
+            group by   stok_oes,  stok_oeM, stok_essanayi, stok_my, stok_yansanayi, stok_toplam,
                 servisicioem,  servisicioes,  servisiciesdeger, servisicimyok,  servisicitoplam,  servisiciuygunparca,
                 servisiciucretliuygunparca, servisicigaranti,  servisicioem2el,   servisicioes2el,
                 servisiciesdeger2el,  servisiciyansanayi2el,  servisicimyok2el,
@@ -601,11 +694,10 @@ namespace SasonBase.Reports.Sason.Merkez
                 servisicigaranti2el,  servisdisioem, servisdisioes,  servisdisiesdeger,
                 servisdisimyok , servisdisitoplam, servisdisiystoplam, servisdisiuygunparca,
                 servisiciyansanayi, servisdisiyansanayi, servisiciyansanayitoplam, servisdisiyansanayitoplam,
-                servisiciyag, servisiciyag2el, servisdisiyag, yagtoplam  ,BAKIMPAKETI, uukko
+                servisiciyag, servisiciyag2el, servisdisiyag, yagtoplam  ,BAKIMPAKETI, uukko, servisid 
 
  
- 
- 
+  
  
                 ")
          //     .Parameter("stok_oesx", stok_oesx)
