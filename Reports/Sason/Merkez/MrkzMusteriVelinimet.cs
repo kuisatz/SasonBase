@@ -76,7 +76,7 @@ namespace SasonBase.Reports.Sason.Merkez
             {
                 //    servisIdQuery = $" > 1 ";
                 selectedServisId = ServisId;
-                servisIdQuery = $" in( {selectedServisId} )";
+                servisIdQuery = $" in( {selectedServisId} )";  
             }
 
             string hizmetYeriIdQuery = "";

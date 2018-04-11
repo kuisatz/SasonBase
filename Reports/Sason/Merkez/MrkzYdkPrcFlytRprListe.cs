@@ -12,7 +12,7 @@ namespace SasonBase.Reports.Sason.Merkez
     /// <summary>
     /// Merkez Yedek Parça Faaliyet Raporu
     /// </summary>
-    public class MrkzYdkPrcFlytRprListe : Base.SasonMerkezReporter
+    public class MrkzYdkPrcFlytRprListe : Base.SasonMerkezReporter 
     {
         public MrkzYdkPrcFlytRprListe()
         {
