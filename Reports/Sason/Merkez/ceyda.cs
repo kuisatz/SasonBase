@@ -69,6 +69,17 @@ namespace SasonBase.Reports.Sason.Merkez
             servisIdQuery = $"  {selectedServisId}";
 #endif
 
+
+            if (ServisIds.isNotEmpty())
+                servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
+            else
+            {
+                //    servisIdQuery = $" > 1 ";
+                selectedServisId = ServisId;
+                servisIdQuery = $" in( {selectedServisId} )";
+            }
+
+
             MethodReturn mr = new MethodReturn();
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"

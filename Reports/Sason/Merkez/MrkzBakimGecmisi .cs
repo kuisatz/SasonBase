@@ -92,8 +92,11 @@ namespace SasonBase.Reports.Sason.Merkez
             if (ServisIds.isNotEmpty())
                 servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
             else
-                servisIdQuery = $" > 1 ";
-
+            {
+                //    servisIdQuery = $" > 1 ";
+                selectedServisId = ServisId;
+                servisIdQuery = $" in( {selectedServisId} )";
+            }
 
             StartDate = StartDate.startOfDay();
             FinishDate = FinishDate.endOfDay();

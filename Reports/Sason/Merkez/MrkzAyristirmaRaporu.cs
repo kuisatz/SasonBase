@@ -89,11 +89,14 @@ namespace SasonBase.Reports.Sason.Merkez
 #endif
 
 
-              //if (ServisIds.isNotEmpty())
-              //     servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
-              // else
-              //     servisIdQuery = $" > 1 ";
-  
+            if (ServisIds.isNotEmpty())
+                servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
+            else { 
+            //    servisIdQuery = $" > 1 ";
+                selectedServisId = ServisId;
+                servisIdQuery = $" in( {selectedServisId} )";
+            }
+
 
             StartDate = StartDate.startOfDay(); 
             FinishDate = FinishDate.endOfDay();
@@ -101,7 +104,9 @@ namespace SasonBase.Reports.Sason.Merkez
             MethodReturn mr = new MethodReturn();
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
-                SELECT a.durumid,
+                SELECT  
+                        (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = a.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
+                        a.durumid,
                         o3.ad ISORTAKAD,
                         d.id,
                         a.servisid,
@@ -214,7 +219,7 @@ namespace SasonBase.Reports.Sason.Merkez
  
                 ")
               .GetDataTable(mr)
-            .ToModels();
+               .ToModels();
              
             CloseCustomAppPool();
             return queryResults;

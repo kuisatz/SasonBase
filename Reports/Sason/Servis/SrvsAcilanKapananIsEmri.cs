@@ -84,17 +84,17 @@ namespace SasonBase.Reports.Sason.Servis
                         FROM 
                             (SELECT count(id) acikadet,null kapanan_adet ,servisid,KAYITTARIH
                                 FROM servisisemirler
-                                    WHERE TAMAMLANMATARIH is null
-                                    and KAYITTARIH BETWEEN '{dateQuery}' 
-                                    and servisid {servisIdQuery}
+                                    WHERE 
+                                        KAYITTARIH BETWEEN '{dateQuery}' AND
+                                        servisid {servisIdQuery}
                                     group by servisid,KAYITTARIH
                                 union all
-                                SELECT null acikadet ,count(id)kapanan_adet,servisid,KAYITTARIH
+                                SELECT null acikadet ,count(id)kapanan_adet,servisid,TAMAMLANMATARIH
                                 FROM servisisemirler
-                                    WHERE TAMAMLANMATARIH is not null
-                                    and KAYITTARIH BETWEEN '{dateQuery}' 
-                                    and servisid {servisIdQuery}
-                            group by servisid,KAYITTARIH) dsf
+                                    WHERE 
+                                        TAMAMLANMATARIH BETWEEN '{dateQuery}' AND
+                                        servisid {servisIdQuery}
+                            group by servisid,TAMAMLANMATARIH) dsf
                         group by servisid,KAYITTARIH
                     ) 
                     GROUP BY servisid, partnercode , servisad , KAYITTARIH                    

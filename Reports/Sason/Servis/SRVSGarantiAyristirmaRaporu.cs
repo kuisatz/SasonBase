@@ -7,26 +7,25 @@ using System.Threading.Tasks;
 using System.Data;
 
 
-namespace SasonBase.Reports.Sason.Merkez
+namespace SasonBase.Reports.Sason.Servis
 {
     /// <summary>
     /// Merkez Yedek Parça Faaliyet Raporu
     /// </summary>
-    public class MrkzGarantiAyristirmaRaporu : Base.SasonMerkezReporter
+    public class SrvsGarantiAyristirmaRaporu : Base.SasonReporter
     {
-        public MrkzGarantiAyristirmaRaporu()
+        public SrvsGarantiAyristirmaRaporu()
         {
             Text = "Garanti Detay Raporu";
-            SubjectCode = "MrkzGarantiAyristirmaRaporu";
+            SubjectCode = "SrvsGarantiAyristirmaRaporu.";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
-            AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
-            AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
+            AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());            
             AddParameter(new ReporterParameter() { Name = "param_sase_no", Text = "Şase No" }.CreateTextBox("İsteğe Bağlı Şase No. Girebilirsiniz"));
             Disabled = false;
         }
-        public MrkzGarantiAyristirmaRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
+        public SrvsGarantiAyristirmaRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
             base.ServisId = servisId;
             this.StartDate = startDate;
@@ -43,13 +42,8 @@ namespace SasonBase.Reports.Sason.Merkez
         {
             get { return GetParameter("param_finish_date").ReporterValue.cast<DateTime>(); }
             set { SetParameterReporterValue("param_finish_date", value.endOfDay()); }
-        }
-
-        public List<decimal> ServisIds
-        {
-            get { return GetParameter("param_servisler").ReporterValue.cast<List<decimal>>(); }
-            set { SetParameterReporterValue("param_servisler", value); }
-        }
+        } 
+      
         public string SaseNo
         {
             get { return GetParameter("param_sase_no").ReporterValue.toString(); }
@@ -66,10 +60,7 @@ namespace SasonBase.Reports.Sason.Merkez
                     break;
                 case "param_finish_date":
                     FinishDate = Convert.ToInt64(value).toDateTime();
-                    break;
-                case "param_servisler":
-                    ServisIds = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
-                    break;
+                    break; 
                 case "param_sase_no":
                     SaseNo = value.toString();
                     break;
@@ -79,29 +70,18 @@ namespace SasonBase.Reports.Sason.Merkez
 
         public override object ExecuteReport(MethodReturn refMr = null)
         {
-            decimal selectedServisId = ServisIds.first().toString("0").cto<decimal>();
-            string servisIdQuery = $" = {selectedServisId}";
+            string servisIdQuery = $" = {ServisId}";
             string dateQuery = "";
 
-#if DEBUG
-               selectedServisId = ServisId;
-              servisIdQuery = $"  {selectedServisId}";
+#if DEBUG           
+            servisIdQuery = $" = {ServisId}";
 #endif
 
-            if (ServisIds.isNotEmpty())
-                servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
-            else
-            {
-                //    servisIdQuery = $" > 1 ";
-                selectedServisId = ServisId;
-                servisIdQuery = $" in( {selectedServisId} )";
-            }
-
-
-            StartDate = StartDate.startOfDay(); 
+            StartDate = StartDate.startOfDay();
             FinishDate = FinishDate.endOfDay();
-            dateQuery = ""+StartDate.ToString("dd/MM/yyyy") +  "' AND '"+ FinishDate.ToString("dd/MM/yyyy")+"";
+            dateQuery = "" + StartDate.ToString("dd/MM/yyyy") + "' AND '" + FinishDate.ToString("dd/MM/yyyy") + "";
 
+ 
             MethodReturn mr = new MethodReturn(); 
                 List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"  
                 SELECT  a.DURUMID,
@@ -162,10 +142,9 @@ namespace SasonBase.Reports.Sason.Merkez
                 inner join servisvarlikruhsatlar d ON a.saseno = d.saseno
                 WHERE A.KAYITTARIH BETWEEN '{dateQuery}' 
                         AND a.SERVISID  {servisIdQuery} 
-                        AND a.ayristirmatipid not in (1,2)
+                        AND (A.AYRISTIRMATIPAD != 'HARICI' AND A.AYRISTIRMATIPAD != 'DAHILI') 
                         
                 ORDER BY a.SERVISID, A.KAYITTARIH desc 
-d
                 ")                          
                 .GetDataTable(mr)
                 .ToModels();

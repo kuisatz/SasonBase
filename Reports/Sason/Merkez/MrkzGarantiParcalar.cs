@@ -59,10 +59,16 @@ namespace SasonBase.Reports.Sason.Merkez
         public override object ExecuteReport(MethodReturn refMr = null)
         {
             string servisIdQuery = "";
+            decimal selectedServisId = ServisIds.first().toString("0").cto<decimal>();
+
             if (ServisIds.isNotEmpty())
                 servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
             else
-                servisIdQuery = $" > 1 ";
+            {
+                //    servisIdQuery = $" > 1 ";
+                selectedServisId = ServisId;
+                servisIdQuery = $" in( {selectedServisId} )";
+            }
 
             List<object> reportDataSource = AppPool.EbaTestConnector.CreateQuery($@"
                 select

@@ -83,13 +83,16 @@ namespace SasonBase.Reports.Sason.Merkez
             selectedServisId = ServisId;
               servisIdQuery = $"=  {selectedServisId}";
 #endif
-       
-       /*        if (ServisIds.isNotEmpty())
-                    servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
-                else
-                    servisIdQuery = $" > 1 ";
-        */ 
-          
+
+            if (ServisIds.isNotEmpty())
+                servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
+            else
+            {
+                //    servisIdQuery = $" > 1 ";
+                selectedServisId = ServisId;
+                servisIdQuery = $" in( {selectedServisId} )";
+            }
+
 
 
             StartDate = StartDate.startOfDay();

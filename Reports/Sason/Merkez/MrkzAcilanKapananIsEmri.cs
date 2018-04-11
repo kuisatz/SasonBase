@@ -81,7 +81,11 @@ namespace SasonBase.Reports.Sason.Merkez
             if (ServisIds.isNotEmpty())
                 servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
             else
-                servisIdQuery = $" > 1 ";
+            {
+                //    servisIdQuery = $" > 1 ";
+                selectedServisId = ServisId;
+                servisIdQuery = $" in( {selectedServisId} )";
+            }
 
             StartDate = StartDate.startOfDay();
             FinishDate = FinishDate.endOfDay();
@@ -92,28 +96,28 @@ namespace SasonBase.Reports.Sason.Merkez
                     SELECT SUM(AIES) AS AIES , sum(KIES) AS KIES , servisid, partnercode , servisad , KAYITTARIH  
                     FROM (
                         select max(acikadet) as AIES,
-                               max(kapanan_adet) as KIES, 
-                               servisid , 
+                               max(kapanan_adet) as KIES,
+                               servisid,
                                (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = dsf.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
-                               (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where vtsxy.dilkod = 'Turkish' and vtsxy.servisid = dsf.servisid   )  as servisad,
+                               (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where vtsxy.dilkod = 'Turkish' and vtsxy.servisid = dsf.servisid) as servisad,
                                 to_char(KAYITTARIH,'dd/mm/yyyy') as  KAYITTARIH
                         from
                             (SELECT count(id) acikadet,null kapanan_adet ,servisid, KAYITTARIH
                                 FROM servisisemirler
-                                    where TAMAMLANMATARIH is null
-                                    and KAYITTARIH BETWEEN '{dateQuery}' 
-                                    and servisid {servisIdQuery}
+                                    where 
+                                        KAYITTARIH BETWEEN '{dateQuery}' AND
+                                        servisid {servisIdQuery}
                                     group by servisid, KAYITTARIH
                                 union all
-                                SELECT null acikadet ,count(id)kapanan_adet ,servisid, KAYITTARIH
+                                SELECT null acikadet ,count(id)kapanan_adet,servisid, TAMAMLANMATARIH
                                 FROM servisisemirler
-                                    where TAMAMLANMATARIH is not null
-                                    and KAYITTARIH BETWEEN '{dateQuery}' 
+                                    where 
+                                        TAMAMLANMATARIH BETWEEN '{dateQuery}'
                                     and servisid {servisIdQuery}
-                            group by servisid ,KAYITTARIH) dsf
+                            group by servisid ,TAMAMLANMATARIH) dsf
                         group by servisid ,KAYITTARIH 
                       ) 
-                    GROUP BY servisid, partnercode , servisad , KAYITTARIH                    
+                    GROUP BY servisid, partnercode, servisad, KAYITTARIH          
                     order by servisid,KAYITTARIH desc
             
             ")

@@ -72,11 +72,16 @@ namespace SasonBase.Reports.Sason.Merkez
 #endif
 
 
-              if (ServisIds.isNotEmpty())
-                   servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
-               else
-                   servisIdQuery = $" > 1 ";
-  
+            if (ServisIds.isNotEmpty())
+                servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
+            else
+            {
+                //    servisIdQuery = $" > 1 ";
+                selectedServisId = ServisId;
+                servisIdQuery = $" in( {selectedServisId} )";
+            }
+
+
 
             StartDate = StartDate.startOfDay();
             dateQuery = "to_date('" + StartDate.ToString("dd/MM/yyyy") + "')";
@@ -138,7 +143,7 @@ namespace SasonBase.Reports.Sason.Merkez
                        servisstokturler a
                  WHERE p.servisstokturid = a.id AND hservisid {servisIdQuery} 
                  order by  p.HSERVISID 
-  
+ 
                 ")
               .GetDataTable(mr)
             .ToModels();
