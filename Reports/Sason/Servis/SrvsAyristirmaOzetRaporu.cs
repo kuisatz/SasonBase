@@ -127,7 +127,7 @@ namespace SasonBase.Reports.Sason.Servis
             a.turid = c.turid(+) AND 
             A.SERVISID = b.servisid(+) AND 
             a.servisid = c.servisid(+)   
-            ORDER BY servisad ,F.islemtarihi desc 
+            ORDER BY servisad  desc 
                 ")
               .GetDataTable(mr)
                .ToModels();
