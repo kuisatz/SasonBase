@@ -96,8 +96,8 @@ namespace SasonBase.Reports.Sason.Merkez
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
                 SELECT 
-                    (SELECT vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = a.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
-                    (SELECT vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = a.servisid) as servisad,
+                    (SELECT vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = d.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
+                    (SELECT vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = d.servisid) as servisad,
                     f.netkdvtoplam,
                     f.nettutar,
                     f.netkdvtoplam+f.nettutar toplam, 
