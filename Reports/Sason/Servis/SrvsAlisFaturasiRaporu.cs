@@ -44,10 +44,7 @@ namespace SasonBase.Reports.Sason.Servis
             get { return GetParameter("param_finish_date").ReporterValue.cast<DateTime>(); }
             set { SetParameterReporterValue("param_finish_date", value.endOfDay()); }
         }
-        
-   
-
-            */
+          
         public override ReporterParameter SetParameterIncomingValue(string parameterName, object value)
         {
             switch (parameterName)
