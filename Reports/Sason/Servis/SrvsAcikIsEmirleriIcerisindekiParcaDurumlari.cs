@@ -40,10 +40,10 @@ namespace SasonBase.Reports.Sason.Servis
         {
             string servisIdQuery = $" in( {ServisId} )";
 
-#if DEBUG
-             selectedServisId = ServisId;
-              servisIdQuery = $" in( {selectedServisId} )";
-#endif
+//#if DEBUG
+//             selectedServisId = ServisId;
+//              servisIdQuery = $" in( {selectedServisId} )";
+//#endif
              
 
             MethodReturn mr = new MethodReturn();
