@@ -116,13 +116,18 @@ namespace SasonBase.Reports.Sason.Merkez
                 br.ad BIRIM,
                 A.BIRIMFIYAT ALIS_FIYATI,
                 b.TARIH,
-                f.faturano
+                f.faturano,
+                KURLAR_PKG.CAPRAZKURTARIH (2, 1, b.TARIH) kur,
+                kurlar_pkg.servisstokfiyatgetir (d.id, 2, TRUNC (SYSDATE)) as EUROLISTEFIYAT,
+                KURLAR_PKG.STOKFIYATINDGETIR (d.id, 2, 2, 1,0) as EUROINDFIYAT
             FROM servisstokhareketdetaylar  a
             INNER JOIN servisstokhareketler b on B.ID = A.SERVISSTOKHAREKETID and b.parabirimid=1
             INNER JOIN servissiparisler c on c.id=b.servissiparisid and c.siparisservisid=1
             INNER JOIN servisstoklar d on d.id = A.SERVISSTOKID
             INNER JOIN faturalar f on f.id=b.faturaid
             INNER JOIN vw_birimler br on br.id=a.birimid and br.dilkod='Turkish'
+            INNER JOIN servisdeporaflar dr ON d.servisdeporafid = dr.id  
+            INNER JOIN servisstokturler sst ON sst.id = d.servisstokturid  
             WHERE
                 a.stokislemtipdeger=1 and
                 b.servisid {servisIdQuery} AND
