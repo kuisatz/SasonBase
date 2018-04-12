@@ -44,17 +44,8 @@ namespace SasonBase.Reports.Sason.Servis
             get { return GetParameter("param_finish_date").ReporterValue.cast<DateTime>(); }
             set { SetParameterReporterValue("param_finish_date", value.endOfDay()); }
         }
-
-        public List<decimal> ServisIds
-        {
-            get { return GetParameter("param_servisler").ReporterValue.cast<List<decimal>>(); }
-            set { SetParameterReporterValue("param_servisler", value); }
-        }
-   /*     public string SaseNo
-        {
-            get { return GetParameter("param_sase_no").ReporterValue.toString(); }
-            set { SetParameterReporterValue("param_sase_no", value.toString()); }
-        }
+        
+   
 
             */
         public override ReporterParameter SetParameterIncomingValue(string parameterName, object value)
@@ -67,35 +58,22 @@ namespace SasonBase.Reports.Sason.Servis
                     break;
                 case "param_finish_date":
                     FinishDate = Convert.ToInt64(value).toDateTime();
-                    break;           
-        /*        case "param_sase_no":
-                    SaseNo = value.toString();
                     break;
-                    */
             }
             return base.SetParameterIncomingValue(parameterName, value);
         }
 
         public override object ExecuteReport(MethodReturn refMr = null)
         {
-            decimal selectedServisId = ServisIds.first().toString("0").cto<decimal>();
-            string servisIdQuery = $" = {selectedServisId}";
+         
+            string servisIdQuery = $" = {ServisId}";
             string dateQuery = "";
 
 #if DEBUG
              selectedServisId = ServisId;
               servisIdQuery = $" in( {selectedServisId} )";
 #endif
-
-
-            if (ServisIds.isNotEmpty())
-                servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
-            else { 
-            //    servisIdQuery = $" > 1 ";
-                selectedServisId = ServisId;
-                servisIdQuery = $" in( {selectedServisId} )";
-            }
-
+  
 
             StartDate = StartDate.startOfDay(); 
             FinishDate = FinishDate.endOfDay();
