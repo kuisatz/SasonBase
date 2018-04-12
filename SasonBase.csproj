@@ -81,6 +81,7 @@
     <Compile Include="Reports\Reporter.cs" />
     <Compile Include="Reports\Sason\Enums.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzAcikIsEmirleriIcerisindekiParcaDurumlari.cs" />
+    <Compile Include="Reports\Sason\Merkez\MrkzAyristirmaOzetRaporu.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzDisHizmetAlimRaporu.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzAlisFaturasiRaporu.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzServisHareketRaporu.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Reports\Sason\Servis\Base\SasonServisReporter.cs" />
     <Compile Include="Reports\Sason\Servis\ceyda2.cs" />
     <Compile Include="Reports\Sason\Servis\SrvsAcikIsEmirleriIcerisindekiParcaDurumlari.cs" />
+    <Compile Include="Reports\Sason\Servis\SrvsAyristirmaOzetRaporu.cs" />
     <Compile Include="Reports\Sason\Servis\SrvsDisHizmetAlimRaporu.cs" />
     <Compile Include="Reports\Sason\Servis\SrvsAlisFaturasiRaporu.cs" />
     <Compile Include="Reports\Sason\Servis\SrvsServisHareketRaporu.cs" />
