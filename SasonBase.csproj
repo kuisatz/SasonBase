@@ -80,6 +80,7 @@
     <Compile Include="Reports\Models\RptTeknisyenHareket.cs" />
     <Compile Include="Reports\Reporter.cs" />
     <Compile Include="Reports\Sason\Enums.cs" />
+    <Compile Include="Reports\Sason\Merkez\MrkzAlisFaturasiRaporu.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzServisHareketRaporu.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzBakimGecmisi .cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzAcilanKapananIsEmri.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Reports\Sason\Merkez\Base\SasonMerkezReporter.cs" />
     <Compile Include="Reports\Sason\Servis\Base\SasonServisReporter.cs" />
     <Compile Include="Reports\Sason\Servis\ceyda2.cs" />
+    <Compile Include="Reports\Sason\Servis\SrvsAlisFaturasiRaporu.cs" />
     <Compile Include="Reports\Sason\Servis\SrvsServisHareketRaporu.cs" />
     <Compile Include="Reports\Sason\Servis\SrvsGarantiAyristirmaRaporu.cs" />
     <Compile Include="Reports\Sason\Servis\SrvsBakimGecmisi.cs" />
