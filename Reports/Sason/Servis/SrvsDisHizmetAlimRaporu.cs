@@ -94,7 +94,7 @@ namespace SasonBase.Reports.Sason.Servis
                     F.ILGILIKISI,
                     F.ILGILIKISITELNO,
                     F.IRSALIYENO,
-                    F.IRSALIYETARIHI,
+                    to_char(F.IRSALIYETARIHI,'dd/mm/yyyy') as IRSALIYETARIHI,
                     F.ISLEMTARIHI
                 FROM sason.servisdishizmetalimlar d, sason.faturalar f
                 WHERE
