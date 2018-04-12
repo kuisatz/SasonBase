@@ -66,10 +66,10 @@ namespace SasonBase.Reports.Sason.Servis
             string servisIdQuery = $" = {ServisId}";
             string dateQuery = "";
 
-#if DEBUG
-             selectedServisId = ServisId;
-              servisIdQuery = $" in( {selectedServisId} )";
-#endif
+//#if DEBUG
+//             selectedServisId = ServisId;
+//              servisIdQuery = $" in( {selectedServisId} )";
+//#endif
   
 
             StartDate = StartDate.startOfDay(); 
