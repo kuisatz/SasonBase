@@ -106,23 +106,28 @@ namespace SasonBase.Reports.Sason.Merkez
             MethodReturn mr = new MethodReturn();
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
-            SELECT 
+            SELECT
                 DISTINCT b.servisid,
                 (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = b.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
                 (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = b.servisid) as servisad,
-                a.*, 
-                b.TARIH, 
-                d.kod, 
-                d.ad
-            FROM servisstokhareketdetaylar  a 
-            INNER JOIN servisstokhareketler b on B.ID = A.SERVISSTOKHAREKETID
-            INNER JOIN servissiparisler c on c.servisid = b.servisid and c.siparisservisid=1 
-            INNER JOIN servisstoklar d on d.id = A.SERVISSTOKID 
-            WHERE 
-                a.stokislemtipdeger=1 and 
-                b.servisid {servisIdQuery}  AND 
-                b.TARIH between '{dateQuery}' 
-            ORDER BY b.servisid , b.TARIH desc 
+                d.kod,
+                d.ad,
+                a.miktar,
+                br.ad BIRIM,
+                A.BIRIMFIYAT ALIS_FIYATI,
+                b.TARIH,
+                f.faturano
+            FROM servisstokhareketdetaylar  a
+            INNER JOIN servisstokhareketler b on B.ID = A.SERVISSTOKHAREKETID and b.parabirimid=1
+            INNER JOIN servissiparisler c on c.id=b.servissiparisid and c.siparisservisid=1
+            INNER JOIN servisstoklar d on d.id = A.SERVISSTOKID
+            INNER JOIN faturalar f on f.id=b.faturaid
+            INNER JOIN vw_birimler br on br.id=a.birimid and br.dilkod='Turkish'
+            WHERE
+                a.stokislemtipdeger=1 and
+                b.servisid {servisIdQuery} AND
+                b.TARIH between '{dateQuery}'
+            ORDER BY b.servisid , b.TARIH desc  
                 ")
               .GetDataTable(mr)
                .ToModels();
