@@ -26,13 +26,7 @@ namespace SasonBase.Reports.Sason.Servis
         {
             base.ServisId = servisId;            
         } 
-        
-        public List<decimal> ServisIds
-        {
-            get { return GetParameter("param_servisler").ReporterValue.cast<List<decimal>>(); }
-            set { SetParameterReporterValue("param_servisler", value); }
-        }
-    
+         
         public override ReporterParameter SetParameterIncomingValue(string parameterName, object value)
         {
             switch (parameterName)
@@ -44,24 +38,14 @@ namespace SasonBase.Reports.Sason.Servis
 
         public override object ExecuteReport(MethodReturn refMr = null)
         {
-            decimal selectedServisId = ServisIds.first().toString("0").cto<decimal>();
-            string servisIdQuery = $" = {selectedServisId}";
-           
+            string servisIdQuery = $" in( {ServisId} )";
 
 #if DEBUG
              selectedServisId = ServisId;
               servisIdQuery = $" in( {selectedServisId} )";
 #endif
+             
 
-
-            if (ServisIds.isNotEmpty())
-                servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
-            else { 
-            //    servisIdQuery = $" > 1 ";
-                selectedServisId = ServisId;
-                servisIdQuery = $" in( {selectedServisId} )";
-            } 
- 
             MethodReturn mr = new MethodReturn();
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
