@@ -10,23 +10,22 @@ using System.Data;
 namespace SasonBase.Reports.Sason.Merkez
 {
     /// <summary>
-    /// Merkez Servis Hareket Raporu
+    /// Merkez Alış Faturasi Raporu
     /// </summary>
-    public class MrkzServisHareketRaporu : Base.SasonMerkezReporter
+    public class MrkzAlisFaturasiRaporu : Base.SasonMerkezReporter
     {
-        public MrkzServisHareketRaporu()
+        public MrkzAlisFaturasiRaporu()
         {
-            Text = "Servis Hareket Raporu";
-            SubjectCode = "MrkzServisHareketRaporu";
+            Text = "Alış Faturası Raporu";
+            SubjectCode = "MrkzAlisFaturasiRaporu";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
-            AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
-        //    AddParameter(new ReporterParameter() { Name = "param_sase_no", Text = "Şase No" }.CreateTextBox("İsteğe Bağlı Şase No. Girebilirsiniz"));
+            AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true)); 
             Disabled = false;
         }
-        public MrkzServisHareketRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
+        public MrkzAlisFaturasiRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
             base.ServisId = servisId;
             this.StartDate = startDate;
@@ -50,13 +49,7 @@ namespace SasonBase.Reports.Sason.Merkez
             get { return GetParameter("param_servisler").ReporterValue.cast<List<decimal>>(); }
             set { SetParameterReporterValue("param_servisler", value); }
         }
-   /*     public string SaseNo
-        {
-            get { return GetParameter("param_sase_no").ReporterValue.toString(); }
-            set { SetParameterReporterValue("param_sase_no", value.toString()); }
-        }
-
-            */
+   
         public override ReporterParameter SetParameterIncomingValue(string parameterName, object value)
         {
             switch (parameterName)
@@ -70,11 +63,7 @@ namespace SasonBase.Reports.Sason.Merkez
                     break;
                 case "param_servisler":
                     ServisIds = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
-                    break;
-        /*        case "param_sase_no":
-                    SaseNo = value.toString();
-                    break;
-                    */
+                    break; 
             }
             return base.SetParameterIncomingValue(parameterName, value);
         }
@@ -106,23 +95,26 @@ namespace SasonBase.Reports.Sason.Merkez
             MethodReturn mr = new MethodReturn();
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
-            SELECT 
-                DISTINCT b.servisid,
-                (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = b.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
-                (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = b.servisid) as servisad,
-                a.*, 
-                b.TARIH, 
-                d.kod, 
-                d.ad
-            FROM servisstokhareketdetaylar  a 
-            INNER JOIN servisstokhareketler b on B.ID = A.SERVISSTOKHAREKETID
-            INNER JOIN servissiparisler c on c.servisid = b.servisid and c.siparisservisid=1 
-            INNER JOIN servisstoklar d on d.id = A.SERVISSTOKID 
-            WHERE 
-                a.stokislemtipdeger=1 and 
-                b.servisid {servisIdQuery}  AND 
-                b.TARIH between '{dateQuery}' 
-            ORDER BY b.servisid , b.TARIH desc 
+                select 
+                    (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = a.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
+                    (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = a.servisid) as servisad,
+                    a.faturaturid, 
+                    a.faturano, 
+                    a.islemtarihi,
+                    a.cariunvan,
+                    a.bruttoplam, 
+                    a.indirimtoplam,
+                    a.netkdvtoplam, 
+                    a.nettutar, 
+                    a.toplam,
+                    a.carikod, 
+                    a.vno,
+                    a.servisid
+                FROM faturalar a
+                WHERE a.servisid  {servisIdQuery} 
+                and a.islemtarihi between '{dateQuery}'
+                and a.faturaturid=4 
+            ORDER BY servisad ,a.islemtarihi desc 
                 ")
               .GetDataTable(mr)
                .ToModels();

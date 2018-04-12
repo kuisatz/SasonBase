@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -80,11 +80,6 @@
     <Compile Include="Reports\Models\RptTeknisyenHareket.cs" />
     <Compile Include="Reports\Reporter.cs" />
     <Compile Include="Reports\Sason\Enums.cs" />
-    <Compile Include="Reports\Sason\Merkez\MrkzServisHareketRaporu.cs" />
-    <Compile Include="Reports\Sason\Merkez\MrkzBakimGecmisi .cs" />
-    <Compile Include="Reports\Sason\Merkez\MrkzAcilanKapananIsEmri.cs" />
-    <Compile Include="Reports\Sason\Merkez\MrkzGarantiAyristirmaRaporu.cs" />
-    <Compile Include="Reports\Sason\Merkez\MrkzStokRaporu.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzAyristirmaRaporu.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzDetayliYedekParcaSatinAlma.cs" />
     <Compile Include="Reports\Sason\Merkez\MrkzDetayliYedekParca.cs" />
@@ -106,10 +101,6 @@
     <Compile Include="Reports\Sason\Merkez\Base\SasonMerkezReporter.cs" />
     <Compile Include="Reports\Sason\Servis\Base\SasonServisReporter.cs" />
     <Compile Include="Reports\Sason\Servis\ceyda2.cs" />
-    <Compile Include="Reports\Sason\Servis\SrvsServisHareketRaporu.cs" />
-    <Compile Include="Reports\Sason\Servis\SrvsGarantiAyristirmaRaporu.cs" />
-    <Compile Include="Reports\Sason\Servis\SrvsBakimGecmisi.cs" />
-    <Compile Include="Reports\Sason\Servis\SrvsAcilanKapananIsEmri.cs" />
     <Compile Include="Reports\Sason\Servis\SrvsYdkPrcFlytRpr.cs" />
     <Compile Include="Reports\Sason\Servis\SrvsDetayliYedekParca.cs" />
     <Compile Include="Reports\Sason\Servis\SrvsAracGirisSayilari.cs" />
