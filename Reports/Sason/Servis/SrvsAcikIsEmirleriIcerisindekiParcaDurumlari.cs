@@ -109,7 +109,7 @@ namespace SasonBase.Reports.Sason.Servis
                 WHERE   
                         p.servisstokturid = a.id AND 
                         p.servisid  {servisIdQuery}  
-                ORDER BY servisad desc
+                ORDER BY P.STOKMIKTAR desc
                 ")
               .GetDataTable(mr)
                .ToModels();
