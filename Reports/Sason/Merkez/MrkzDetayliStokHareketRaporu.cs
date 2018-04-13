@@ -134,7 +134,7 @@ namespace SasonBase.Reports.Sason.Merkez
                     )  hizmetlerxx on b.id=hizmetlerxx.SERVISISEMIRISLEMID   
 
             WHERE
-                a.KAYITTARIH between '{dateQuery}'  
+                a.KAYITTARIH between '{dateQuery}'  AND 
                 a.servisid {servisIdQuery}
             
                 ")
