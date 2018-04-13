@@ -16,7 +16,7 @@ namespace SasonBase.Reports.Sason.Servis
     {
         public SrvsServisHareketRaporu()
         {
-            Text = "Servis Hareket Raporu";
+            Text = "Orjinal Parça Alım Raporu";//"Servis Hareket Raporu";
             SubjectCode = "SrvsServisHareketRaporu";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
