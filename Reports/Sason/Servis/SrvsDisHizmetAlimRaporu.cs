@@ -96,6 +96,7 @@ namespace SasonBase.Reports.Sason.Servis
                     F.IRSALIYENO,
                     to_char(F.IRSALIYETARIHI,'dd/mm/yyyy') as IRSALIYETARIHI,
                     F.ISLEMTARIHI
+                    (SELECT zx.ISEMIRNO FROM servisisemirler zx where zx.id = d.SERVISISEMIRID) as ISEMIRNO
                 FROM sason.servisdishizmetalimlar d, sason.faturalar f
                 WHERE
                     d.faturaid = f.id AND 

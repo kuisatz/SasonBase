@@ -117,7 +117,8 @@ namespace SasonBase.Reports.Sason.Merkez
                     F.ILGILIKISITELNO,
                     F.IRSALIYENO,
                     to_char(F.IRSALIYETARIHI,'dd/mm/yyyy') as IRSALIYETARIHI,
-                    F.ISLEMTARIHI
+                    F.ISLEMTARIHI,
+                    (SELECT zx.ISEMIRNO FROM servisisemirler zx where zx.id = d.SERVISISEMIRID) as ISEMIRNO
                 FROM sason.servisdishizmetalimlar d, sason.faturalar f
                 WHERE     
                     d.faturaid = f.id AND 
