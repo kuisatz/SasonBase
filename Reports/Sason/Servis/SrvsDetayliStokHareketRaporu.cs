@@ -10,13 +10,13 @@ using System.Data;
 namespace SasonBase.Reports.Sason.Servis
 {
     /// <summary>
-    ///  Detaylı Stok Hareket Raporu
+    ///  Detaylı İş Emri Listesi Raporu
     /// </summary>
     public class SrvsDetayliStokHareketRaporu : Base.SasonReporter
     {
         public SrvsDetayliStokHareketRaporu()
         {
-            Text = "Detaylı Stok Hareket Raporu";
+            Text = "Detaylı İş Emri Listesi Raporu";
             SubjectCode = "SrvsDetayliStokHareketRaporu";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
