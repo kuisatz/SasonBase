@@ -73,9 +73,9 @@ namespace SasonBase.Reports.Sason.Servis
             MethodReturn mr = new MethodReturn();
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
-              SELECT 
-                    (SELECT vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = D.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
-                    (SELECT vtsxy.ISORTAKAD FROM vt_servisler vtsxy where vtsxy.dilkod = 'Turkish' and vtsxy.servisid = D.servisid) as servisad,
+                SELECT 
+                    (SELECT vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = d.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
+                    (SELECT vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = d.servisid) as servisad,
                     f.netkdvtoplam,
                     f.nettutar,
                     f.netkdvtoplam+f.nettutar toplam, 
@@ -95,10 +95,10 @@ namespace SasonBase.Reports.Sason.Servis
                     F.ILGILIKISITELNO,
                     F.IRSALIYENO,
                     to_char(F.IRSALIYETARIHI,'dd/mm/yyyy') as IRSALIYETARIHI,
-                    F.ISLEMTARIHI
+                    F.ISLEMTARIHI,
                     (SELECT zx.ISEMIRNO FROM servisisemirler zx where zx.id = d.SERVISISEMIRID) as ISEMIRNO
                 FROM sason.servisdishizmetalimlar d, sason.faturalar f
-                WHERE
+                WHERE     
                     d.faturaid = f.id AND 
                     F.ISLEMTARIHI BETWEEN '{dateQuery}' AND 
                         d.servisid {servisIdQuery}   
