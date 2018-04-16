@@ -1,52 +1,67 @@
 ﻿using Antibiotic.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Data;
+
 
 namespace SasonBase.Reports.Sason.Servis
 {
-    public class StokRaporu01 : Base.SasonReporter
+    /// <summary>
+    ///  Stok Raporu
+    /// </summary>
+    public class SrvsStokRaporu : Base.SasonReporter
     {
-        public StokRaporu01()
+        public SrvsStokRaporu()
         {
             Text = "Stok Raporu";
+            SubjectCode = "SrvsStokRaporu";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Tarih" }.CreateDate());
-            Disabled = true;
+               
+            Disabled = false;
         }
-
-        public StokRaporu01(decimal servisId, DateTime reportDate) : this()
+        public SrvsStokRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
             base.ServisId = servisId;
-            this.ReportDate = reportDate;
+            this.StartDate = startDate; 
         }
 
-        public DateTime ReportDate
+        public DateTime StartDate
         {
             get { return GetParameter("param_start_date").ReporterValue.cast<DateTime>(); }
             set { SetParameterReporterValue("param_start_date", value.startOfDay()); }
         }
 
+       
+          
         public override ReporterParameter SetParameterIncomingValue(string parameterName, object value)
         {
             switch (parameterName)
             {
                 //Dışarıdan Gelen Format 20171231235959 Şeklinde Olmalıdır
                 case "param_start_date":
-                    ReportDate = Convert.ToInt64(value).toDateTime();
-                    break;
+                    StartDate = Convert.ToInt64(value).toDateTime(); 
+                    break; 
             }
             return base.SetParameterIncomingValue(parameterName, value);
         }
 
         public override object ExecuteReport(MethodReturn refMr = null)
         {
-            List<QueryResult> reportDataSource = new List<QueryResult>();
-            DataTable dtb = AppPool.EbaTestConnector.CreateQuery(@"
+         
+            string servisIdQuery = $" = {ServisId}";
+            string dateQuery = ""; 
+
+            StartDate = StartDate.startOfDay();
+
+            dateQuery = "to_date('" + StartDate.ToString("dd/MM/yyyy") + "')";
+            MethodReturn mr = new MethodReturn();
+
+            List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
                 SELECT 
                        a.kod tur,
                        p.ID,
@@ -69,14 +84,14 @@ namespace SasonBase.Reports.Sason.Servis
                                a.kod,
                                C.STOKMIKTAR,
                                r.ad BIRIMAD,
-                               kurlar_pkg.servisstokfiyatgetir(a.id, 2, TRUNC({ReportDate}))
+                               kurlar_pkg.servisstokfiyatgetir(a.id, 2, TRUNC({dateQuery}))
                                   fiyat,
                                KURLAR_PKG.STOKFIYATINDGETIR(a.id,
                                                              2,
                                                              2,
                                                              1,
                                                              0)
-                                  indfiyat,
+                               indfiyat,
                                kurlar_pkg.ORTALAMAMALIYET(a.id) ortalamamaliyet,
                                d.ad SERVISDEPOAD,
                                p.ad SERVISDEPOrafAD,
@@ -107,38 +122,14 @@ namespace SasonBase.Reports.Sason.Servis
                                AND a.servisdeporafid = p.id(+)
                                AND r.id = a.birimid) p,
                        servisstokturler a
-                 WHERE p.servisstokturid = a.id AND hservisid =94
-   
-            ")
-            .Parameter("ReportDate", ReportDate.Date)
-            .Parameter("ServisId", ServisId)
-            .GetDataTable(refMr);
-
-            reportDataSource = dtb.ToModels<QueryResult>(refMr);
-
+                 WHERE p.servisstokturid = a.id AND hservisid {servisIdQuery} 
+ 
+                ")
+              .GetDataTable(mr)
+               .ToModels();
+             
             CloseCustomAppPool();
-            return reportDataSource;
-        }
-
-
-        public class QueryResult
-        {
-            public string TUR { get; set; }
-            public decimal ID { get; set; }
-            public string AD { get; set; }
-            public string KOD { get; set; }
-            public string ORJINALKOD { get; set; }
-            public int SERVISSTOKTURID { get; set; }
-            public decimal STOKMIKTAR { get; set; }
-            public string BIRIMAD { get; set; }
-            public decimal EUROINDFIYAT { get; set; }
-            public decimal EUROLISTEFIYAT { get; set; }
-            public decimal ORTALAMAMALIYET { get; set; }
-            public string SERVISDEPOAD { get; set; }
-            public string SERVISDEPORAFAD { get; set; }
-            public decimal STOKTUTAR { get; set; }
-
-            public ServisStokTurIds ServisStokTur { get => (ServisStokTurIds)SERVISSTOKTURID; }
+            return queryResults;
         }
 
     }
