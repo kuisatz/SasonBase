@@ -67,7 +67,7 @@ namespace SasonBase.Reports.Sason.Merkez
                    (SELECT vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = a.SERVISID) as servisad, 
                    count(b.servisisemirid) as servisisemiridadedi, 
                    to_number ( to_char(KAYITTARIH,'mm')) as ay,
-                   to_char(KAYITTARIH, 'Month')  as ayadi
+                   to_char(KAYITTARIH, 'Month')  as ayadi,
                    to_char(sysdate,'yyyy') as yil
                  FROM servisisemirler a 
                  INNER JOIN servisisemirislemler b on a.id=b.servisisemirid
