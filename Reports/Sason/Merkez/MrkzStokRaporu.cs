@@ -106,7 +106,8 @@ namespace SasonBase.Reports.Sason.Merkez
                        P.ORTALAMAMALIYET ORTALAMAMALIYET,
                        p.SERVISDEPOAD,
                        p.SERVISDEPORAFAD,
-                       p.stokmiktar * p.ortalamamaliyet stoktutar
+                       p.stokmiktar * p.ortalamamaliyet stoktutar,
+                       p.orjinalkod
                   FROM(SELECT servisstokturid,
                                a.id,
                                a.servisid hservisid,
@@ -124,20 +125,30 @@ namespace SasonBase.Reports.Sason.Merkez
                                kurlar_pkg.ORTALAMAMALIYET(a.id) ortalamamaliyet,
                                d.ad SERVISDEPOAD,
                                p.ad SERVISDEPOrafAD,
-                               a.ad
+                               a.ad, 
+                               CASE WHEN orj.orjinalgkod IS NULL THEN a.kod ELSE orj.orjinalgkod END orjinalkod
                           FROM(SELECT DISTINCT servisstokid
                                   FROM sason.servisstokhareketdetaylar) h,
                                sason.servisstoklar a,
                                sason.vt_genelstok c,
                                sason.vw_birimler r,
                                sason.servisdepolar d,
-                               sason.servisdeporaflar p
+                               sason.servisdeporaflar p,
+                               (SELECT m1.id malzemeid,
+                                  m1.kod,
+                                  m1.gkod,
+                                  m2.kod orjinalkod,
+                                  m2.gkod orjinalgkod,
+                                  m1.orjinalmalzemeid
+                                FROM malzemeler m1, malzemeler m2
+                                WHERE m1.orjinalmalzemeid = M2.ID) orj 
                          WHERE     h.servisstokid = a.id
                                AND A.ID = C.SERVISSTOKID
                                AND C.STOKMIKTAR <> 0
                                AND a.servisid = c.servisid
                                AND r.dilkod = 'Turkish'
                                AND A.SERVISDEPOID = d.id(+)
+                               AND A.kod = orj.kod(+)
                                AND a.servisdeporafid = p.id(+)
                                AND r.id = a.birimid) p,
                        servisstokturler a
