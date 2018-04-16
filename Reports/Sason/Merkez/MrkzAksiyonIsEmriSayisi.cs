@@ -76,7 +76,7 @@ namespace SasonBase.Reports.Sason.Merkez
                     a.servisid {servisIdQuery} AND
                     to_char(sysdate,'yyyy') =  to_char(KAYITTARIH,'yyyy')
                  GROUP BY a.servisid, to_number ( to_char(KAYITTARIH,'mm')), to_char(KAYITTARIH, 'Month') 
-                 order by 1,3 desc
+                 order by 1,5 desc
                 
                 ")
               .GetDataTable(mr)

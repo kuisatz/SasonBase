@@ -59,7 +59,7 @@ namespace SasonBase.Reports.Sason.Servis
                     a.servisid {servisIdQuery} AND
                     to_char(sysdate,'yyyy') =  to_char(KAYITTARIH,'yyyy')
                  GROUP BY a.servisid, to_number ( to_char(KAYITTARIH,'mm')), to_char(KAYITTARIH, 'Month') 
-                 order by 3 desc
+                 order by 5 desc
                 ")
               .GetDataTable(mr)
                .ToModels();
