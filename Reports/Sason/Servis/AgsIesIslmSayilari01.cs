@@ -66,7 +66,7 @@ namespace SasonBase.Reports.Sason.Servis
                      FROM companies c, sason.servisler s
                     WHERE c.ID = s.EBAFIRMAID(+)
                 ) b
-                where a.servis= {ServisId} or {ServisId}=1
+                where a.servis= {ServisId} 
                  and a.servis=b.servisid
             ")
             //.Parameter("StartDate", StartDate.Date)
