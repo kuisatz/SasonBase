@@ -106,15 +106,15 @@ namespace SasonBase.Reports.Sason.Merkez
                              e_ssi31_form.garantirednedenid_text,
                              (SELECT esagarantino
                                 FROM ayristirmalar g
-                               WHERE g.id = e_ssi31_form.ayristirmaid)  'ESAGARANTINO',
+                               WHERE g.id = e_ssi31_form.ayristirmaid)  ESAGARANTINO,
                             (select C.KOD from bakimsozlesmeler a, araclar b, bakimsozlesmetipler c where a.aracid = b.id and c.id = A.BAKIMSOZLESMETIPID and saseno = e_ssi31_form.saseno and a.durumid = 1) bakimsozlesmetipi,
-                                 e_ssi31_form.REGNUMBER PLAKA, (SELECT esastatu  FROM ayristirmalar g WHERE g.id = e_ssi31_form.ayristirmaid)  'ESASTATU',
+                                 e_ssi31_form.REGNUMBER PLAKA, (SELECT esastatu  FROM ayristirmalar g WHERE g.id = e_ssi31_form.ayristirmaid)  ESASTATU,
                              (SELECT t.ad
                                 FROM vw_ayristirmatipler t, ayristirmalar a
                                WHERE     a.ayristirmatipid = t.id
                                      AND a.id = e_ssi31_form.ayristirmaid
-                                     AND dilkod = '<?=DILKOD>')
-                                'AYRISTIRMATIPAD',
+                                     AND dilkod = 'Turkish')
+                                AYRISTIRMATIPAD,
                              e_ssi31_form.servisgarantino,
                              e_ssi31_form.saseno,
                              e_ssi31_form.SERVISID,
