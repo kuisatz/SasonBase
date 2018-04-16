@@ -106,7 +106,7 @@ namespace SasonBase.Reports.Sason.Servis
                                AND a.servisdeporafid = p.id(+)
                                AND r.id = a.birimid) p,
                        servisstokturler a
-                 WHERE p.servisstokturid = a.id AND hservisid = {ServisId}
+                 WHERE p.servisstokturid = a.id AND hservisid {ServisId}
    
             ")
             .Parameter("ReportDate", ReportDate.Date)
