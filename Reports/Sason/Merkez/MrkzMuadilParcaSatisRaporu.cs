@@ -63,7 +63,7 @@ namespace SasonBase.Reports.Sason.Merkez
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
 
-                SELECT 
+              SELECT 
                     PARCA_NO,
                     PARCA_ADI,
                     STOK_TURU,
@@ -73,7 +73,7 @@ namespace SasonBase.Reports.Sason.Merkez
                     servissiparisid,
                     belgeno,
                     asd.kod,
-                    CASE WHEN orj.orjinalgkod IS '' THEN asd.kod ELSE orj.orjinalgkod END orjinalkod,
+                    CASE WHEN orj.orjinalgkod IS NULL THEN '' ELSE orj.orjinalgkod END orjinalkod,
                     asd.servisid,
                     (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = asd.SERVISID and vtsx.dilkod = 'Turkish') as partnercode,
                     (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = asd.SERVISID) as servisad 
@@ -86,7 +86,7 @@ namespace SasonBase.Reports.Sason.Merkez
                             hardet.birimfiyat,
                             hardet.isemirno,
                             to_char(hardet.servissiparisid) as servissiparisid,
-                            (select SSPX.BELGENO FROM servissiparisler sspx where sspx.id= hardet.servissiparisid) as belgeno,
+                            (select SSPX.BELGENO  from servissiparisler sspx where sspx.id= hardet.servissiparisid) as belgeno,
                             ss.malzemeid,
                             ss.kod,
                             ss.servisid
@@ -99,7 +99,7 @@ namespace SasonBase.Reports.Sason.Merkez
                             NVL( to_char(HARDET.SERVISSIPARISID), HARDET.ISEMIRNO) is not null and  
                             SS.SERVISSTOKTURID in (6,7,8,9,10,11) and
                             hardet.servisstokid=ss.id AND 
-                            ss.servisid {servisIdQuery}   
+                            ss.servisid {servisIdQuery}  
                     ) asd ,  (SELECT m1.id malzemeid,
                                                     m1.kod,
                                                     m1.gkod,
@@ -110,8 +110,8 @@ namespace SasonBase.Reports.Sason.Merkez
                                                 WHERE m1.orjinalmalzemeid = M2.ID) orj  
                                 
                             where 
-                            asd.kod = orj.kod(+)  
-                     order by  asd.servisid
+                            asd.kod = orj.kod(+)
+                    order by  asd.servisid
                 ")
               .GetDataTable(mr)
                .ToModels();

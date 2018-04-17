@@ -48,7 +48,7 @@ namespace SasonBase.Reports.Sason.Servis
                     servissiparisid,
                     belgeno,
                     asd.kod,
-                    CASE WHEN orj.orjinalgkod IS NULL THEN asd.kod ELSE orj.orjinalgkod END orjinalkod,
+                    CASE WHEN orj.orjinalgkod IS NULL THEN '' ELSE orj.orjinalgkod END orjinalkod,
                     asd.servisid,
                     (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = asd.SERVISID and vtsx.dilkod = 'Turkish') as partnercode,
                     (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = asd.SERVISID) as servisad 
