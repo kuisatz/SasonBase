@@ -118,7 +118,7 @@ namespace SasonBase.Reports.Sason.Servis
                         T.TUTAR,
                         T.BRUTTUTAR,
                         CASE
-                            WHEN    (a.ayristirmatipid IN (1) AND d.faturaid IS NOT NULL)
+                            WHEN  (a.ayristirmatipid IN (1) AND d.faturaid IS NOT NULL)
                                 OR a.claimstatus IN ('Z057', 'Z060', 'Z070', 'Z0110')
                             THEN
                             'TAMAMLANMIS'
@@ -191,11 +191,11 @@ namespace SasonBase.Reports.Sason.Servis
                         and a.servisid = i.servisid
                         and i.servisid {servisIdQuery} 
 
-                        and i.id in (select ixx.id from servisisemirler ixx where i.servisid {servisIdQuery}  and ixx.KAYITTARIH between '{dateQuery}'  AND (i.saseno = NVL ('{SaseNo}', i.saseno))   )
+                        and i.id in (select ixx.id from servisisemirler ixx where i.durumid = 1 AND i.servisid {servisIdQuery}  and ixx.KAYITTARIH between '{dateQuery}'  AND (i.saseno = NVL ('{SaseNo}', i.saseno))   )
                         AND a.ayristirmatipid not in (1,2)
                         
                         ) asd 
-                        ORDER BY SERVISID, KAYITTARIH desc  
+                        ORDER BY SERVISID, isemirno , SERVISSTOKTURad asc  , KAYITTARIH desc  
                 ")                          
                 .GetDataTable(mr)
                 .ToModels();

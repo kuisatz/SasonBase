@@ -46,6 +46,7 @@ namespace SasonBase.Reports.Sason.Servis
                     birimfiyat,
                     isemirno,
                     servissiparisid,
+                    belgeno,
                     asd.kod,
                     CASE WHEN orj.orjinalgkod IS NULL THEN asd.kod ELSE orj.orjinalgkod END orjinalkod,
                     asd.servisid,
@@ -60,6 +61,7 @@ namespace SasonBase.Reports.Sason.Servis
                             hardet.birimfiyat,
                             hardet.isemirno,
                             to_char(hardet.servissiparisid) as servissiparisid,
+                            (select SSPX.BELGENO  from servissiparisler sspx where sspx.id= hardet.servissiparisid) as belgeno,
                             ss.malzemeid,
                             ss.kod,
                             ss.servisid
@@ -72,31 +74,7 @@ namespace SasonBase.Reports.Sason.Servis
                             NVL( to_char(HARDET.SERVISSIPARISID), HARDET.ISEMIRNO) is not null and  
                             SS.SERVISSTOKTURID in (6,7,8,9,10,11) and
                             hardet.servisstokid=ss.id AND 
-                            ss.servisid {servisIdQuery} 
- 
-                union all 
-
-                        SELECT
-                            ss.kod PARCA_NO,
-                            ss.ad PARCA_ADI,
-                            stur.kod STOK_TURU,
-                            hardet.miktar,
-                            hardet.birimfiyat,
-                            hardet.isemirno,
-                            (select SSPX.BELGENO from servissiparisler sspx where sspx.id= hardet.servissiparisid) as servissiparisid  
-                            ,ss.malzemeid,
-                            ss.kod,
-                            ss.servisid 
-                        from servisstokhareketdetaylar hardet,
-                                servisstoklar ss,
-                                servisstokturler stur
-                        where
-                            ss.servisstokturid=stur.id and
-                            hardet.stokislemtipdeger=-1 and
-                            NVL( to_char(HARDET.SERVISSIPARISID), HARDET.ISEMIRNO) is not null and  
-                            SS.SERVISSTOKTURID in (6,7,8,9,10,11) and
-                            hardet.servisstokid=ss.id  AND 
-                            ss.servisid {servisIdQuery} 
+                            ss.servisid {servisIdQuery}  
                     ) asd ,  (SELECT m1.id malzemeid,
                                                     m1.kod,
                                                     m1.gkod,
@@ -108,7 +86,7 @@ namespace SasonBase.Reports.Sason.Servis
                                 
                             where 
                             asd.kod = orj.kod(+)
-                     order by  asd.servisid
+                  
             
             ")
             .GetDataTable()

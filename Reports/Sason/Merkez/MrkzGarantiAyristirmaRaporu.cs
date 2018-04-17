@@ -104,7 +104,8 @@ namespace SasonBase.Reports.Sason.Merkez
 
             MethodReturn mr = new MethodReturn(); 
                 List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"  
-                 SELECT  
+            SELECT * FROM ( 
+                 SELECT  distinct
                         (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = a.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
                         a.durumid,
                         o3.ad ISORTAKAD,
@@ -212,10 +213,11 @@ namespace SasonBase.Reports.Sason.Merkez
                         and a.servisid = i.servisid
                         and i.servisid {servisIdQuery} 
 
-                        and i.id in (select ixx.id from servisisemirler ixx where i.servisid {servisIdQuery}  and ixx.KAYITTARIH between '{dateQuery}'  AND (i.saseno = NVL ('{SaseNo}', i.saseno))   )
+                        and i.id in (select ixx.id from servisisemirler ixx where   i.durumid = 1 AND i.servisid {servisIdQuery}  and ixx.KAYITTARIH between '{dateQuery}'  AND (i.saseno = NVL ('{SaseNo}', i.saseno))   )
                         AND a.ayristirmatipid not in (1,2)
                         
-                        ORDER BY i.SERVISID, i.KAYITTARIH desc  
+                         ) asd 
+                ORDER BY SERVISID, isemirno , SERVISSTOKTURad asc  , KAYITTARIH desc  
  
                 ")                          
                 .GetDataTable(mr)

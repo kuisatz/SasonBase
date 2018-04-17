@@ -71,8 +71,9 @@ namespace SasonBase.Reports.Sason.Merkez
                     birimfiyat,
                     isemirno,
                     servissiparisid,
+                    belgeno,
                     asd.kod,
-                    CASE WHEN orj.orjinalgkod IS NULL THEN asd.kod ELSE orj.orjinalgkod END orjinalkod,
+                    CASE WHEN orj.orjinalgkod IS '' THEN asd.kod ELSE orj.orjinalgkod END orjinalkod,
                     asd.servisid,
                     (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = asd.SERVISID and vtsx.dilkod = 'Turkish') as partnercode,
                     (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = asd.SERVISID) as servisad 
@@ -85,6 +86,7 @@ namespace SasonBase.Reports.Sason.Merkez
                             hardet.birimfiyat,
                             hardet.isemirno,
                             to_char(hardet.servissiparisid) as servissiparisid,
+                            (select SSPX.BELGENO FROM servissiparisler sspx where sspx.id= hardet.servissiparisid) as belgeno,
                             ss.malzemeid,
                             ss.kod,
                             ss.servisid
@@ -97,31 +99,7 @@ namespace SasonBase.Reports.Sason.Merkez
                             NVL( to_char(HARDET.SERVISSIPARISID), HARDET.ISEMIRNO) is not null and  
                             SS.SERVISSTOKTURID in (6,7,8,9,10,11) and
                             hardet.servisstokid=ss.id AND 
-                            ss.servisid {servisIdQuery} 
- 
-                union all 
-
-                        SELECT
-                            ss.kod PARCA_NO,
-                            ss.ad PARCA_ADI,
-                            stur.kod STOK_TURU,
-                            hardet.miktar,
-                            hardet.birimfiyat,
-                            hardet.isemirno,
-                            (select SSPX.BELGENO from servissiparisler sspx where sspx.id= hardet.servissiparisid) as servissiparisid  
-                            ,ss.malzemeid,
-                            ss.kod,
-                            ss.servisid 
-                        from servisstokhareketdetaylar hardet,
-                                servisstoklar ss,
-                                servisstokturler stur
-                        where
-                            ss.servisstokturid=stur.id and
-                            hardet.stokislemtipdeger=-1 and
-                            NVL( to_char(HARDET.SERVISSIPARISID), HARDET.ISEMIRNO) is not null and  
-                            SS.SERVISSTOKTURID in (6,7,8,9,10,11) and
-                            hardet.servisstokid=ss.id  AND 
-                            ss.servisid {servisIdQuery} 
+                            ss.servisid {servisIdQuery}   
                     ) asd ,  (SELECT m1.id malzemeid,
                                                     m1.kod,
                                                     m1.gkod,
