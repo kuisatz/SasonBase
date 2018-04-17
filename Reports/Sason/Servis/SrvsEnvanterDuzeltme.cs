@@ -14,7 +14,7 @@ namespace SasonBase.Reports.Sason.Servis
     {
         public SrvsEnvanterDuzeltme()
         {
-            Text = "Garanti Red Raporu";
+            Text = "Envanter Düzeltme Raporu";
             SubjectCode = "SrvsEnvanterDuzeltme";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
