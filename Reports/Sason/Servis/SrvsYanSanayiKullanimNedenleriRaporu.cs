@@ -16,7 +16,7 @@ namespace SasonBase.Reports.Sason.Servis
     {
         public SrvsYanSanayiKullanimNedenleriRaporu()
         {
-            Text = "Yan Sanayi Kkullanım Nedenleri Raporu";
+            Text = "Yan Sanayi Kullanım Nedenleri Raporu";
             SubjectCode = "SrvsYanSanayiKullanimNedenleriRaporu";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
@@ -105,9 +105,9 @@ namespace SasonBase.Reports.Sason.Servis
                     WHERE   
                         SSM.MUADILTEDARIKNEDENID is not null AND 
                         ssip.SERVISID {servisIdQuery}  AND 
-                        ssip.tarih between '{dateQuery} 
+                        ssip.tarih between '{dateQuery}' 
              
-                    ORDER BY ssip.SERVISID ,ssip.tarihdesc 
+                    ORDER BY ssip.SERVISID ,ssip.tarih desc 
                 ")
               .GetDataTable(mr)
                .ToModels();
