@@ -33,6 +33,7 @@ namespace SasonBase.Sason.Tables
     [DbField(21, "ISLETIMTUTAREUR", typeof(Decimal), null, DbFieldFlags.Nullable, 22, 0, 0, "")]
     [DbField(22, "SERVISSTOKHAREKETDETAYID", typeof(Decimal), null, DbFieldFlags.Nullable, 22, 0, 0, "")]
     [DbField(23, "STOKKOD", typeof(String), null, DbFieldFlags.Nullable, 250, 0, 0, "")]
+    //[DbField(24, "ICMALBRUTTUTAR", typeof(Decimal), null, DbFieldFlags.Nullable, 22, 0, 0, "")]
     [DbIndex("FATURADETAYLAR_PK", DbIndexType.PrimaryKey, DbIndexFlags.Clustered | DbIndexFlags.Unique, new string[] {"ID"})]
     public abstract class Table_FATURADETAYLAR : SasonDbTable
     {
@@ -67,6 +68,7 @@ namespace SasonBase.Sason.Tables
             protected virtual Decimal ISLETIMTUTAREUR { get; set; }
             protected virtual Decimal SERVISSTOKHAREKETDETAYID { get; set; }
             protected virtual String STOKKOD { get; set; }
+            //protected virtual Decimal ICMALBRUTTUTAR { get; set; }
         }
         [Serializable()]
         public abstract class PublicItem : RawItem
@@ -94,6 +96,7 @@ namespace SasonBase.Sason.Tables
             public virtual Decimal ISLETIMTUTAREUR { get; set; }
             public virtual Decimal SERVISSTOKHAREKETDETAYID { get; set; }
             public virtual String STOKKOD { get; set; }
+            //public virtual Decimal ICMALBRUTTUTAR { get; set; }
         }
     }
 }
