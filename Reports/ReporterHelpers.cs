@@ -308,6 +308,68 @@ namespace SasonBase.Reports
             return param.ReplaceParamTextName();
         }
 
+        public static ReporterParameter CreateBakimTuruSelect(this ReporterParameter param, bool multipleSelect)
+        {
+            string selectType = (multipleSelect ? "multiple" : "single");
+
+            param.Html = $@"<div class='option'><span>parameter_text</span><div id='parameter_name'></div></div>";
+            param.Js = @"
+            <script>$(function() {
+
+                var dataGrid = $('#parameter_name').dxDataGrid({
+                    selection:
+                        {
+                            mode: '" + selectType + @"'
+                    },
+                    paging:
+                        {
+                            pageSize: 12
+                    },
+                    filterRow:
+                        {
+                            visible: true
+                    },
+                    columns: [
+                        {
+                            dataField: 'ID', 
+                            caption: 'ID',
+                            width: 90,
+                            visible: false
+                        },
+                        {
+                            dataField:'KOD',
+                            caption:'Bakim Grup',
+                            width:400
+                        }
+                        ],
+                    onSelectionChanged: function (selectedItems) {
+                                var bakimTuruIds = '';
+                                $.each(selectedItems.selectedRowKeys, function(index, item) {
+                                    bakimTuruIds += item.ID + ','; 
+                                });
+                                jQuery.data(document.body, 'parameter_name_value', bakimTuruIds);
+                        }
+                }).dxDataGrid('instance');
+
+                jQuery.data(document.body, 'parameter_name_value', '');        
+
+                dataGrid.option('selection.selectAllMode', 'allPages');
+                dataGrid.option('selection.showCheckBoxesMode', 'onClick');
+
+                action('Sason', 'GetBakimGruplariListesi', null, function (res) {
+                    if (res.Ok) {
+                       getGrid('parameter_name').option('dataSource', res.Data);
+                    }
+                }
+                );
+ 
+            }
+            )   
+            </script>
+            ";
+            return param.ReplaceParamTextName();
+        }
+
         public static ReporterParameter CreateIsEmirHizmetYeri(this ReporterParameter param, bool multipleSelect)
         {
             string selectType = (multipleSelect ? "multiple" : "single");
