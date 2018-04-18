@@ -23,7 +23,7 @@ namespace SasonBase.Reports.Sason.Servis
             //   AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
             //   AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_recete", Text = "Reçete" }.CreateRecetelerSelect(true));
-            AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
+            //AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
             Disabled = false;
         }
         public SrvsReceteBulunabilirlik(decimal servisId, decimal receteId , DateTime startDate, DateTime finishDate) : this()
