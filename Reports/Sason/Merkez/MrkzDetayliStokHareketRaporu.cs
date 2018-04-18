@@ -101,7 +101,7 @@ namespace SasonBase.Reports.Sason.Merkez
                 a.saseno, 
                 a.kayittarih,
                 a.Tutar,   
-                a.INDIRIMLITUTAR,
+                a.INDIRIMLITUTAR, 
                 a.PLAKA,    
                 (SELECT zx.tutar/10 FROM servisiscilikfiyatlar zx WHERE zx.servisid = a.servisid and  zx.AYRISTIRMATIPID is null ) as aw 
                 FROM servisisemirler a 
