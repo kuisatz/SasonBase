@@ -88,7 +88,11 @@ namespace SasonBase.Reports.Sason.Servis
                 a.Tutar,   
                 a.INDIRIMLITUTAR,
                 a.PLAKA,    
-                (SELECT zx.tutar/10 FROM servisiscilikfiyatlar zx WHERE zx.servisid = a.servisid and  zx.AYRISTIRMATIPID is null ) as aw 
+                (SELECT zx.tutar/10 FROM servisiscilikfiyatlar zx WHERE zx.servisid = a.servisid and  zx.AYRISTIRMATIPID is null ) as aw, 
+                isciliklerxx.TUTAR as isciliklerTUTAR , isciliklerxx.ACIKLAMA as isciliklerACIKLAMA, isciliklerxx.INDIRIMLITUTAR as isciliklerINDIRIMLITUTAR, isciliklerxx.MIKTAR as isciliklerMIKTAR, isciliklerxx.KOD as isciliklerKOD,
+                mmalzemelerxx.KOD as mmalzemelerKOD , mmalzemelerxx.AD as mmalzemelerAD, mmalzemelerxx.MIKTAR as mmalzemelerMIKTAR, mmalzemelerxx.MALZEMEBIRIMFIYAT as mmalzemelerMALZEMEBIRIMFIYAT, mmalzemelerxx.TUTAR as mmalzemelerTUTAR, mmalzemelerxx.INDIRIMLITUTAR as mmalzemelerINDIRIMLITUTAR,
+                kalemlerxx.DIGERKALEMID as kalemler , kalemlerxx.KOD as kalemlerKOD, kalemlerxx.TUTAR as kalemlerTUTAR, kalemlerxx.INDIRIMLITUTAR as kalemlerINDIRIMLITUTAR, kalemlerxx.MIKTAR as kalemlerMIKTAR,
+                hizmetlerxx.ACIKLAMA as hizmetlerACIKLAMA, hizmetlerxx.TUTAR as hizmetlerTUTAR, hizmetlerxx.INDIRIMLITUTAR as hizmetlerINDIRIMLITUTAR
                 FROM servisisemirler a 
             inner join servisisemirislemler b on a.ID = b.SERVISISEMIRID AND b.DURUMID = 1
             left join (
