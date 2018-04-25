@@ -21,7 +21,7 @@ namespace SasonBase.Reports.Sason.Merkez
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_bakim", Text = "Bakım Grup Türleri" }.CreateBakimTuruSelect(true));
-            Disabled = true;
+            Disabled = false;
         }
         public MrkzKontrolTalimatlari(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {

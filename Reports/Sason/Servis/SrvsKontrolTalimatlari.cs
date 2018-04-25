@@ -21,7 +21,7 @@ namespace SasonBase.Reports.Sason.Servis
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_bakim", Text = "Bakım Grup Türleri" }.CreateBakimTuruSelect(true));
-            Disabled = true;
+            Disabled = false;
         }
         public SrvsKontrolTalimatlari(decimal servisId, decimal agretaId, DateTime startDate, DateTime finishDate) : this()
         {
