@@ -17,6 +17,7 @@ namespace SasonBase.Reports.Sason.Merkez
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
+            Disabled = false;
         }
 
         public DateTime StartDate
@@ -64,23 +65,47 @@ namespace SasonBase.Reports.Sason.Merkez
                 servisIdQuery = $" > 1 ";
 
             List<object> reportDataSource = AppPool.EbaTestConnector.CreateQuery($@"
-                    select trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)) ||'.'||
-                    (trunc((round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)-
-                    trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)))*24))||'.' DOWNTIME ,
-                      to_char(ie.tamamlanmatarih,'YYYY.MM') DONEM, ie.servisid
-                      ,vtsrv.isortakad
 
-                    from 
+            SELECT * FROM ( 
+                    SELECT 
+                        trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)) ||'.'||
+                            (trunc((round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)-
+                            trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)))*24))||'.' DOWNTIME ,
+                        to_char(ie.tamamlanmatarih,'YYYY.MM') DONEM, 
+                        ie.servisid,
+                        vtsrv.isortakad
+                    FROM 
                         servisisemirler ie,
                         vt_servisler vtsrv
+                    WHERE ie.tamamlanmatarih between {{startDate}} and {{finishDate}} and ie.teknikolaraktamamla=1 and ie.servisid {servisIdQuery}
+                        and (ie.arackazali <> 1 or ie.arackazaaciklama is null or ie.arackazaaciklama = '')
+                        and vtsrv.dilkod(+) = 'Turkish' and vtsrv.servisid(+)=ie.servisid
+                    GROUP BY to_char(ie.tamamlanmatarih,'YYYY.MM'), ie.servisid, vtsrv.isortakad
+                                   
+                    UNION  
+                    
+                    SELECT 
+                        trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)) ||'.'||
+                            (trunc((round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)-
+                            trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)))*24))||'.' DOWNTIME ,
+                        to_char(ie.tamamlanmatarih,'YYYY.MM') DONEM, 
+                        -1 servisid,
+                        'Türkiye' isortakad
+                    FROM 
+                        servisisemirler ie,
+                        vt_servisler vtsrv
+                    WHERE ie.tamamlanmatarih between {{startDate}} and {{finishDate}} and ie.teknikolaraktamamla=1  
+                        and (ie.arackazali <> 1 or ie.arackazaaciklama is null or ie.arackazaaciklama = '')
+                        and vtsrv.dilkod(+) = 'Turkish' and vtsrv.servisid(+)=ie.servisid
+                    GROUP BY to_char(ie.tamamlanmatarih,'YYYY.MM') 
+            )  asd 
+           ORDER BY DONEM , servisid 
 
-                    where ie.tamamlanmatarih between {{startDate}} and {{finishDate}} and ie.teknikolaraktamamla=1 and ie.servisid {servisIdQuery}
-                    and (ie.arackazali <> 1 or ie.arackazaaciklama is null or ie.arackazaaciklama = '')
 
-                    and vtsrv.dilkod(+) = 'Turkish' and vtsrv.servisid(+)=ie.servisid
+                   
 
-                    group by to_char(ie.tamamlanmatarih,'YYYY.MM'), ie.servisid, vtsrv.isortakad
-                    order by to_char(ie.tamamlanmatarih,'YYYY.MM'), ie.servisid
+
+
             ")
             .Parameter("startDate", StartDate.startOfDay())
             .Parameter("finishDate", FinishDate.endOfDay())
