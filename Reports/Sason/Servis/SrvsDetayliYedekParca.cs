@@ -106,20 +106,19 @@ namespace SasonBase.Reports.Sason.Servis
                 */
             #endregion
 
-            List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
-
-            SELECT
-                      CASE
+            List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"   
+                    SELECT 
+                        CASE
                              WHEN a.servisid IS NULL THEN a.siparisservisid
                              ELSE a.servisid
                           END
                              servisid,
                             a.siparisservisid HASHSERVISID,
                           CASE
-                             WHEN(a.servisid IS NULL
+                             WHEN (   a.servisid IS NULL
                                    OR a.servisid = 1
-                                   OR(NVL(a.servisid, 1) <> 1
-                                       AND NVL(a.siparisservisid, 1) <> 1))
+                                   OR (NVL (a.servisid, 1) <> 1
+                                       AND NVL (a.siparisservisid, 1) <> 1))
                              THEN
                                 (SELECT isortakad
                                    FROM vt_servisler
@@ -146,21 +145,21 @@ namespace SasonBase.Reports.Sason.Servis
                              THEN
                                 h.ad
                              ELSE
-                                (SELECT MAX(isortakad)
+                                (SELECT MAX (isortakad)
                                    FROM vt_servisler
                                   WHERE servisid = a.servisid AND dilkod = 'Turkish')
                           END
                              musteriad,
                           f.KOD malzemekod,
                           CASE
-                             WHEN(SELECT orjinalmalzemeid
+                             WHEN (SELECT orjinalmalzemeid
                                      FROM malzemeler
                                     WHERE id = f.malzemeid)
                                      IS NULL
                              THEN
-                                ''-- f.kod
+                                ''          -- f.kod
                              ELSE
-                                (SELECT CONCAT('', gkod)
+                                (SELECT CONCAT ('', gkod)
                                    FROM malzemeler
                                   WHERE id = (SELECT orjinalmalzemeid
                                                 FROM malzemeler
@@ -181,56 +180,59 @@ namespace SasonBase.Reports.Sason.Servis
                              iscilik_parca,
                           F.AD malzemead,
                           b.miktar,
-                          KURLAR_PKG.SERVISSTOKFIYATGETIR(f.servisstokid,
-                                                           a.parabirimid,
-                                                           a.tarih)
-                             bruttutar, 
+                        --  KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid, a.parabirimid, a.tarih) bruttutar, 
+                            CASE  
+                                  WHEN (a.tarih > sysdate) then  KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid, a.parabirimid, sysdate)
+                                  WHEN (a.tarih is null  ) then  null
+                                  ELSE  KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid, a.parabirimid, a.tarih) END bruttutar,
                           B.BIRIMFIYAT TUTAR,
                           C.SASENO,
                           '' TRAFIGECIKISTARIHI,
-                          KURLAR_PKG.ORTALAMAMALIYET(f.servisstokid) ortalamamaliyet,
+                          KURLAR_PKG.ORTALAMAMALIYET (f.servisstokid) ortalamamaliyet,
                           '' ayristirmatipad,
                          ROUND (
-                             ((KURLAR_PKG.SERVISSTOKFIYATGETIR(f.servisstokid,
-                                                                 a.parabirimid,
-                                                                 a.tarih))),
-                             2)
-                             fiyat2,
-                           TO_CHAR(kurlar_pkg.CaprazKurTarih(2, a.parabirimid, a.tarih)) kur,
+                             ( (
+                          --      KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid,  a.parabirimid, a.tarih)
+                                CASE  
+                                      WHEN (a.tarih > sysdate) then  KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid,  a.parabirimid, sysdate)
+                                      WHEN (a.tarih is null  ) then  null
+                                      ELSE KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid,  a.parabirimid, a.tarih) end
+                            )),2)  fiyat2,
+                           TO_CHAR (kurlar_pkg.CaprazKurTarih (2, a.parabirimid, a.tarih)) kur,
                            f.servisstokid,
                           f.SERVISSTOKTURID ,
-                          KURLAR_PKG.STOKFIYATINDGETIR(f.servisstokid,
+                          KURLAR_PKG.STOKFIYATINDGETIR (f.servisstokid,
                                                         2,
                                                         2,
                                                         1,
                                                         0)
                              EUROINDFIYAT, 
-                          kurlar_pkg.servisstokfiyatgetir(f.servisstokid, 2, TRUNC(SYSDATE)) EUROLISTEFIYAT
-                  FROM servissiparisler a,
-                        servissiparismlzler b,
+                          kurlar_pkg.servisstokfiyatgetir (f.servisstokid, 2, TRUNC (SYSDATE)) EUROLISTEFIYAT
+                    FROM servissiparisler a,
+                          servissiparismlzler b,
                           servisisemirler c,
                           mt_malzemeler d,  
                           vt_servisstoklar f,
                           vt_servisler g,
                           vt_servisvarliklar h
-                    WHERE A.ID = b.servissiparisid
+                    WHERE     A.ID = b.servissiparisid
                           AND B.ISEMRINO = C.ISEMIRNO(+)
                           AND B.MALZEMEID = D.MALZEMEID(+)
-                          AND siparisservisid<> '1'
+                          AND siparisservisid <> '1'
                           AND f.servisstokid(+) = b.servisstokid
                           AND a.servisid = g.servisid(+)
                           AND A.SERVISVARLIKID = h.servisvarlikid(+)
-                          AND(f.dilkod = d.dilkod OR d.dilkod IS NULL)
-                          AND(f.dilkod = g.dilkod OR g.dilkod IS NULL)
-                          AND(f.dilkod = h.dilkod OR h.dilkod IS NULL)
-                          AND f.dilkod = 'Turkish'
-                          and a.siparisservisid  = {ServisId}  
-            and a.tarih between '{dateQuery}'
+                          AND (f.dilkod = d.dilkod OR d.dilkod IS NULL)
+                          AND (f.dilkod = g.dilkod OR g.dilkod IS NULL)
+                          AND (f.dilkod = h.dilkod OR h.dilkod IS NULL)
+                          AND f.dilkod = 'Turkish'    
+                          and a.siparisservisid {ServisId} 
+                          and a.tarih between '{dateQuery}'
 
                        UNION ALL
 
                        SELECT r.servisid,
-                              sason.hashservisid(r.servisid) hashservisid,
+                              r.servisid hashservisid,
                               r.isortakad servisad,
                               r.KAYITTARIH tarih,
                               r.isemirno belgeno,
@@ -252,12 +254,12 @@ namespace SasonBase.Reports.Sason.Servis
                               --r.orjinalkod, 
                               r.uretici, 
                               r.servisstokturad, 
-                              b.ack iscilik_parca,
+                              b.ack iscilik_parca, 
                               r.malzemead, 
                               r.miktar, 
                               r.bruttutar, 
                               r.tutar, 
-                              r.saseno, 
+                              r.saseno,                             
                               to_char(r.FIRSTREGDATE,'dd/mm/yyyy') as TRAFIGECIKISTARIHI,
                               r.ortalamamaliyet, 
                               r.ayristirmatipad, 
@@ -265,88 +267,83 @@ namespace SasonBase.Reports.Sason.Servis
                               r.kur, 
                               servisstokturid,
                               r.SERVISSTOKTURID ,
-                              KURLAR_PKG.STOKFIYATINDGETIR(r.servisstokid,
+                              KURLAR_PKG.STOKFIYATINDGETIR (r.servisstokid,
                                                         2,
                                                         2,
                                                         1,
                                                         0)
                              EUROINDFIYAT, 
-                          kurlar_pkg.servisstokfiyatgetir(r.servisstokid, 2, TRUNC(SYSDATE)) EUROLISTEFIYAT
-                       FROM      --sason.rp_isemirler r, sason.lovturler b,(SELECT m1.id malzemeid,
-                      (
-                    SELECT a.durumid,
-                           o3.ad ISORTAKAD,
-                           d.id,
-                           a.servisid,
-                           sason.hashservisid(i.servisid) hashservisid,
-                           f.faturano,
-                           a.isemirno,
-                           r.sirano,
-                           tr.kod ayristirmatipad,
-                           t.kod malzemekod,
-                           t.ad malzemead,
-                           D.TURID,
-                           a.arizakodu,
-                           I.TAMAMLANMATARIH,
-                           I.KAYITTARIH,
-                           I.KM,
-                           I.KUR,
-                           i.aractipad,
-                           i.modelno,
-                           i.firstregdate,
-                           T.TUTAR isemirtutar,
-                           i.saseno,
-                           R.ISEMIRTIPID,
-                           A.PDFKDV,
-                           A.PDFONAYGENELTOPLAM,
-                           A.PDFMATRAH,
-                           O2.AD,
-                           a.claimstatus,
-                           d.faturaid,
-                           T.MIKTAR,
-                           T.TUTAR,
-                           T.BRUTTUTAR,
-                           CASE
-
-                              WHEN(a.ayristirmatipid IN(1) AND d.faturaid IS NOT NULL)
-
-                                   OR a.claimstatus IN('Z057', 'Z060', 'Z070', 'Z0110')
-
-                              THEN
-
-                                 'TAMAMLANMIS'
-
-                              ELSE
-
-                                 'DEVAM EDIYOR'
-
-                           END
-
-                              DURUM,
-                           St.AD SERVISSTOKTURad,
-                           CASE WHEN ss.ureticivarlikid IS NULL THEN 'MAN' ELSE O1.AD END
-
-                              uretici,
-                           d.atutar,
-                           D.PDFISLETIMUCRETI,
-                           D.PDFITEMID,
-                           D.PDFTOPLAM,
-                           F.VNO vergino,
-                           orjinalkod,
-                           KURLAR_PKG.ORTALAMAMALIYET(ss.id) ortalamamaliyet,
-                           ROUND(
-                                (1
-                                 - t.tutar
-                                   / CASE WHEN t.bruttutar = 0 THEN NULL ELSE t.bruttutar END)
-                              * 100,
-                              2)
+                          kurlar_pkg.servisstokfiyatgetir (r.servisstokid, 2, TRUNC (SYSDATE)) EUROLISTEFIYAT
+                         FROM      -- sason.rp_isemirler r, sason.lovturler b,(SELECT m1.id malzemeid, 
+                         (  
+                       SELECT a.durumid,
+                              o3.ad ISORTAKAD,
+                              d.id,
+                              a.servisid,
+                              sason.hashservisid (i.servisid) hashservisid,
+                              f.faturano,
+                              a.isemirno,
+                              r.sirano,
+                              tr.kod ayristirmatipad,
+                              t.kod malzemekod,
+                              t.ad malzemead,
+                              D.TURID,
+                              a.arizakodu,
+                              I.TAMAMLANMATARIH,
+                              I.KAYITTARIH,
+                              I.KM,
+                              I.KUR,
+                              i.aractipad,
+                              i.modelno,
+                              i.firstregdate,
+                              T.TUTAR isemirtutar,
+                              i.saseno,
+                              R.ISEMIRTIPID,
+                              A.PDFKDV,
+                              A.PDFONAYGENELTOPLAM,
+                              A.PDFMATRAH,
+                              O2.AD,
+                              a.claimstatus,
+                              d.faturaid,
+                              T.MIKTAR,
+                              T.TUTAR,
+                              T.BRUTTUTAR,
+                              CASE
+                                 WHEN    (a.ayristirmatipid IN (1) AND d.faturaid IS NOT NULL)
+                                      OR a.claimstatus IN ('Z057', 'Z060', 'Z070', 'Z0110')
+                                 THEN
+                                    'TAMAMLANMIS'
+                                 ELSE
+                                    'DEVAM EDIYOR'
+                              END
+                                 DURUM,
+                              St.AD SERVISSTOKTURad,
+                              CASE
+                                WHEN st.id = 1 THEN 'MAN'
+                                WHEN ss.ureticivarlikid IS NOT NULL THEN O1.AD                                 
+                                ELSE '' END uretici,
+                              d.atutar,
+                              D.PDFISLETIMUCRETI,
+                              D.PDFITEMID,
+                              D.PDFTOPLAM,
+                              F.VNO vergino,
+                              orjinalkod,
+                              KURLAR_PKG.ORTALAMAMALIYET (ss.id) ortalamamaliyet,
+                              ROUND (
+                                   (  1
+                                    -   t.tutar
+                                      / CASE WHEN t.bruttutar = 0 THEN NULL ELSE t.bruttutar END)
+                                 * 100,
+                                 2)
                                  indirimoran,
                               IC.TFATTOPLAM,
                               IC.ICMALTARIHI,
-                              KURLAR_PKG.CAPRAZKURTARIH(2, 1, ic.icmaltarihi) icmalkur,
-                              servisstokturid,
-          
-                              ss.id as servisstokid
+                              CASE  
+                                  WHEN (ic.icmaltarihi > sysdate) then  KURLAR_PKG.CAPRAZKURTARIH (2, 1, sysdate)     
+                                  WHEN (ic.icmaltarihi is null  ) then  null
+                                  ELSE  KURLAR_PKG.CAPRAZKURTARIH (2, 1, ic.icmaltarihi) END icmalkur,
+                              servisstokturid,          
+                              ss. id as servisstokid                                 
                          FROM servisisemirislemler r,
                               servisicmaller ic,
                               ayristirmadetaylar d,
@@ -371,7 +368,7 @@ namespace SasonBase.Reports.Sason.Servis
                               AND st.id(+) = ss.servisstokturid
                               AND t.turid = d.turid
                               AND ss.kod(+) = T.KOD
-                              AND(ss.servisid = i.servisid OR ss.servisid IS NULL)
+                              AND (ss.servisid = i.servisid OR ss.servisid IS NULL)
                               AND ss.ureticivarlikid = O1.ID(+)
                               AND I.SERVISVARLIKID = O2.id
                               AND sv.id = i.servisid
@@ -379,7 +376,7 @@ namespace SasonBase.Reports.Sason.Servis
                               AND st.dilkod = 'Turkish'
                               AND A.ICMALID = ic.id(+)
                                 ) 
-                                r,sason.lovturler b,(SELECT m1.id malzemeid,
+                                r,sason.lovturler b,(SELECT m1.id malzemeid, 
                                       m1.kod,
                                       m1.gkod,
                                       m2.kod orjinalkod,
@@ -387,10 +384,12 @@ namespace SasonBase.Reports.Sason.Servis
                                       m1.orjinalmalzemeid
                                  FROM malzemeler m1, malzemeler m2
                                 WHERE m1.orjinalmalzemeid = M2.ID) o
-                        WHERE r.turid = b.id and
-                        r.malzemekod = o.gkod(+) and
-                        r.servisid  ={ServisId}  AND
-                        r.KAYITTARIH between '{dateQuery}'  ")
+                        WHERE r.turid = b.id AND
+                        r.malzemekod = o.gkod(+) AND
+                        r.servisid  {ServisId}  AND 
+                        r.KAYITTARIH between '{dateQuery}' 
+
+                        ")
                         .GetDataTable(mr)   
                             .ToModels();
 
