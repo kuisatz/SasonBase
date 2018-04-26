@@ -201,21 +201,24 @@ namespace SasonBase.Reports.Sason.Merkez
                              iscilik_parca,
                           F.AD malzemead,
                           b.miktar,
-                          KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid,
-                                                           a.parabirimid,
-                                                           a.tarih)
-                             bruttutar, 
+                        --  KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid, a.parabirimid, a.tarih) bruttutar, 
+                            CASE  
+                                  WHEN (a.tarih > sysdate) then  KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid, a.parabirimid, sysdate)
+                                  WHEN (a.tarih is null  ) then  null
+                                  ELSE  KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid, a.parabirimid, a.tarih) END bruttutar,
                           B.BIRIMFIYAT TUTAR,
                           C.SASENO,
                           '' TRAFIGECIKISTARIHI,
                           KURLAR_PKG.ORTALAMAMALIYET (f.servisstokid) ortalamamaliyet,
                           '' ayristirmatipad,
                          ROUND (
-                             ( (KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid,
-                                                                 a.parabirimid,
-                                                                 a.tarih))),
-                             2)
-                             fiyat2,
+                             ( (
+                          --      KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid,  a.parabirimid, a.tarih)
+                                CASE  
+                                      WHEN (a.tarih > sysdate) then  KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid,  a.parabirimid, sysdate)
+                                      WHEN (a.tarih is null  ) then  null
+                                      ELSE KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid,  a.parabirimid, a.tarih) end
+                            )),2)  fiyat2,
                            TO_CHAR (kurlar_pkg.CaprazKurTarih (2, a.parabirimid, a.tarih)) kur,
                            f.servisstokid,
                           f.SERVISSTOKTURID ,
@@ -244,13 +247,13 @@ namespace SasonBase.Reports.Sason.Merkez
                           AND (f.dilkod = g.dilkod OR g.dilkod IS NULL)
                           AND (f.dilkod = h.dilkod OR h.dilkod IS NULL)
                           AND f.dilkod = 'Turkish'    
-                          and a.siparisservisid  {servisIdQuery}   
+                          and a.siparisservisid {servisIdQuery} 
                           and a.tarih between '{dateQuery}'
 
                        UNION ALL
 
                        SELECT r.servisid,
-                              sason.hashservisid (r.servisid) hashservisid,
+                              r.servisid hashservisid,
                               r.isortakad servisad,
                               r.KAYITTARIH tarih,
                               r.isemirno belgeno,
@@ -336,8 +339,10 @@ namespace SasonBase.Reports.Sason.Merkez
                               END
                                  DURUM,
                               St.AD SERVISSTOKTURad,
-                              CASE WHEN ss.ureticivarlikid IS NULL THEN 'MAN' ELSE O1.AD END
-                                 uretici,
+                              CASE
+                                WHEN st.id = 1 THEN 'MAN'
+                                WHEN ss.ureticivarlikid IS NOT NULL THEN O1.AD                                 
+                                ELSE ''  END uretici,
                               d.atutar,
                               D.PDFISLETIMUCRETI,
                               D.PDFITEMID,
@@ -354,9 +359,11 @@ namespace SasonBase.Reports.Sason.Merkez
                                  indirimoran,
                               IC.TFATTOPLAM,
                               IC.ICMALTARIHI,
-                              KURLAR_PKG.CAPRAZKURTARIH (2, 1, ic.icmaltarihi) icmalkur,
-                              servisstokturid,
-          
+                              CASE  
+                                  WHEN (ic.icmaltarihi > sysdate) then  KURLAR_PKG.CAPRAZKURTARIH (2, 1, sysdate)     
+                                  WHEN (ic.icmaltarihi is null  ) then  null
+                                  ELSE  KURLAR_PKG.CAPRAZKURTARIH (2, 1, ic.icmaltarihi) END icmalkur,
+                              servisstokturid,          
                               ss. id as servisstokid                                 
                          FROM servisisemirislemler r,
                               servisicmaller ic,
@@ -402,6 +409,7 @@ namespace SasonBase.Reports.Sason.Merkez
                         r.malzemekod = o.gkod(+) and
                         r.servisid  {servisIdQuery}  AND 
                         r.KAYITTARIH between '{dateQuery}'
+                      
                      
                 ")
               .GetDataTable(mr)
