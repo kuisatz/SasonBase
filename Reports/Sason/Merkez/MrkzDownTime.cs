@@ -68,29 +68,31 @@ namespace SasonBase.Reports.Sason.Merkez
 
             SELECT * FROM ( 
                     SELECT 
-                        trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)) ||'.'||
+                        trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)) ||','||
                             (trunc((round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)-
-                            trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)))*24))||'.' DOWNTIME ,
+                            trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)))*24))||'' DOWNTIME ,
                         to_char(ie.tamamlanmatarih,'YYYY.MM') DONEM, 
                         ie.servisid,
-                        vtsrv.isortakad
+                        vtsrv.isortakad,
+                        vtsrv.partnercode
                     FROM 
                         servisisemirler ie,
                         vt_servisler vtsrv
                     WHERE ie.tamamlanmatarih between {{startDate}} and {{finishDate}} and ie.teknikolaraktamamla=1 and ie.servisid {servisIdQuery}
                         and (ie.arackazali <> 1 or ie.arackazaaciklama is null or ie.arackazaaciklama = '')
                         and vtsrv.dilkod(+) = 'Turkish' and vtsrv.servisid(+)=ie.servisid
-                    GROUP BY to_char(ie.tamamlanmatarih,'YYYY.MM'), ie.servisid, vtsrv.isortakad
+                    GROUP BY to_char(ie.tamamlanmatarih,'YYYY.MM'), ie.servisid, vtsrv.isortakad, vtsrv.partnercode
                                    
                     UNION  
                     
                     SELECT 
-                        trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)) ||'.'||
+                        trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)) ||','||
                             (trunc((round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)-
-                            trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)))*24))||'.' DOWNTIME ,
+                            trunc(round( sum((case when ie.araccikiszamani is not null then ie.araccikiszamani else ie.tamamlanmatarih end ) - ie.kayittarih)/count(id),2)))*24))||'' DOWNTIME ,
                         to_char(ie.tamamlanmatarih,'YYYY.MM') DONEM, 
                         -1 servisid,
-                        'Türkiye' isortakad
+                        'Türkiye Geneli' isortakad,
+                        'R001' partnercode
                     FROM 
                         servisisemirler ie,
                         vt_servisler vtsrv
