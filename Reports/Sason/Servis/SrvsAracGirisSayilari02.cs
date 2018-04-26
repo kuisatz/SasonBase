@@ -12,6 +12,7 @@ namespace SasonBase.Reports.Sason.Servis
         public SrvsAracGirisSayilari02()
         {
             Text = "Araç Giriş Sayıları (R02)";
+            Disabled = true;
         }
 
         public override object ExecuteReport(MethodReturn refMr = null)

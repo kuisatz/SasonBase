@@ -21,7 +21,7 @@ namespace SasonBase.Reports.Sason.Servis
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_agreta", Text = "Agrega" }.CreateAgregaSelect(true));
-            Disabled = false;
+            Disabled = true;
         }
         public SrvsAgregaKatalog(decimal servisId, decimal agretaId, DateTime startDate, DateTime finishDate) : this()
         {
