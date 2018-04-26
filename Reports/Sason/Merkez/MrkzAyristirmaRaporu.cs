@@ -212,7 +212,7 @@ namespace SasonBase.Reports.Sason.Merkez
                         and a.servisid = i.servisid
                         and i.servisid {servisIdQuery} 
 
-                        and i.id in (select ixx.id from servisisemirler ixx where i.servisid {servisIdQuery}  and ixx.KAYITTARIH between '{dateQuery}'  AND (i.saseno = NVL ('{SaseNo}', i.saseno))   )
+                        and i.id in (select ixx.id from servisisemirler ixx where ixx.servisid {servisIdQuery}  and ixx.KAYITTARIH between '{dateQuery}'  AND (ixx.saseno = NVL ('{SaseNo}', ixx.saseno))   )
 
                    --     ORDER BY i.servisid,  i.id  desc
  
