@@ -10,13 +10,13 @@ using System.Data;
 namespace SasonBase.Reports.Sason.Merkez
 {
     /// <summary>
-    /// Merkez KATALOK raporu
+    /// Merkez KATALOG raporu
     /// </summary>
     public class MrkzKatalog : Base.SasonMerkezReporter
     {
         public MrkzKatalog()
         {
-            Text = "Katalok Raporu";
+            Text = "GEnel Agrega Katalog Raporu";
             SubjectCode = "MrkzKatalog";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
