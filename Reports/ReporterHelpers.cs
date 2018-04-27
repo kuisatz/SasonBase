@@ -400,7 +400,7 @@ namespace SasonBase.Reports
                         },
                         {
                             dataField:'KOD',
-                            caption:'Recete',
+                            caption:'Agrega',
                             width:400
                         }
                         ],

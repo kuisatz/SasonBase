@@ -134,7 +134,7 @@ namespace SasonBase.Reports.Sason.Merkez
                             FROM servisisemirler a 
                         inner join servisisemirislemler b on a.ID = b.SERVISISEMIRID AND b.DURUMID = 1
                         left join (
-                                    SELECT distinct C1.servisisemirislemid, C1.TUTAR , C1.ACIKLAMA, C1.INDIRIMLITUTAR, C1.MIKTAR, H1.KOD  FROM servisismislemiscilikler c1 
+                                    SELECT distinct C1.servisisemirislemid, C1.TUTAR , C1.ACIKLAMA, C1.INDIRIMLITUTAR, C1.MIKTAR, g1.KOD  FROM servisismislemiscilikler c1 
                                     inner join mt_iscilikler g1 ON  C1.ISCILIKID = G1.ISCILIKID AND G1.DURUMID = c1.DURUMID 
                                     LEFT JOIN servisiscilikler h1 ON H1.ID = C1.SERVISISCILIKID AND h1.DURUMID = c1.DURUMID 
                                     WHERE 
