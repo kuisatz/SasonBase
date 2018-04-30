@@ -226,7 +226,7 @@ namespace SasonBase.Reports.Sason.Servis
                           AND (f.dilkod = g.dilkod OR g.dilkod IS NULL)
                           AND (f.dilkod = h.dilkod OR h.dilkod IS NULL)
                           AND f.dilkod = 'Turkish'    
-                          and a.siparisservisid {ServisId} 
+                          and a.siparisservisid = {ServisId} 
                           and a.tarih between '{dateQuery}'
 
                        UNION ALL
@@ -386,8 +386,8 @@ namespace SasonBase.Reports.Sason.Servis
                                 WHERE m1.orjinalmalzemeid = M2.ID) o
                         WHERE r.turid = b.id AND
                         r.malzemekod = o.gkod(+) AND
-                        r.servisid  {ServisId}  AND 
-                        r.KAYITTARIH between '{dateQuery}' 
+                        r.servisid  = {ServisId}  AND 
+                        r.KAYITTARIH between '{dateQuery}'  
 
                         ")
                         .GetDataTable(mr)   
