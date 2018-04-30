@@ -111,7 +111,7 @@ namespace SasonBase.Reports.Sason.Merkez
                             Pb.Id=Bksoz.Parabirimid AND
                             (A.Saseno = NVL('{SaseNo}', A.Saseno)) AND
                             Bksoz.Bastarih BETWEEN '{dateQuery}'
-                        ORDER BY Bksoz.Id DESC;
+                        ORDER BY Bksoz.Id DESC
 
                 ")
             .GetDataTable(mr)
