@@ -128,8 +128,9 @@ namespace SasonBase.Reports.Sason.Merkez
             string AracTurIdQuery = ""; //  $" = {selectedAracTurId}";
             string addSQLAracTur = $"  E_SSI31_FORM.VEHICLETYPE AS ARAC_TURU,  ";
             string addSQLGROUP = $"  ARAC_TURU, ";
+            string addSQLSelect = $"  ARAC_TURU, ";
 
-           //  if (AracTurIds.isNotEmpty())
+            //  if (AracTurIds.isNotEmpty())
             if (AracTurIds.Count > 0 )
                     AracTurIdQuery = $"  AND ATT.ID  in ({AracTurIds.joinNumeric(",")}) ";
             else
@@ -223,7 +224,7 @@ namespace SasonBase.Reports.Sason.Merkez
                 SELECT
                     SERVIS_ADI,                        
                     AYRISTIRMA_TIPI,                        
-                    {addSQLGROUP}
+                    {addSQLSelect}
                     arizakod, 
                     count(arizakod) as adet
                 FROM (
@@ -270,7 +271,7 @@ namespace SasonBase.Reports.Sason.Merkez
                     {addSQLGROUP} 
                     arizakod
                     ORDER BY adet DESC                     
-                             
+                           
                 " )
             .GetDataTable(mr)
             .ToModels();
