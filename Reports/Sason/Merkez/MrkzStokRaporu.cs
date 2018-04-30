@@ -130,7 +130,49 @@ namespace SasonBase.Reports.Sason.Merkez
                           FROM(SELECT DISTINCT servisstokid
                                   FROM sason.servisstokhareketdetaylar) h,
                                sason.servisstoklar a,
-                               sason.vt_genelstok c,
+                               -- sason.vt_genelstok c, 
+                                ( 
+                                        SELECT CASE
+                                                 WHEN servisstokid IS NULL THEN 0 - ambarstokmiktar
+                                                 ELSE stokmiktar
+                                              END
+                                                 stokmiktar,
+                                              CASE
+                                                 WHEN servisstokid IS NULL THEN ambarstokid
+                                                 ELSE servisstokid
+                                              END
+                                                 servisstokid,
+                                              servisid
+                                         FROM (SELECT a.stokmiktar - NVL (b.stokmiktar, 0) stokmiktar,
+                                                      a.servisstokid,
+                                                      b.servisstokid ambarstokid,
+                                                      b.stokmiktar ambarstokmiktar,
+                                                      a.servisid
+                                                 FROM (  SELECT SUM (stokmiktar) STOKMIKTAR,
+                                                                servisid,
+                                                                servisstokid
+                                                           FROM(SELECT servisid,
+                                                                        servisstokid,
+                                                                        amiktar * stokislemtipdeger STOKMIKTAR
+                                                                   FROM servisstokhareketdetaylar s,
+                                                                        servisstokhareketler h
+                                                                  WHERE     h.id = S.SERVISSTOKHAREKETID
+                                                                        AND s.servisdepoid NOT IN(21, 22))
+                                                       GROUP BY servisid, servisstokid) a
+                                                      FULL OUTER JOIN
+                                                      (SELECT SUM (a.miktar) stokmiktar,
+                                                                a.servisstokid,
+                                                                c.servisid
+                                                           FROM servisismislemmalzemeler a,
+                                                                servisisemirislemler b,
+                                                                servisisemirler c
+                                                          WHERE c.id = b.servisisemirid
+                                                                AND b.id = A.SERVISISEMIRISLEMID
+                                                                AND a.durumid = 1
+                                                                AND c.teknikolaraktamamla = 0
+                                                       GROUP BY servisstokid, servisid) b
+                                                 ON(a.servisstokid = b.servisstokid))
+                                            ) c,    
                                sason.vw_birimler r,
                                sason.servisdepolar d,
                                sason.servisdeporaflar p,
@@ -154,6 +196,7 @@ namespace SasonBase.Reports.Sason.Merkez
                        servisstokturler a
                  WHERE p.servisstokturid = a.id AND hservisid {servisIdQuery} 
                  order by  p.HSERVISID 
+ 
  
                 ")
               .GetDataTable(mr)

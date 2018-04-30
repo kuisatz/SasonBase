@@ -62,7 +62,10 @@ namespace SasonBase.Reports.Sason.Servis
             MethodReturn mr = new MethodReturn();
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
-                SELECT 
+                  SELECT 
+                        p.HSERVISID, (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = p.HSERVISID  and vtsx.dilkod = 'Turkish') as partnercode,
+                        (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = p.HSERVISID   )  as servisad,
+          
                        a.kod tur,
                        p.ID,
                        P.AD,
@@ -77,7 +80,7 @@ namespace SasonBase.Reports.Sason.Servis
                        p.SERVISDEPOAD,
                        p.SERVISDEPORAFAD,
                        p.stokmiktar * p.ortalamamaliyet stoktutar,
-                       p.ORJINALKOD
+                       p.orjinalkod
                   FROM(SELECT servisstokturid,
                                a.id,
                                a.servisid hservisid,
@@ -91,16 +94,58 @@ namespace SasonBase.Reports.Sason.Servis
                                                              2,
                                                              1,
                                                              0)
-                               indfiyat,
+                                  indfiyat,
                                kurlar_pkg.ORTALAMAMALIYET(a.id) ortalamamaliyet,
                                d.ad SERVISDEPOAD,
                                p.ad SERVISDEPOrafAD,
-                               a.ad,
-                               CASE WHEN orj.orjinalgkod IS NULL THEN a.kod ELSE orj.orjinalgkod END ORJINALKOD
+                               a.ad, 
+                               CASE WHEN orj.orjinalgkod IS NULL THEN a.kod ELSE orj.orjinalgkod END orjinalkod
                           FROM(SELECT DISTINCT servisstokid
                                   FROM sason.servisstokhareketdetaylar) h,
                                sason.servisstoklar a,
-                               sason.vt_genelstok c,
+                               -- sason.vt_genelstok c, 
+                                ( 
+                                        SELECT CASE
+                                                 WHEN servisstokid IS NULL THEN 0 - ambarstokmiktar
+                                                 ELSE stokmiktar
+                                              END
+                                                 stokmiktar,
+                                              CASE
+                                                 WHEN servisstokid IS NULL THEN ambarstokid
+                                                 ELSE servisstokid
+                                              END
+                                                 servisstokid,
+                                              servisid
+                                         FROM (SELECT a.stokmiktar - NVL (b.stokmiktar, 0) stokmiktar,
+                                                      a.servisstokid,
+                                                      b.servisstokid ambarstokid,
+                                                      b.stokmiktar ambarstokmiktar,
+                                                      a.servisid
+                                                 FROM (  SELECT SUM (stokmiktar) STOKMIKTAR,
+                                                                servisid,
+                                                                servisstokid
+                                                           FROM(SELECT servisid,
+                                                                        servisstokid,
+                                                                        amiktar * stokislemtipdeger STOKMIKTAR
+                                                                   FROM servisstokhareketdetaylar s,
+                                                                        servisstokhareketler h
+                                                                  WHERE     h.id = S.SERVISSTOKHAREKETID
+                                                                        AND s.servisdepoid NOT IN(21, 22))
+                                                       GROUP BY servisid, servisstokid) a
+                                                      FULL OUTER JOIN
+                                                      (SELECT SUM (a.miktar) stokmiktar,
+                                                                a.servisstokid,
+                                                                c.servisid
+                                                           FROM servisismislemmalzemeler a,
+                                                                servisisemirislemler b,
+                                                                servisisemirler c
+                                                          WHERE c.id = b.servisisemirid
+                                                                AND b.id = A.SERVISISEMIRISLEMID
+                                                                AND a.durumid = 1
+                                                                AND c.teknikolaraktamamla = 0
+                                                       GROUP BY servisstokid, servisid) b
+                                                 ON(a.servisstokid = b.servisstokid))
+                                            ) c,    
                                sason.vw_birimler r,
                                sason.servisdepolar d,
                                sason.servisdeporaflar p,
@@ -123,6 +168,7 @@ namespace SasonBase.Reports.Sason.Servis
                                AND r.id = a.birimid) p,
                        servisstokturler a
                  WHERE p.servisstokturid = a.id AND hservisid {servisIdQuery} 
+                 order by  p.HSERVISID 
  
                 ")
               .GetDataTable(mr)
