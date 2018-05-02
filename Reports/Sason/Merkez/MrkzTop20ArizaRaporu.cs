@@ -30,6 +30,7 @@ namespace SasonBase.Reports.Sason.Merkez
         }
         public MrkzTop20ArizaRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
+            base.ServisId = servisId;
             this.StartDate = startDate;
             this.FinishDate = finishDate;
         }
@@ -82,12 +83,12 @@ namespace SasonBase.Reports.Sason.Merkez
                 case "param_finish_date":
                     FinishDate = Convert.ToInt64(value).toDateTime();
                     break;
-                case "param_ariza_kod":
-                    ArizaKod = value.toString();
-                    break;
                 case "param_servisler":
                     ServisIds = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
                     break;
+                case "param_ariza_kod":
+                    ArizaKod = value.toString();
+                    break; 
                 case "param_aractip":
                     AracTipIds = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
                     break;
@@ -101,49 +102,57 @@ namespace SasonBase.Reports.Sason.Merkez
 
         public override object ExecuteReport(MethodReturn refMr = null)
         {
+            string servisIdQuery1 = $" =  {ServisId} ";
 
             #region tarih
             string dateQuery = "";
-
-            StartDate = StartDate.startOfDay();
-            FinishDate = FinishDate.endOfDay();
-            dateQuery = "" + StartDate.ToString("dd/MM/yyyy") + "' AND '" + FinishDate.ToString("dd/MM/yyyy") + "";
+        //    string addSQLSelect = "  ARAC_TURU, ";
+            string AracTurIdQuery = ""; //  $" = {selectedAracTurId}";
+           
+         
+            decimal selectedServisId = 94; //  ServisIds.first().toString("0").cto<decimal>();
             #endregion
 
-            #region servisid
-            decimal selectedServisId = ServisIds.first().toString("0").cto<decimal>();
-            string servisIdQuery = $" = {selectedServisId}";
-             if (ServisIds.isNotEmpty())          
+            #region servisidz
+        //    decimal selectedServisId = ServisId;
+            string servisIdQuery = ""; // $" = {selectedServisId}";
+
+ 
+            servisIdQuery = $" AND E_SSI31_FORM.SERVISID IN ( {ServisId} )";
+
+
+
+            if (ServisIds.isNotEmpty())          
                  servisIdQuery = $" AND E_SSI31_FORM.SERVISID IN ({ServisIds.joinNumeric(",")}) ";
             else
             {              
-                selectedServisId = ServisId;
-                servisIdQuery = $" AND E_SSI31_FORM.SERVISID IN ( {selectedServisId} )";
+              //  selectedServisId = ServisId;
+             //   servisIdQuery = $" AND E_SSI31_FORM.SERVISID IN ( {selectedServisId} )";
             }
             #endregion
 
-            #region aractur
+            #region aracturz
             // decimal selectedAracTurId = AracTurIds.first().toString("0").cto<decimal>();
-            decimal selectedAracTurId = 0;
-            string AracTurIdQuery = ""; //  $" = {selectedAracTurId}";
-            string addSQLAracTur = $"  E_SSI31_FORM.VEHICLETYPE AS ARAC_TURU,  ";
-            string addSQLGROUP = $"  ARAC_TURU, ";
-            string addSQLSelect = $"  ARAC_TURU, ";
+            //  decimal selectedAracTurId = 0; 
+          
+          
 
-            //  if (AracTurIds.isNotEmpty())
-            if (AracTurIds.Count > 0 )
+            if (AracTurIds.isNotEmpty())
+           //  if (AracTurIds.Count > 0 )
                     AracTurIdQuery = $"  AND ATT.ID  in ({AracTurIds.joinNumeric(",")}) ";
             else
             {            
                 AracTurIdQuery = "";                              
             }
             #endregion
-
-            #region aractip
-       //     decimal selectedAracTipId = AracTipIds.first().toString("0").cto<decimal>();
+            string addSQLGROUP = "  ARAC_TURU, ";
+            #region aractipz
+            //     decimal selectedAracTipId = AracTipIds.first().toString("0").cto<decimal>();
             string AracTipIdQuery = ""; // $" = {selectedAracTipId}";
-                     
-            if (AracTipIds.Count > 0 )
+            string addSQLAracTur = "";
+
+           //  if (AracTipIds.Count > 0 )
+             if (AracTipIds.isNotEmpty())
                 {
                     addSQLAracTur = $"    CONCAT(CONCAT(E_SSI31_FORM.VEHICLETYPE,' - '), ATP.KOD) AS ARAC_TURU,  ";         
                     AracTipIdQuery =  $"  AND ATP.ID  in ({AracTipIds.joinNumeric(",")}) ";
@@ -152,7 +161,8 @@ namespace SasonBase.Reports.Sason.Merkez
             else
                 {
                     AracTipIdQuery = "";
-                }
+                    addSQLAracTur = "  E_SSI31_FORM.VEHICLETYPE AS ARAC_TURU,  ";
+            }
             #endregion
 
             #region arizakod
@@ -164,8 +174,11 @@ namespace SasonBase.Reports.Sason.Merkez
             else
                 arizaKodQuery = "";
 
-                #endregion
+            #endregion
 
+            StartDate = StartDate.startOfDay();
+            FinishDate = FinishDate.endOfDay();
+            dateQuery = "" + StartDate.ToString("dd/MM/yyyy") + "' AND '" + FinishDate.ToString("dd/MM/yyyy") + "";
 
             MethodReturn mr = new MethodReturn();
             #region eskisql
@@ -224,7 +237,7 @@ namespace SasonBase.Reports.Sason.Merkez
                 SELECT
                     SERVIS_ADI,                        
                     AYRISTIRMA_TIPI,                        
-                    {addSQLSelect}
+                    ARAC_TURU,
                     arizakod, 
                     count(arizakod) as adet
                 FROM (
@@ -271,7 +284,7 @@ namespace SasonBase.Reports.Sason.Merkez
                     {addSQLGROUP} 
                     arizakod
                     ORDER BY adet DESC                     
-                           
+                       
                 " )
             .GetDataTable(mr)
             .ToModels();
