@@ -104,7 +104,6 @@ namespace SasonBase.Reports.Sason.Merkez
                         Sstok.Kod AS Kod,
                         Sstok.Ad AS Ad,
                         COUNT(Sstok.Kod) AS Miktar,
-                        NVL (Sshd.Isemirno, Sshd.Servissiparisid) AS IsmeriNo,
                         KURLAR_PKG.SERVISSTOKFIYATGETIR(Sstok.id, 2,sysdate) AS EuroListeFiyat,
                         KURLAR_PKG.STOKFIYATINDGETIR(Sstok.id, 2, 2, 1, 0) AS EuroIndFiyat
 
@@ -119,8 +118,7 @@ namespace SasonBase.Reports.Sason.Merkez
                          AND (Sshd.Isemirno IS NOT NULL OR Sshd.Servissiparisid IS NOT NULL) 
                          AND Srv.Servisid  {servisIdQuery} 
     
-      
-                   GROUP BY Srv.Partnercode,Srv.Isortakad,Sstok.Kod,Sstok.Ad, Sshd.Isemirno, Sshd.Servissiparisid, Sstok.id
+                   GROUP BY Srv.Partnercode,Srv.Isortakad,Sstok.Kod,Sstok.Ad, Sshd.Servissiparisid, Sstok.id
                 ORDER BY Srv.Partnercode, COUNT(Sstok.Kod) DESC
    
  
