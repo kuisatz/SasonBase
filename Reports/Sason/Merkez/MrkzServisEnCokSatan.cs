@@ -98,31 +98,30 @@ namespace SasonBase.Reports.Sason.Merkez
             MethodReturn mr = new MethodReturn();
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"   
-
-                 SELECT Srv.Partnercode AS ServisKodu, 
-                        Srv.Isortakad AS ServisAdi, 
-                        Sstok.Kod AS Kod,
-                        Sstok.Ad AS Ad,
-                        COUNT(Sstok.Kod) AS Miktar,
-                        KURLAR_PKG.SERVISSTOKFIYATGETIR(Sstok.id, 2,sysdate) AS EuroListeFiyat,
-                        KURLAR_PKG.STOKFIYATINDGETIR(Sstok.id, 2, 2, 1, 0) AS EuroIndFiyat
-
-                   FROM Servisstokhareketdetaylar Sshd,
-                        Servisstoklar Sstok,
-                        Vt_Servisler Srv
-
-                   WHERE Sshd.Stokislemtipdeger=-1
-                         AND Sshd.Servisstokid=Sstok.Id 
-                         AND Srv.Servisid=Sstok.Servisid 
-                         AND Srv.Dilkod='Turkish' 
-                         AND (Sshd.Isemirno IS NOT NULL OR Sshd.Servissiparisid IS NOT NULL) 
-                         AND Srv.Servisid  {servisIdQuery} 
-    
-                   GROUP BY Srv.Partnercode,Srv.Isortakad,Sstok.Kod,Sstok.Ad, Sshd.Servissiparisid, Sstok.id
-                ORDER BY Srv.Partnercode, COUNT(Sstok.Kod) DESC
-   
- 
- 
+                    SELECT asd.*,COUNT(asd.Kod) AS Miktar FROM ( 
+                        SELECT Srv.Partnercode AS ServisKodu, 
+                                Srv.Isortakad AS ServisAdi, 
+                                Sstok.Kod AS Kod,
+                                Sstok.Ad AS Ad,
+                                --COUNT(Sstok.Kod) AS Miktar,
+                                KURLAR_PKG.SERVISSTOKFIYATGETIR(Sshd.Servisstokid, 2,sysdate) AS EuroListeFiyat,                          
+                                KURLAR_PKG.STOKFIYATINDGETIR(Sshd.Servisstokid, 2, 2, 1, 0) AS EuroIndFiyat,
+                                NVL(to_char(Sshd.Servissiparisid),Sshd.Isemirno  ) Isemirno,  
+                                to_char(SSH.TARIH,'DD/MM/YYYY') tarih
+                            FROM Servisstokhareketdetaylar Sshd,
+                                Servisstoklar Sstok,
+                                Vt_Servisler Srv,
+                                Servisstokhareketler ssh
+                            WHERE Sshd.Stokislemtipdeger=-1
+                                    AND Sshd.Servisstokid=Sstok.Id 
+                                    AND Srv.Servisid=Sstok.Servisid 
+                                    AND Srv.Dilkod='Turkish'                             
+                                    AND Srv.Servisid  {servisIdQuery} 
+                                    AND SSH.ID = SSHD.SERVISSTOKHAREKETID AND ssh.durumid = 1 
+                                    AND SSH.TARIH between {dateQuery}    
+                    ) asd
+                    GROUP BY ServisKodu,ServisAdi,Kod,Ad,  Isemirno,EuroListeFiyat,EuroIndFiyat,tarih
+                    ORDER BY ServisKodu, tarih desc, Miktar DESC  
                 ")
               .GetDataTable(mr)
             .ToModels();
