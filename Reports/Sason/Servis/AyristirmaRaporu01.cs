@@ -76,7 +76,9 @@ namespace SasonBase.Reports.Sason.Servis
 
             MethodReturn mr = new MethodReturn();
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"  
-                   SELECT a.durumid,
+                    SELECT  distinct
+                        (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = a.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
+                        a.durumid,
                         o3.ad ISORTAKAD,
                         d.id,
                         a.servisid,
@@ -88,14 +90,14 @@ namespace SasonBase.Reports.Sason.Servis
                         t.kod malzemekod,
                         t.ad malzemead,
                         D.TURID,
-                        a.arizakodu,          
+                        a.arizakodu,
                         to_char(I.TAMAMLANMATARIH,'dd/mm/yyyy') as TAMAMLANMATARIH,
-                        to_char(I.KAYITTARIH,'dd/mm/yyyy') as KAYITTARIH,          
+                        to_char(I.KAYITTARIH,'dd/mm/yyyy') as KAYITTARIH,
                         I.KM,
                         I.KUR,
                         i.aractipad,
-                        i.modelno,
-                        i.firstregdate,
+                        i.modelno,                        
+                        to_char(i.firstregdate,'dd/mm/yyyy') as firstregdate,
                         T.TUTAR isemirtutar,
                         i.saseno,
                         R.ISEMIRTIPID,
@@ -134,11 +136,15 @@ namespace SasonBase.Reports.Sason.Servis
                             * 100,
                             2)
                             indirimoran,
-                        IC.TFATTOPLAM,          
-                        to_char(IC.ICMALTARIHI,'dd/mm/yyyy') as ICMALTARIHI,
-                        KURLAR_PKG.CAPRAZKURTARIH (2, 1, ic.icmaltarihi) icmalkur,
+                        IC.TFATTOPLAM,
+                        to_char(IC.ICMALTARIHI,'dd/mm/yyyy') as ICMALTARIHI,                        
+                        CASE  
+                            WHEN (ic.icmaltarihi > sysdate) then  KURLAR_PKG.CAPRAZKURTARIH (2, 1, sysdate)
+                            WHEN (ic.icmaltarihi is null  ) then  null
+                            ELSE KURLAR_PKG.CAPRAZKURTARIH (2,  1d, ic.icmaltarihi) end
+                            icmalkur,
                         servisstokturid,
-                        Bx.KOD, 
+                        Bx.KOD,
                         cx.ack ,
                         to_char(dx.ilktesciltarihi,'dd/mm/yyyy') as ilktesciltarihi,
                         '{StartDate}' as bastar, 
@@ -149,7 +155,7 @@ namespace SasonBase.Reports.Sason.Servis
                         ayristirmadetaylar d,
                         ayristirmalar a,
                         ayristirmatipler tr,
-                   /*  servisisemirler i, */ 
+                   /*  servisisemirler i, */
                         faturalar f,
                         servisstokturler st,
                         sason.rp_isemirdetay t,
@@ -159,12 +165,12 @@ namespace SasonBase.Reports.Sason.Servis
                         isortaklar o3,
                         servisler sv,
                         sason.isemirtipler bx ,
-                        sason.lovturler cx,   
-                        servisvarlikruhsatlar dx 
-          
+                        sason.lovturler cx,
+                        servisvarlikruhsatlar dx
+
                 WHERE     d.ayristirmaid = a.id
                         AND a.isemirno = i.isemirno
-                        AND a.ayristirmatipid = tr.id 
+                        AND a.ayristirmatipid = tr.id
                         AND f.id(+) = d.faturaid
                         AND r.id = a.servisisemirislemid
                         AND T.REFERANSID = d.referansid
@@ -178,11 +184,10 @@ namespace SasonBase.Reports.Sason.Servis
                         AND sv.isortakid = o3.id
                         AND A.ICMALID = ic.id(+)
                         AND a.durumid = bx.id and D.TURID = Cx.ID AND  i.saseno = dx.saseno
-                        AND a.durumid = 1 
-                        and a.servisid = i.servisid   
-                        and i.servisid = {ServisId} 
- 
-                        and i.id in (select ixx.id from servisisemirler ixx where i.servisid ={ServisId} and ixx.KAYITTARIH between '{dateQuery}'  AND (i.saseno = NVL ('{SaseNo}', i.saseno))   )
+                        AND a.durumid = 1
+                        and a.servisid = i.servisid
+                        and i.servisid = {ServisId}
+                        and i.id in (select ixx.id from servisisemirler ixx where ixx.servisid ={ServisId} and ixx.KAYITTARIH between '{dateQuery}'  AND (ixx.saseno = NVL ('{SaseNo}', ixx.saseno))   )
           
                         ORDER BY i.id  desc
                       
