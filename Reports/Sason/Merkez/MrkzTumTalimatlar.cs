@@ -21,7 +21,7 @@ namespace SasonBase.Reports.Sason.Merkez
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_bakim", Text = "Bakım Grup Türleri" }.CreateBakimTuruSelect(true));
-            AddParameter(new ReporterParameter() { Name = "param_sase_no", Text = "Şase No" }.CreateTextBox("İsteğe Bağlı Şase No. Girebilirsiniz"));
+        //    AddParameter(new ReporterParameter() { Name = "param_sase_no", Text = "Şase No" }.CreateTextBox("İsteğe Bağlı Şase No. Girebilirsiniz"));
             Disabled = false;
         }
         public MrkzTumTalimatlar(decimal servisId, DateTime startDate, DateTime finishDate) : this()
@@ -35,22 +35,22 @@ namespace SasonBase.Reports.Sason.Merkez
         }
 
 
-        public string SaseNo
+    /*    public string SaseNo
         {
             get { return GetParameter("param_sase_no").ReporterValue.toString(); }
             set { SetParameterReporterValue("param_sase_no", value.toString()); }
         }
-
+*/
 
 
         public override ReporterParameter SetParameterIncomingValue(string parameterName, object value)
         {
             switch (parameterName)
             {
-                case "param_sase_no":
+       /*         case "param_sase_no":
                     SaseNo = value.toString();
                     break;
-                case "param_bakim":
+           */     case "param_bakim":
                     BakimTuruIds = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
                     break;
 
