@@ -104,7 +104,7 @@ namespace SasonBase.Reports.Sason.Merkez
             MethodReturn mr = new MethodReturn();
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
-                SELECT  
+                SELECT  distinct
                         (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = a.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
                         a.durumid,
                         o3.ad ISORTAKAD,
@@ -165,8 +165,12 @@ namespace SasonBase.Reports.Sason.Merkez
                             2)
                             indirimoran,
                         IC.TFATTOPLAM,
-                        to_char(IC.ICMALTARIHI,'dd/mm/yyyy') as ICMALTARIHI,
-                        KURLAR_PKG.CAPRAZKURTARIH (2, 1, ic.icmaltarihi) icmalkur,
+                        to_char(IC.ICMALTARIHI,'dd/mm/yyyy') as ICMALTARIHI,                        
+                        CASE  
+                            WHEN (ic.icmaltarihi > sysdate) then  KURLAR_PKG.CAPRAZKURTARIH (2, 1, sysdate)
+                            WHEN (ic.icmaltarihi is null  ) then  null
+                            ELSE KURLAR_PKG.CAPRAZKURTARIH (2,  1d, ic.icmaltarihi) end
+                            icmalkur,
                         servisstokturid,
                         Bx.KOD,
                         cx.ack ,
