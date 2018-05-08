@@ -126,7 +126,22 @@ namespace SasonBase.Reports.Sason.Merkez
                                d.ad SERVISDEPOAD,
                                p.ad SERVISDEPOrafAD,
                                a.ad, 
-                               CASE WHEN orj.orjinalgkod IS NULL THEN a.kod ELSE orj.orjinalgkod END orjinalkod
+                               CASE
+                                 WHEN (SELECT orjinalmalzemeid
+                                         FROM malzemeler
+                                        WHERE id = a.malzemeid)
+                                         IS NULL
+                                 THEN
+                                        ''
+                                 ELSE
+                                    (SELECT CONCAT ('', gkod)
+                                       FROM malzemeler
+                                      WHERE id = (SELECT orjinalmalzemeid
+                                                    FROM malzemeler
+                                                   WHERE id = a.malzemeid))
+                              END
+                                 orjinalkod
+                             
                           FROM(SELECT DISTINCT servisstokid
                                   FROM sason.servisstokhareketdetaylar) h,
                                sason.servisstoklar a,
@@ -175,28 +190,18 @@ namespace SasonBase.Reports.Sason.Merkez
                                             ) c,    
                                sason.vw_birimler r,
                                sason.servisdepolar d,
-                               sason.servisdeporaflar p,
-                               (SELECT m1.id malzemeid,
-                                  m1.kod,
-                                  m1.gkod,
-                                  m2.kod orjinalkod,
-                                  m2.gkod orjinalgkod,
-                                  m1.orjinalmalzemeid
-                                FROM malzemeler m1, malzemeler m2
-                                WHERE m1.orjinalmalzemeid = M2.ID) orj 
+                               sason.servisdeporaflar p 
                          WHERE     h.servisstokid = a.id
                                AND A.ID = C.SERVISSTOKID
                                AND C.STOKMIKTAR <> 0
                                AND a.servisid = c.servisid
                                AND r.dilkod = 'Turkish'
-                               AND A.SERVISDEPOID = d.id(+)
-                               AND A.kod = orj.kod(+)
+                               AND A.SERVISDEPOID = d.id(+)                               
                                AND a.servisdeporafid = p.id(+)
                                AND r.id = a.birimid) p,
                        servisstokturler a
                  WHERE p.servisstokturid = a.id AND hservisid {servisIdQuery} 
                  order by  p.HSERVISID 
- 
  
                 ")
               .GetDataTable(mr)
