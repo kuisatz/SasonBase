@@ -24,7 +24,7 @@ namespace SasonBase.Reports.Sason.Servis
             AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
        //     AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
         //    AddParameter(new ReporterParameter() { Name = "param_sase_no", Text = "Şase No" }.CreateTextBox("İsteğe Bağlı Şase No. Girebilirsiniz"));
-            Disabled = false;
+            Disabled = true;
         }
         public SrvsDetayliStokHareketRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {

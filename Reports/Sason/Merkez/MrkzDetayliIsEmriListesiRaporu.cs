@@ -10,22 +10,22 @@ using System.Data;
 namespace SasonBase.Reports.Sason.Merkez
 {
     /// <summary>
-    /// Merkez Detaylı Stok Hareket Raporu
+    /// Merkez Detaylı İş Emri Listesi Raporu
     /// </summary>
-    public class MrkzDetayliStokHareketRaporu : Base.SasonMerkezReporter
+    public class MrkzDetayliIsEmriListesiRaporu : Base.SasonMerkezReporter
     {
-        public MrkzDetayliStokHareketRaporu()
+        public MrkzDetayliIsEmriListesiRaporu()
         {
             Text = "Detaylı İş Emri Listesi Raporu";
-            SubjectCode = "MrkzDetayliStokHareketRaporu";
+            SubjectCode = "MrkzDetayliIsEmriListesiRaporu";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true)); 
-            Disabled = true;
+            Disabled = false;
         }
-        public MrkzDetayliStokHareketRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
+        public MrkzDetayliIsEmriListesiRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
             base.ServisId = servisId;
             this.StartDate = startDate;
@@ -225,6 +225,8 @@ namespace SasonBase.Reports.Sason.Merkez
                             a.KAYITTARIH between  '{dateQuery}'  AND 
                             a.servisid {servisIdQuery}
                         ) asd
+                        WHERE             
+                           tipTUTAR IS NOT NULL 
                         order by asd.servisid , asd.isemirno,tip 
  
             

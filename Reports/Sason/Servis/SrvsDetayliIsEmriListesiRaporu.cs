@@ -7,25 +7,26 @@ using System.Threading.Tasks;
 using System.Data;
 
 
-namespace SasonBase.Reports.Sason.Merkez
+namespace SasonBase.Reports.Sason.Servis
 {
     /// <summary>
-    /// Merkez Detaylı Stok Hareket Raporu
+    ///  Detaylı İş Emri Listesi Raporu
     /// </summary>
-    public class MrkzDetayliStokHareketRaporu : Base.SasonMerkezReporter
+    public class SrvsDetayliIsEmriListesiRaporu : Base.SasonReporter
     {
-        public MrkzDetayliStokHareketRaporu()
+        public SrvsDetayliIsEmriListesiRaporu()
         {
             Text = "Detaylı İş Emri Listesi Raporu";
-            SubjectCode = "MrkzDetayliStokHareketRaporu";
+            SubjectCode = "SrvsDetayliIsEmriListesiRaporu";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
-            AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true)); 
-            Disabled = true;
+       //     AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
+        //    AddParameter(new ReporterParameter() { Name = "param_sase_no", Text = "Şase No" }.CreateTextBox("İsteğe Bağlı Şase No. Girebilirsiniz"));
+            Disabled = false;
         }
-        public MrkzDetayliStokHareketRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
+        public SrvsDetayliIsEmriListesiRaporu(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
             base.ServisId = servisId;
             this.StartDate = startDate;
@@ -43,13 +44,7 @@ namespace SasonBase.Reports.Sason.Merkez
             get { return GetParameter("param_finish_date").ReporterValue.cast<DateTime>(); }
             set { SetParameterReporterValue("param_finish_date", value.endOfDay()); }
         }
-
-        public List<decimal> ServisIds
-        {
-            get { return GetParameter("param_servisler").ReporterValue.cast<List<decimal>>(); }
-            set { SetParameterReporterValue("param_servisler", value); }
-        }
-   
+          
         public override ReporterParameter SetParameterIncomingValue(string parameterName, object value)
         {
             switch (parameterName)
@@ -61,31 +56,21 @@ namespace SasonBase.Reports.Sason.Merkez
                 case "param_finish_date":
                     FinishDate = Convert.ToInt64(value).toDateTime();
                     break;
-                case "param_servisler":
-                    ServisIds = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
-                    break; 
             }
             return base.SetParameterIncomingValue(parameterName, value);
         }
 
         public override object ExecuteReport(MethodReturn refMr = null)
         {
-            decimal selectedServisId = ServisIds.first().toString("0").cto<decimal>();
-            string servisIdQuery = $" = {selectedServisId}";
+         
+            string servisIdQuery = $" = {ServisId}";
             string dateQuery = "";
 
-#if DEBUG
-             selectedServisId = ServisId;
-              servisIdQuery = $" in( {selectedServisId} )";
-#endif
-            
-            if (ServisIds.isNotEmpty())
-                servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
-            else { 
-            //    servisIdQuery = $" > 1 ";
-                selectedServisId = ServisId;
-                servisIdQuery = $" in( {selectedServisId} )";
-            }
+//#if DEBUG
+//             selectedServisId = ServisId;
+//              servisIdQuery = $" in( {selectedServisId} )";
+//#endif
+  
 
             StartDate = StartDate.startOfDay(); 
             FinishDate = FinishDate.endOfDay();
@@ -134,7 +119,7 @@ namespace SasonBase.Reports.Sason.Merkez
                             FROM servisisemirler a 
                         inner join servisisemirislemler b on a.ID = b.SERVISISEMIRID AND b.DURUMID = 1
                         left join (
-                                    SELECT distinct C1.servisisemirislemid, C1.TUTAR , C1.ACIKLAMA, C1.INDIRIMLITUTAR, C1.MIKTAR, g1.KOD  FROM servisismislemiscilikler c1 
+                                    SELECT distinct C1.servisisemirislemid, C1.TUTAR , C1.ACIKLAMA, C1.INDIRIMLITUTAR, C1.MIKTAR, H1.KOD  FROM servisismislemiscilikler c1 
                                     inner join mt_iscilikler g1 ON  C1.ISCILIKID = G1.ISCILIKID AND G1.DURUMID = c1.DURUMID 
                                     LEFT JOIN servisiscilikler h1 ON H1.ID = C1.SERVISISCILIKID AND h1.DURUMID = c1.DURUMID 
                                     WHERE 
@@ -225,9 +210,9 @@ namespace SasonBase.Reports.Sason.Merkez
                             a.KAYITTARIH between  '{dateQuery}'  AND 
                             a.servisid {servisIdQuery}
                         ) asd
+                        WHERE             
+                           tipTUTAR IS NOT NULL 
                         order by asd.servisid , asd.isemirno,tip 
- 
-            
                 ")
               .GetDataTable(mr)
                .ToModels();
