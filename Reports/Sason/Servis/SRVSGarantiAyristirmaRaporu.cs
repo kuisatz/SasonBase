@@ -145,7 +145,10 @@ namespace SasonBase.Reports.Sason.Servis
                             indirimoran,
                         IC.TFATTOPLAM,
                         to_char(IC.ICMALTARIHI,'dd/mm/yyyy') as ICMALTARIHI,
-                        KURLAR_PKG.CAPRAZKURTARIH (2, 1, ic.icmaltarihi) icmalkur,
+                         CASE  
+                                  WHEN (ic.icmaltarihi > sysdate) then  KURLAR_PKG.CAPRAZKURTARIH (2, 1, sysdate)     
+                                  WHEN (ic.icmaltarihi is null  ) then  null
+                                  ELSE  KURLAR_PKG.CAPRAZKURTARIH (2, 1, ic.icmaltarihi) END icmalkur,
                         servisstokturid,
                         Bx.KOD,
                         cx.ack ,

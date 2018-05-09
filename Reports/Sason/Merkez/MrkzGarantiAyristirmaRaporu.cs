@@ -167,7 +167,10 @@ namespace SasonBase.Reports.Sason.Merkez
                             indirimoran,
                         IC.TFATTOPLAM,
                         to_char(IC.ICMALTARIHI,'dd/mm/yyyy') as ICMALTARIHI,
-                        KURLAR_PKG.CAPRAZKURTARIH (2, 1, ic.icmaltarihi) icmalkur,
+                          CASE  
+                                  WHEN (ic.icmaltarihi > sysdate) then  KURLAR_PKG.CAPRAZKURTARIH (2, 1, sysdate)     
+                                  WHEN (ic.icmaltarihi is null  ) then  null
+                                  ELSE  KURLAR_PKG.CAPRAZKURTARIH (2, 1, ic.icmaltarihi) END icmalkur,
                         servisstokturid,
                         Bx.KOD,
                         cx.ack ,
@@ -213,11 +216,13 @@ namespace SasonBase.Reports.Sason.Merkez
                         and a.servisid = i.servisid
                         and i.servisid {servisIdQuery} 
 
-                        and i.id in (select ixx.id from servisisemirler ixx where   i.durumid = 1 AND i.servisid {servisIdQuery}  and ixx.KAYITTARIH between '{dateQuery}'  AND (i.saseno = NVL ('{SaseNo}', i.saseno))   )
+                        and i.id in (select ixx.id from servisisemirler ixx where   ixx.durumid = 1 AND ixx.servisid {servisIdQuery}  and ixx.KAYITTARIH between '{dateQuery}'  AND (i.saseno = NVL ('{SaseNo}', ixx.saseno))   )
                         AND a.ayristirmatipid not in (1,2)
                         
                          ) asd 
                 ORDER BY SERVISID, isemirno , SERVISSTOKTURad asc  , KAYITTARIH desc  
+
+
  
                 ")                          
                 .GetDataTable(mr)
