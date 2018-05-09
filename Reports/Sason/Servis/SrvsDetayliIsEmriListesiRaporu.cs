@@ -119,7 +119,7 @@ namespace SasonBase.Reports.Sason.Servis
                             FROM servisisemirler a 
                         inner join servisisemirislemler b on a.ID = b.SERVISISEMIRID AND b.DURUMID = 1
                         left join (
-                                    SELECT distinct C1.servisisemirislemid, C1.TUTAR , C1.ACIKLAMA, C1.INDIRIMLITUTAR, C1.MIKTAR, H1.KOD  FROM servisismislemiscilikler c1 
+                                    SELECT distinct C1.servisisemirislemid, C1.TUTAR , C1.ACIKLAMA, C1.INDIRIMLITUTAR, C1.MIKTAR, G1.KOD  FROM servisismislemiscilikler c1 
                                     inner join mt_iscilikler g1 ON  C1.ISCILIKID = G1.ISCILIKID AND G1.DURUMID = c1.DURUMID 
                                     LEFT JOIN servisiscilikler h1 ON H1.ID = C1.SERVISISCILIKID AND h1.DURUMID = c1.DURUMID 
                                     WHERE 
@@ -171,12 +171,13 @@ namespace SasonBase.Reports.Sason.Servis
                             a.INDIRIMLITUTAR, 
                             a.PLAKA,    
                             (SELECT zx.tutar/10 FROM servisiscilikfiyatlar zx WHERE zx.servisid = a.servisid and  zx.AYRISTIRMATIPID is null ) as aw,           
-                            'kalem' as tip , kalemlerxx.KOD as kalemlerKOD,     to_char(  kalemlerxx.DIGERKALEMID ) as kalemler  ,  kalemlerxx.MIKTAR as kalemlerMIKTAR,              kalemlerxx.TUTAR as kalemlerTUTAR,               kalemlerxx.INDIRIMLITUTAR as kalemlerINDIRIMLITUTAR,   0  as BIRIMFIYAT       
+                            'kalem' as tip , kalemlerxx.KOD as kalemlerKOD,      kalemlerxx.aciklama  as kalemler  ,  kalemlerxx.MIKTAR as kalemlerMIKTAR,              kalemlerxx.TUTAR as kalemlerTUTAR,               kalemlerxx.INDIRIMLITUTAR as kalemlerINDIRIMLITUTAR,   0  as BIRIMFIYAT       
                             FROM servisisemirler a 
                         inner join servisisemirislemler b on a.ID = b.SERVISISEMIRID AND b.DURUMID = 1        
                         left join (
-                                    SELECT distinct C3.SERVISISEMIRISLEMID, C3.DIGERKALEMID, G3.KOD, C3.TUTAR, C3.INDIRIMLITUTAR, C3.MIKTAR FROM SERVISISMISLEMDKALEMLER c3 
+                                    SELECT distinct C3.SERVISISEMIRISLEMID, C3.DIGERKALEMID, G3.KOD, C3.TUTAR, C3.INDIRIMLITUTAR, C3.MIKTAR, vwd.ad as aciklama FROM SERVISISMISLEMDKALEMLER c3 
                                     inner join digerkalemler g3 ON  C3.DIGERKALEMID = g3.id 
+                                    inner join vw_digerkalemler vwd ON vwd.kod = g3.kod AND VWD.DILID = 0 AND vwd.DURUMID = 1
                                     WHERE 
                                         c3.DURUMID = 1  
                                 )  kalemlerxx on b.id=kalemlerxx.SERVISISEMIRISLEMID      
