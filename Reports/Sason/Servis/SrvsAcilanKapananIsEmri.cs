@@ -98,7 +98,7 @@ namespace SasonBase.Reports.Sason.Servis
                         group by servisid,KAYITTARIH
                     ) 
                     GROUP BY servisid, partnercode , servisad , KAYITTARIH                    
-                    order by servisid,KAYITTARIH desc
+                    order by servisid,to_date(KAYITTARIH) desc
  
             
             ")
