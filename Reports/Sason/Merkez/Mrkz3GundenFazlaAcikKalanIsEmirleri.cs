@@ -144,7 +144,7 @@ namespace SasonBase.Reports.Sason.Merkez
                                 THEN 'EVET'
                               ELSE 'HAYIR' 
                          END arac_kazali, 
-                         ie1.araccikiszamani AS araccikiszamani,
+                         TO_CHAR(ie1.araccikiszamani,'dd.mm.yyyy') AS araccikiszamani,
                          CASE WHEN ie1.aracserviste = 0 
                                 THEN 'HAYIR'
                               ELSE 'EVET'
