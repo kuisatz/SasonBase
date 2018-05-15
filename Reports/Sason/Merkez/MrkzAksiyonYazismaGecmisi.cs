@@ -10,20 +10,20 @@ namespace SasonBase.Reports.Sason.Merkez
     /// <summary>
     /// Merkez Aksiyon Yazışma Geçmişi
     /// </summary>
-    public class MrkzAksiyonYazismaGesmisi : Base.SasonMerkezReporter
+    public class MrkzAksiyonYazismaGecmisi : Base.SasonMerkezReporter
     {
-        public MrkzAksiyonYazismaGesmisi()
+        public MrkzAksiyonYazismaGecmisi()
         {
             Text = "Aksiyon Yazışma Geçmişi";
-            SubjectCode = "MrkzAksiyonYazismaGesmisi";
+            SubjectCode = "MrkzAksiyonYazismaGecmisi";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
-            Disabled = false;
+            Disabled = true;
         }
 
-        public MrkzAksiyonYazismaGesmisi(decimal servisId, DateTime startDate, DateTime finishDate) : this()
+        public MrkzAksiyonYazismaGecmisi(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
             this.StartDate = startDate;
             this.FinishDate = finishDate;
@@ -95,7 +95,6 @@ namespace SasonBase.Reports.Sason.Merkez
                             aks.bastarih AS AKSIYON_BASLANGICTARIH, 
                             aks.bittarih AS AKS_BITISTARIH,
                             ads.adres
-    
                         FROM
                             mektuplar m, 
                             mektuparaclar ma, 
