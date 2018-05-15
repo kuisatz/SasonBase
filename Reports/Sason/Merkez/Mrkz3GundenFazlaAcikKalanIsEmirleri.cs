@@ -10,14 +10,14 @@ using System.Data;
 namespace SasonBase.Reports.Sason.Merkez
 {
     /// <summary>
-    /// Merkez Yedek Parça Faaliyet Raporu
+    /// Merkez 3 Günden Fazla Açık Kalan İş Emirleri Raporu
     /// </summary>
-    public class MrkzAcikKalanIsEmirleri : Base.SasonMerkezReporter
+    public class Mrkz3GundenFazlaAcikKalanIsEmirleri : Base.SasonMerkezReporter
     {
-        public MrkzAcikKalanIsEmirleri()
+        public Mrkz3GundenFazlaAcikKalanIsEmirleri()
         {
-            Text = "Açık Kalan İş Emirleri";
-            SubjectCode = "MrkzAcikKalanIsEmirleri";
+            Text = "3 Günden Fazla Açık Kalan İş Emirleri";
+            SubjectCode = "Mrkz3GundenFazlaAcikKalanIsEmirleri";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
       //      AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
@@ -29,7 +29,7 @@ namespace SasonBase.Reports.Sason.Merkez
             this.MinGun = "0";
             this.MaxGun = "0";
         }
-        public MrkzAcikKalanIsEmirleri(decimal servisId, DateTime startDate, DateTime finishDate) : this()
+        public Mrkz3GundenFazlaAcikKalanIsEmirleri(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
             base.ServisId = servisId;
             this.MinGun = "0";
@@ -130,42 +130,43 @@ namespace SasonBase.Reports.Sason.Merkez
             MethodReturn mr = new MethodReturn();
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
-                    select * from ( 
-                        select 
-                            ie1.servisid, 
-                            SRV.PARTNERCODE, 
-                            SRV.ISORTAKAD SERVISADI, 
-                            ie1.isemirno, 
-                            ie1.kayittarih KAYITTARIHI,
-                            SYSDATE RAPORGUNU, 
-                            round( sysdate - ie1.kayittarih) ACIKKALMAGUNU,
-                            case 
-                                when ie1.arackazali = 1 then 'EVET' 
-                            else 'HAYIR' 
-                                end ARAC_KAZALI, 
-                            TO_CHAR(ie1.araccikiszamani,'dd.mm.yyyy') AS araccikiszamani,
-                            case 
-                                when ie1.aracserviste = 0 then 'HAYIR' 
-                            else 'EVET' 
-                            end  arac_servis_disinda,
-                            case 
-                                when SERVAR.VARLIKTIPID=3 then 'EVET'
-                            else 'HAYIR'
-                            end KAMU,
-                            ie1.aciklama
-                        from (
-                            select * from servisisemirler where teknikolaraktamamla = 0 and tamamlanmatarih is null) ie1
-                            left join vt_servisler srv on srv.dilkod = 'Turkish' and srv.servisid = ie1.servisid
-                            inner join servisvarliklar servar on SERVAR.id=ie1.servisvarlikid
-                            WHERE srv.servisid {servisIdQuery} 
-                        )
-                    where 
-                        1=1 
-                        {dateGunQuery1}
-                        {dateGunQuery2}
-                    order by  ACIKKALMAGUNU desc ,kayittarihi asc
- 
- 
+  
+                    SELECT * 
+                    FROM (
+                         SELECT ie1.servisid AS servisid, 
+                         srv.partnercode AS serviskodu, 
+                         srv.isortakad AS servisadi, 
+                         ie1.isemirno AS isemirno, 
+                         ie1.kayittarih AS kayittarihi,
+                         SYSDATE raporgunu, 
+                         ROUND( SYSDATE - ie1.kayittarih) acikkalmagunu,
+                         CASE WHEN ie1.arackazali = 1 
+                                THEN 'EVET'
+                              ELSE 'HAYIR' 
+                         END arac_kazali, 
+                         TO_CHAR(ie1.araccikiszamani,'dd.mm.yyyy') AS araccikiszamani,
+                         CASE WHEN ie1.aracserviste = 0 
+                                THEN 'HAYIR'
+                              ELSE 'EVET'
+                         END  arac_servis_disinda,
+                         CASE WHEN servar.varliktipid=3 
+                                THEN 'EVET'
+                              ELSE 'HAYIR'
+                         END kamu,
+                         ie1.aciklama AS aciklama 
+
+                         FROM (SELECT * 
+                               FROM servisisemirler 
+                               WHERE teknikolaraktamamla = 0 AND tamamlanmatarih IS NULL) ie1
+                         LEFT JOIN vt_servisler srv ON srv.dilkod = 'Turkish' AND srv.servisid = ie1.servisid
+                         INNER JOIN servisvarliklar servar ON servar.id=ie1.servisvarlikid
+                    )
+
+                    WHERE acikkalmagunu > 3 
+                         AND servisid {servisIdQuery} 
+
+                    ORDER BY servisid,kayittarihi ASC
+
                 ")
               .GetDataTable(mr)
                .ToModels();
