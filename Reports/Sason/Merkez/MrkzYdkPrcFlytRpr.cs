@@ -590,8 +590,35 @@ namespace SasonBase.Reports.Sason.Merkez
                                 end as servisicigaranti2el
 
                           from (
-                             select distinct * from sason.rptable_yedekparcadetay t
-                              where
+                          /*   select distinct * from sason.rptable_yedekparcadetay t */
+                                SELECT 
+                                  t.AYRISTIRMATIPAD,
+                                  t.BELGENO,
+                                  t.BELGETURU,
+                                  t.BRUTTUTAR,
+                                  t.HASHSERVISID,
+                                  t.INDIRIMORAN,
+                                  t.ISCILIK_PARCA,
+                                  t.ISEMIRTIPI,
+                                  t.KUR kur,
+                                  t.MALZEMEAD,
+                                  t.MALZEMEKOD,
+                                  t.MIKTAR,
+                                  t.MUSTERIAD,
+                                  t.ORJINALKOD,
+                                  t.ORTALAMAMALIYET,
+                                  t.SASENO,
+                                  t.SERVISAD,
+                                  t.SERVISID,
+                                  t.SERVISSTOKTURAD,
+                                  t.TARIH,
+                                  t.TRAFIGECIKISTARIHI,
+                                  t.TUTAR,
+                                  t.URETICI,
+                                  t.VERGINO,
+                                  t.SERVISSTOKTURID
+                             FROM sason.rp_yedekparcadetay t
+                             WHERE
                                 t.servisid {servisIdQuery} and                                 
                                 t.tarih BETWEEN '{dateQuery}' 
 

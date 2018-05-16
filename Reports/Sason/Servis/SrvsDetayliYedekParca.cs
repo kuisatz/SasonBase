@@ -375,6 +375,8 @@ namespace SasonBase.Reports.Sason.Servis
                               AND sv.isortakid = o3.id
                               AND st.dilkod = 'Turkish'
                               AND A.ICMALID = ic.id(+)
+                              AND i.servisid = {ServisId}
+                              AND I.KAYITTARIH  between '{dateQuery}'   
                                 ) 
                                 r,sason.lovturler b,(SELECT m1.id malzemeid, 
                                       m1.kod,
@@ -385,9 +387,7 @@ namespace SasonBase.Reports.Sason.Servis
                                  FROM malzemeler m1, malzemeler m2
                                 WHERE m1.orjinalmalzemeid = M2.ID) o
                         WHERE r.turid = b.id AND
-                        r.malzemekod = o.gkod(+) AND
-                        r.servisid  = {ServisId}  AND 
-                        r.KAYITTARIH between '{dateQuery}'  
+                        r.malzemekod = o.gkod(+)  
 
                         ")
                         .GetDataTable(mr)   

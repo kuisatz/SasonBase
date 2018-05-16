@@ -21,7 +21,7 @@ namespace SasonBase.Reports.Sason.Merkez
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name; 
             AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true)); 
-            Disabled = false;
+            Disabled = true;
         }
         public MrkzAcikIsEmirleriIcerisindekiParcaDurumlari(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {

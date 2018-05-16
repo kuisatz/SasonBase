@@ -133,7 +133,7 @@ namespace SasonBase.Reports.Sason.Merkez
                             and E.SERVISID {servisIdQuery}
                             and T.DILKOD='Turkish'
                             and E.TAMAMLANMATARIH is not null
-                            and BAKIMTOPLU is not null
+                         /*   and BAKIMTOPLU is not null */
                             and E.TEKNIKOLARAKTAMAMLA = 1
                         ORDER BY E.SERVISID, E.KAYITTARIH desc
 

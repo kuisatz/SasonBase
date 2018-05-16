@@ -207,7 +207,9 @@ namespace SasonBase.Reports.Sason.Merkez
 
             #region query2
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"                 
-            SELECT servisid, (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = dsf.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
+            
+
+ SELECT servisid, (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = dsf.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
                   (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = dsf.servisid   )  as servisad,
             ---------- stok 
                 stok.stok_toplam, 
@@ -590,8 +592,35 @@ namespace SasonBase.Reports.Sason.Merkez
                                 end as servisicigaranti2el
 
                           from (
-                             select distinct * from sason.rptable_yedekparcadetay t
-                              where
+                          /*   select distinct * from sason.rptable_yedekparcadetay t */
+                                SELECT 
+                                  t.AYRISTIRMATIPAD,
+                                  t.BELGENO,
+                                  t.BELGETURU,
+                                  t.BRUTTUTAR,
+                                  t.HASHSERVISID,
+                                  t.INDIRIMORAN,
+                                  t.ISCILIK_PARCA,
+                                  t.ISEMIRTIPI,
+                                  t.KUR kur,
+                                  t.MALZEMEAD,
+                                  t.MALZEMEKOD,
+                                  t.MIKTAR,
+                                  t.MUSTERIAD,
+                                  t.ORJINALKOD,
+                                  t.ORTALAMAMALIYET,
+                                  t.SASENO,
+                                  t.SERVISAD,
+                                  t.SERVISID,
+                                  t.SERVISSTOKTURAD,
+                                  t.TARIH,
+                                  t.TRAFIGECIKISTARIHI,
+                                  t.TUTAR,
+                                  t.URETICI,
+                                  t.VERGINO,
+                                  t.SERVISSTOKTURID
+                             FROM sason.rp_yedekparcadetay t
+                             WHERE
                                 t.servisid {servisIdQuery} and                                 
                                 t.tarih BETWEEN '{dateQuery}' 
 
@@ -705,24 +734,12 @@ namespace SasonBase.Reports.Sason.Merkez
   
  
                 ")
-         //     .Parameter("stok_oesx", stok_oesx)
-         //     .Parameter("stok_oeMx", stok_oeMx)
-         //     .Parameter("stok_essanayix", stok_essanayix)
-        //      .Parameter("stok_myx", stok_myx)
-        //      .Parameter("stok_yansanayix", stok_yansanayix)
-          //     .Parameter("stok_toplamx", stok_toplamx)
-             .GetDataTable(mr)
-
-                //  .ToModels<QueryResult>();                
+ 
+             .GetDataTable(mr) 
             .ToModels();
-            #endregion
+            #endregion 
 
-
-            // reportDataSource.add(reportData);
-            //     reportData.AMBARCEVIRIM = (reportData.queryr[0].YEDEKPARCATOPLAM / reportData.queryrStk[0].STOK_TOPLAM) * 12;
-
-            CloseCustomAppPool();
-          //  return reportData;
+            CloseCustomAppPool(); 
             return queryResults;
         }
 

@@ -66,6 +66,7 @@ namespace SasonBase.Reports.Sason.Servis
             string dateQuery = "";
             decimal TarihGrupId = TarihGrupIds.first().toString("0").cto<decimal>();
             string dateBetweenQuery = "";
+            string dateBetweenQuery2 = "";
 
             StartDate = StartDate.startOfDay();
 
@@ -74,15 +75,17 @@ namespace SasonBase.Reports.Sason.Servis
             if (TarihGrupId > 0)
             {
                 dateBetweenQuery = " AND TO_DATE(sysdate, 'DD/MM/YYYY') - TO_DATE(ssh.TARIH, 'DD/MM/YYYY')  <= " + TarihGrupId.ToString();
+                dateBetweenQuery2 = " AND TO_DATE(sysdate, 'DD/MM/YYYY') - TO_DATE(KayitTARIH, 'DD/MM/YYYY')  <= " + TarihGrupId.ToString();
             }
 
             MethodReturn mr = new MethodReturn();
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
-                      SELECT 
-                        p.HSERVISID, (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = p.HSERVISID  and vtsx.dilkod = 'Turkish') as partnercode,
+                    
+                    SELECT   distinct p.STOKISLEMTIPDEGER,
+                        (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = p.HSERVISID  and vtsx.dilkod = 'Turkish') as partnercode,
                         (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = p.HSERVISID )  as servisad,
-          
+
                        a.kod tur,
                        p.ID,
                        P.AD,
@@ -97,8 +100,8 @@ namespace SasonBase.Reports.Sason.Servis
                        p.SERVISDEPOAD,
                        p.SERVISDEPORAFAD,
                        p.stokmiktar * p.ortalamamaliyet stoktutar,
-                       p.orjinalkod,
-                       p.STOKISLEMTIPDEGER
+                       p.orjinalkod
+                     
                   FROM(SELECT servisstokturid, h.STOKISLEMTIPDEGER,
                                a.id,
                                a.servisid hservisid,
@@ -116,7 +119,7 @@ namespace SasonBase.Reports.Sason.Servis
                                kurlar_pkg.ORTALAMAMALIYET(a.id) ortalamamaliyet,
                                d.ad SERVISDEPOAD,
                                p.ad SERVISDEPOrafAD,
-                               a.ad, 
+                               a.ad,
                                CASE
                                  WHEN (SELECT orjinalmalzemeid
                                          FROM malzemeler
@@ -132,12 +135,19 @@ namespace SasonBase.Reports.Sason.Servis
                                                    WHERE id = a.malzemeid))
                               END
                                  orjinalkod
-                             
-                          FROM(SELECT DISTINCT servisstokid,STOKISLEMTIPDEGER
-                                  FROM sason.servisstokhareketdetaylar) h,
+
+                          FROM(
+                                  SELECT DISTINCT *
+                                  FROM sason.servisstokhareketdetaylar sshd
+                                  inner join  servisstokhareketler ssh on ssh.id = sshd.servisstokhareketid
+                                  where  sshd.STOKISLEMTIPDEGER != -1 AND 
+                                         ssh.servisid {servisIdQuery} 
+                                         {dateBetweenQuery} 
+
+                                ) h,
                                sason.servisstoklar a,
-                               -- sason.vt_genelstok c, 
-                                ( 
+                               -- sason.vt_genelstok c,
+                                (
                                         SELECT CASE
                                                  WHEN servisstokid IS NULL THEN 0 - ambarstokmiktar
                                                  ELSE stokmiktar
@@ -160,10 +170,15 @@ namespace SasonBase.Reports.Sason.Servis
                                                            FROM(SELECT servisid,
                                                                         servisstokid,
                                                                         amiktar * stokislemtipdeger STOKMIKTAR
-                                                                   FROM servisstokhareketdetaylar s,
-                                                                        servisstokhareketler h
-                                                                  WHERE     h.id = S.SERVISSTOKHAREKETID
-                                                                        AND s.servisdepoid NOT IN(21, 22))
+                                                                   FROM servisstokhareketdetaylar sshd,
+                                                                        servisstokhareketler ssh
+                                                                  WHERE 
+                                                                        sshd.STOKISLEMTIPDEGER != -1 AND
+                                                                        ssh.id = sshd.SERVISSTOKHAREKETID AND
+                                                                        sshd.servisdepoid NOT IN(21, 22) AND
+                                                                        ssh.servisid  {servisIdQuery} 
+                                                                        {dateBetweenQuery} 
+                                                        )
                                                        GROUP BY servisid, servisstokid) a
                                                       FULL OUTER JOIN
                                                       (SELECT SUM (a.miktar) stokmiktar,
@@ -176,53 +191,126 @@ namespace SasonBase.Reports.Sason.Servis
                                                                 AND b.id = A.SERVISISEMIRISLEMID
                                                                 AND a.durumid = 1
                                                                 AND c.teknikolaraktamamla = 0
+                                                                AND c.servisid {servisIdQuery} 
+                                                                {dateBetweenQuery2} 
                                                        GROUP BY servisstokid, servisid) b
                                                  ON(a.servisstokid = b.servisstokid))
-                                            ) c,    
+                                            ) c,
                                sason.vw_birimler r,
                                sason.servisdepolar d,
-                               sason.servisdeporaflar p 
+                               sason.servisdeporaflar p
                          WHERE     h.servisstokid = a.id
                                AND A.ID = C.SERVISSTOKID
                                AND C.STOKMIKTAR <> 0
                                AND a.servisid = c.servisid
                                AND r.dilkod = 'Turkish'
-                               AND A.SERVISDEPOID = d.id(+)                               
+                               AND A.SERVISDEPOID = d.id(+)
                                AND a.servisdeporafid = p.id(+)
                                AND r.id = a.birimid
-                               AND a.id in  ( 
+                               /*****************************************/
+                               
+                                and 
+                    a.id not in
+                    (
+                     
+                    SELECT  distinct --  p.STOKISLEMTIPDEGER, 
+                       p.ID  
+                  FROM(SELECT servisstokturid, h.STOKISLEMTIPDEGER,
+                               a.id,
+                               a.servisid hservisid,
+                               a.kod,
+                               C.STOKMIKTAR 
+                             
+                          FROM(
+                                  SELECT DISTINCT *
+                                  FROM sason.servisstokhareketdetaylar sshd
+                                  inner join  servisstokhareketler ssh on ssh.id = sshd.servisstokhareketid
+                                  where 
+                                         SSHD.STOKISLEMTIPDEGER = -1 AND  
+                                         ssh.servisid {servisIdQuery}   
+                                        {dateBetweenQuery} 
 
-                            select  
-                                  distinct SSHD.SERVISSTOKID --  ,  SSHD.STOKISLEMTIPDEGER ,ss. kod
-                                  from servisstokhareketler  ssh 
-                                  inner join servisstokhareketdetaylar sshd on ssh.id = sshd.servisstokhareketid and sshd.durumid = 1
-                                  inner join servisstoklar ss on SS.ID = sshd.servisstokid 
-                                  where
-                                 
-                                  SSHD.STOKISLEMTIPDEGER != -1  AND 
-                                  ssh.servisid  {servisIdQuery}  and                              
-                                  ssh.durumid = 1 and   
-                                  SSHD.SERVISSTOKID in (  
-                                            select  
-                                                  distinct SSHD.SERVISSTOKID  -- ,  SSHD.STOKISLEMTIPDEGER ,ss. kod
-                                                  from servisstokhareketler  ssh 
-                                                  inner join servisstokhareketdetaylar sshd on ssh.id = sshd.servisstokhareketid and sshd.durumid = 1
-                                                  inner join servisstoklar ss on SS.ID = sshd.servisstokid 
-                                             where                                 
-                                                  SSHD.STOKISLEMTIPDEGER = -1  AND 
-                                                  ssh.servisid  {servisIdQuery}  and                              
-                                                  ssh.durumid = 1                                     
-                                                  {dateBetweenQuery}
-                                  )
-                                 {dateBetweenQuery}                                         
-                             )
+                                ) h,
+                               sason.servisstoklar a,
+                               -- sason.vt_genelstok c,
+                                (
+                                        SELECT CASE
+                                                 WHEN servisstokid IS NULL THEN 0 - ambarstokmiktar
+                                                 ELSE stokmiktar
+                                              END
+                                                 stokmiktar,
+                                              CASE
+                                                 WHEN servisstokid IS NULL THEN ambarstokid
+                                                 ELSE servisstokid
+                                              END
+                                                 servisstokid,
+                                              servisid
+                                         FROM (SELECT a.stokmiktar - NVL (b.stokmiktar, 0) stokmiktar,
+                                                      a.servisstokid,
+                                                      b.servisstokid ambarstokid,
+                                                      b.stokmiktar ambarstokmiktar,
+                                                      a.servisid
+                                                 FROM (  SELECT SUM (stokmiktar) STOKMIKTAR,
+                                                                servisid,
+                                                                servisstokid
+                                                           FROM(SELECT servisid,
+                                                                        servisstokid,
+                                                                        amiktar * stokislemtipdeger STOKMIKTAR
+                                                                   FROM servisstokhareketdetaylar sshd,
+                                                                        servisstokhareketler ssh
+                                                                  WHERE ssh.id = sshd.SERVISSTOKHAREKETID AND
+                                                                        sshd.servisdepoid NOT IN(21, 22) AND
+                                                                        SSHD.STOKISLEMTIPDEGER = -1 AND 
+                                                                        ssh.servisid {servisIdQuery} 
+                                                                        {dateBetweenQuery} 
+                                                        )
+                                                       GROUP BY servisid, servisstokid) a
+                                                      FULL OUTER JOIN
+                                                      (SELECT SUM (a.miktar) stokmiktar,
+                                                                a.servisstokid,
+                                                                c.servisid
+                                                           FROM servisismislemmalzemeler a,
+                                                                servisisemirislemler b,
+                                                                servisisemirler c
+                                                          WHERE c.id = b.servisisemirid
+                                                                AND b.id = A.SERVISISEMIRISLEMID
+                                                                AND a.durumid = 1
+                                                                AND c.teknikolaraktamamla = 0
+                                                                AND c.servisid {servisIdQuery} 
+                                                               {dateBetweenQuery2} 
+                                                       GROUP BY servisstokid, servisid) b
+                                                 ON(a.servisstokid = b.servisstokid))
+                                            ) c,
+                               sason.vw_birimler r,
+                               sason.servisdepolar d,
+                               sason.servisdeporaflar p
+                         WHERE     h.servisstokid = a.id
+                               AND A.ID = C.SERVISSTOKID
+                               AND C.STOKMIKTAR <> 0
+                               AND a.servisid = c.servisid
+                               AND r.dilkod = 'Turkish'
+                               AND A.SERVISDEPOID = d.id(+)
+                               AND a.servisdeporafid = p.id(+)
+                               AND r.id = a.birimid 
+                               AND a.servisid {servisIdQuery} 
+                           
                         ) p,
                        servisstokturler a
-                 WHERE 
-                    p.servisstokturid = a.id AND hservisid {servisIdQuery} AND 
-                    P.STOKMIKTAR> 0 AND
-                    p.STOKISLEMTIPDEGER != -1  
-                 
+                 WHERE
+                    p.servisstokturid = a.id AND hservisid {servisIdQuery}    
+                    
+                    ) 
+                               /******************************************/
+                               
+                               
+                               
+                           
+                        ) p,
+                       servisstokturler a
+                 WHERE
+                    p.servisstokturid = a.id AND hservisid {servisIdQuery}  AND
+                    P.STOKMIKTAR> 0
+                    -- AND p.STOKISLEMTIPDEGER != -1
  
                 ")
               .GetDataTable(mr)
