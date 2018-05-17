@@ -616,7 +616,7 @@ namespace SasonBase.Reports
             ";
             return param.ReplaceParamTextName();
         }
-        
+
         public static ReporterParameter CreateTarihGrupSelect(this ReporterParameter param, bool multipleSelect)
         {
             string selectType = (multipleSelect ? "multiple" : "single");
@@ -729,6 +729,130 @@ namespace SasonBase.Reports
                 dataGrid.option('selection.showCheckBoxesMode', 'onClick');
 
                 action('Sason', 'GetIsEmirHizmetYerleri', null, function (res) {
+                    if (res.Ok) {
+                       getGrid('parameter_name').option('dataSource', res.Data);
+                    }
+                }
+                );
+ 
+            }
+            )   
+            </script>
+            ";
+            return param.ReplaceParamTextName();
+        }
+        public static ReporterParameter CreateEvetHayir(this ReporterParameter param, bool multipleSelect)
+        {
+            string selectType = (multipleSelect ? "multiple" : "single");
+
+            param.Html = $@"<div class='option'><span>parameter_text</span><div id='parameter_name'></div></div>";
+            param.Js = @"
+            <script>$(function() {
+
+                var dataGrid = $('#parameter_name').dxDataGrid({
+                    //dataSource: sales,
+                    selection:
+                        {
+                            mode: '" + selectType + @"'
+                    },
+                    paging:
+                        {
+                            pageSize: 12
+                    },
+                    filterRow:
+                        {
+                            visible: true
+                    },
+                    columns: [
+                        {
+                            dataField: 'ID', 
+                            caption: 'ID',
+                            width: 90,
+                            visible: false
+                        },
+                        {
+                            dataField:'AD',
+                            caption:'Evet/Hayır',
+                            width:400
+                        }
+                        ],
+                    onSelectionChanged: function (selectedItems) {
+                                var servisIds = '';
+                                $.each(selectedItems.selectedRowKeys, function(index, item) {
+                                    servisIds += item.ID + ','; 
+                                });
+                                jQuery.data(document.body, 'parameter_name_value', servisIds);
+                        }
+                }).dxDataGrid('instance');
+
+                jQuery.data(document.body, 'parameter_name_value', '');
+
+                dataGrid.option('selection.selectAllMode', 'allPages');
+                dataGrid.option('selection.showCheckBoxesMode', 'onClick');
+
+                action('Sason', 'GetEvetHayir', null, function (res) {
+                    if (res.Ok) {
+                       getGrid('parameter_name').option('dataSource', res.Data);
+                    }
+                }
+                );
+ 
+            }
+            )   
+            </script>
+            ";
+            return param.ReplaceParamTextName();
+        }
+        public static ReporterParameter CreateAcikKalmaGunu(this ReporterParameter param, bool multipleSelect)
+        {
+            string selectType = (multipleSelect ? "multiple" : "single");
+
+            param.Html = $@"<div class='option'><span>parameter_text</span><div id='parameter_name'></div></div>";
+            param.Js = @"
+            <script>$(function() {
+
+                var dataGrid = $('#parameter_name').dxDataGrid({
+                    //dataSource: sales,
+                    selection:
+                        {
+                            mode: '" + selectType + @"'
+                    },
+                    paging:
+                        {
+                            pageSize: 12
+                    },
+                    filterRow:
+                        {
+                            visible: true
+                    },
+                    columns: [
+                        {
+                            dataField: 'ID', 
+                            caption: 'ID',
+                            width: 90,
+                            visible: false
+                        },
+                        {
+                            dataField:'AD',
+                            caption:'Ne kadar zamandır açık?',
+                            width:400
+                        }
+                        ],
+                    onSelectionChanged: function (selectedItems) {
+                                var servisIds = '';
+                                $.each(selectedItems.selectedRowKeys, function(index, item) {
+                                    servisIds += item.ID + ','; 
+                                });
+                                jQuery.data(document.body, 'parameter_name_value', servisIds);
+                        }
+                }).dxDataGrid('instance');
+
+                jQuery.data(document.body, 'parameter_name_value', '');
+
+                dataGrid.option('selection.selectAllMode', 'allPages');
+                dataGrid.option('selection.showCheckBoxesMode', 'onClick');
+
+                action('Sason', 'GetAcikKalmaGunu', null, function (res) {
                     if (res.Ok) {
                        getGrid('parameter_name').option('dataSource', res.Data);
                     }

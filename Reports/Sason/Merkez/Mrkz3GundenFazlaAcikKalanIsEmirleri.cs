@@ -20,71 +20,77 @@ namespace SasonBase.Reports.Sason.Merkez
             SubjectCode = "Mrkz3GundenFazlaAcikKalanIsEmirleri";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
-      //      AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
-      //      AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
-            AddParameter(new ReporterParameter() { Name = "param_min_gun", Text = "Min Gün" }.CreateTextBox("İsteğe Bağlı Min Gün Sayısı"));
-            AddParameter(new ReporterParameter() { Name = "param_max_gun", Text = "Max Gün" }.CreateTextBox("İsteğe Bağlı Max Gün Sayısı"));
+            AddParameter(new ReporterParameter() { Name = "param_acik_kalma", Text = "İş Emri Ne Kadar Süredir Açık?" }.CreateAcikKalmaGunu(false));
+            AddParameter(new ReporterParameter() { Name = "param_kazali", Text = "Araç Kazalı Mı?" }.CreateEvetHayir(false));
+            AddParameter(new ReporterParameter() { Name = "param_servis_disi", Text = "Araç Servis Dışında Mı?" }.CreateEvetHayir(false));
+            AddParameter(new ReporterParameter() { Name = "param_kamu", Text = "Cari Kamu Müşterisi Mi?" }.CreateEvetHayir(false));
+            AddParameter(new ReporterParameter() { Name = "param_araccikis", Text = "Araç Çıkış Tarihi Dolu Mu?" }.CreateEvetHayir(false));
+
             Disabled = false;
-            this.MinGun = "0";
-            this.MaxGun = "0";
         }
         public Mrkz3GundenFazlaAcikKalanIsEmirleri(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
             base.ServisId = servisId;
-            this.MinGun = "0";
-            this.MaxGun = "0";
-            //      this.FinishDate = finishDate;
+          
         }
 
-    /*    public DateTime StartDate
-        {
-            get { return GetParameter("param_start_date").ReporterValue.cast<DateTime>(); }
-            set { SetParameterReporterValue("param_start_date", value.startOfDay()); }
-        }
-
-        public DateTime FinishDate
-        {
-            get { return GetParameter("param_finish_date").ReporterValue.cast<DateTime>(); }
-            set { SetParameterReporterValue("param_finish_date", value.endOfDay()); }
-        }
-*/
         public List<decimal> ServisIds
         {
             get { return GetParameter("param_servisler").ReporterValue.cast<List<decimal>>(); }
             set { SetParameterReporterValue("param_servisler", value); }
         }
-        public string MinGun
+        public List<decimal> AcikKalma
         {
-            get { return GetParameter("param_min_gun").ReporterValue.toString(); }
-            set { SetParameterReporterValue("param_min_gun", value.toString()); }
+            get { return GetParameter("param_acik_kalma").ReporterValue.cast<List<decimal>>(); }
+            set { SetParameterReporterValue("param_acik_kalma", value); }
         }
-        public string MaxGun
+        public List<decimal> AracKazali
         {
-            get { return GetParameter("param_max_gun").ReporterValue.toString(); }
-            set { SetParameterReporterValue("param_max_gun", value.toString()); }
+            get { return GetParameter("param_kazali").ReporterValue.cast<List<decimal>>(); }
+            set { SetParameterReporterValue("param_kazali", value); }
+        }
+        public List<decimal> AracServisDisi
+        {
+            get { return GetParameter("param_servis_disi").ReporterValue.cast<List<decimal>>(); }
+            set { SetParameterReporterValue("param_servis_disi", value); }
+        }
+        public List<decimal> CariKamu
+        {
+            get { return GetParameter("param_kamu").ReporterValue.cast<List<decimal>>(); }
+            set { SetParameterReporterValue("param_kamu", value); }
+        }
+        public List<decimal> AracCikis
+        {
+            get { return GetParameter("param_araccikis").ReporterValue.cast<List<decimal>>(); }
+            set { SetParameterReporterValue("param_araccikis", value); }
         }
 
         public override ReporterParameter SetParameterIncomingValue(string parameterName, object value)
         {
             switch (parameterName)
             {
-                //Dışarıdan Gelen Format 20171231235959 Şeklinde Olmalıdır
-            /*    case "param_start_date":
-                    StartDate = Convert.ToInt64(value).toDateTime();
-                    break;
-                case "param_finish_date":
-                    FinishDate = Convert.ToInt64(value).toDateTime();
-                    break; */
+
                 case "param_servisler":
                     ServisIds = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
                     break;
-                case "param_min_gun":
-                    MinGun = value.toString();
+                case "param_acik_kalma":
+                    AcikKalma = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
                     break;
-                case "param_max_gun":
-                    MaxGun = value.toString();
+                case "param_kazali":
+                    AracKazali = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
                     break;
+                case "param_servis_disi":
+                    AracServisDisi = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
+                    break;
+                case "param_kamu":
+                    CariKamu = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
+                    break;
+                case "param_araccikis":
+                    AracCikis = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
+                    break;
+
+
             }
             return base.SetParameterIncomingValue(parameterName, value);
         }
@@ -93,18 +99,26 @@ namespace SasonBase.Reports.Sason.Merkez
         {
             decimal selectedServisId = ServisIds.first().toString("0").cto<decimal>();
             string servisIdQuery = $" = {selectedServisId}";
-            string dateQuery = "";
-            string dateGunQuery1 = "";
-            string dateGunQuery2 = "";
-            int MinGun1 = int.Parse(MinGun);
-            int MaxGun1 = int.Parse(MaxGun);
 
+            decimal selectedAcikKalma = AcikKalma.first().toString("0").cto<decimal>();
+            string acikKalma = "";
+
+            decimal selectedAracKazali = AracKazali.first().ToString("0").cto<decimal>();
+            string aracKazali = "";
+
+            decimal selectedServisDisi = AracServisDisi.first().ToString("0").cto<decimal>();
+            string servisDisi = "";
+
+            decimal selectedCariKamu = CariKamu.first().ToString("0").cto<decimal>();
+            string cariKamu = "";
+
+            decimal selectedAracCikis = AracCikis.first().ToString("0").cto<decimal>();
+            string aracCikis = "";
 
 #if DEBUG
              selectedServisId = ServisId;
               servisIdQuery = $" in( {selectedServisId} )";
 #endif
-
 
             if (ServisIds.isNotEmpty())
                 servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
@@ -114,19 +128,47 @@ namespace SasonBase.Reports.Sason.Merkez
                 servisIdQuery = $" in( {selectedServisId} )";
             }
 
-            if (MinGun1 > 0)
-            {
-                dateGunQuery1 = " AND acikkalmagunu >= "+ MinGun;              
-            }
-            if (MaxGun1 > 0)
-            {
-                dateGunQuery2 = " AND acikkalmagunu <= " + MaxGun;
-            }
+            #region filtreler
+            if (selectedAracKazali == 1)
+                aracKazali = "='EVET'";
+            else if (selectedAracKazali == 2)
+                aracKazali = "='HAYIR'";
+            else
+                aracKazali = " = 'HAYIR' or arac_kazali = 'EVET'";
+
+            if (selectedServisDisi == 1)
+                servisDisi = "='EVET'";
+            else if (selectedServisDisi == 2)
+                servisDisi = "='HAYIR'";
+            else
+                servisDisi = " = 'HAYIR' or arac_servis_disinda = 'EVET'";
+
+            if (selectedCariKamu == 1)
+                cariKamu = "='EVET'";
+            else if (selectedCariKamu == 2)
+                cariKamu = "='HAYIR'";
+            else
+                cariKamu = " = 'HAYIR' or kamu = 'EVET'";
+
+            if (selectedAracCikis == 1)
+                aracCikis = "IS NOT NULL";
+            else if (selectedAracCikis == 2)
+                aracCikis = "IS NULL";
+            else
+                aracCikis = " IS NOT NULL or araccikiszamani IS NULL";
+
+            if (selectedAcikKalma == 3)
+                acikKalma = ">3";
+            else if (selectedAcikKalma == 7)
+                acikKalma = ">7";
+            else if (selectedAcikKalma == 30)
+                acikKalma = ">30";
+            else
+                acikKalma = ">0";
+
+            #endregion
 
 
-            //        StartDate = StartDate.startOfDay(); 
-            //       FinishDate = FinishDate.endOfDay();
-            //        dateQuery = ""+StartDate.ToString("dd/MM/yyyy") +  "' AND '"+ FinishDate.ToString("dd/MM/yyyy")+"";
             MethodReturn mr = new MethodReturn();
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
@@ -162,9 +204,12 @@ namespace SasonBase.Reports.Sason.Merkez
                          INNER JOIN servisvarliklar servar ON servar.id=ie1.servisvarlikid
                     )
 
-                    WHERE acikkalmagunu > 3 
-                         AND servisid {servisIdQuery} 
-
+                    WHERE acikkalmagunu {acikKalma} 
+                          AND ( servisid {servisIdQuery} )
+                          AND ( arac_kazali {aracKazali} )
+                          AND ( arac_servis_disinda {servisDisi} )
+                          AND ( kamu {cariKamu} )
+                          AND ( araccikiszamani {aracCikis} )
                     ORDER BY servisid,kayittarihi ASC
 
                 ")
