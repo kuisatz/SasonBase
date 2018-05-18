@@ -239,9 +239,11 @@ namespace SasonBase.Reports.Sason.Merkez
                     AYRISTIRMA_TIPI,                        
                     ARAC_TURU,
                     arizakod, 
-                    count(arizakod) as adet
+                    count(arizakod) as adet,
+                    (SELECT vtsx.partnercode FROM vt_servisler vtsx where vtsx.servisid = SERVISID and vtsx.dilkod = 'Turkish') as partnercode
                 FROM (
                     SELECT
+                        E_SSI31_FORM.SERVISID, 
                         LIVEFLOWS.RDATE AS TALEP_TARIHI,                      
                         FLOWSTATUSES.DESCRIPTION AS STATU,
                         e_ssi31_form.FIRMAAD AS SERVIS_ADI,   
@@ -285,6 +287,8 @@ namespace SasonBase.Reports.Sason.Merkez
                     arizakod
                     ORDER BY adet DESC                     
                        
+ 
+
                 " )
             .GetDataTable(mr)
             .ToModels();
