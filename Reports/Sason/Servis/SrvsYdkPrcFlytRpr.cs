@@ -87,478 +87,117 @@ namespace SasonBase.Reports.Sason.Servis
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"                 
             
- SELECT servisid, (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = dsf.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
-                  (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = dsf.servisid   )  as servisad,
-            ---------- stok 
-                stok.stok_toplam, 
-                stok.stok_oes,
-                stok.stok_oeM,
-                stok.stok_essanayi,
-                stok.stok_my,
-                stok.stok_yansanayi,
-                servisicioem,
-                servisicioes,
-                servisiciesdeger,
-                servisicimyok,
-                servisicitoplam,
-                servisiciuygunparca,
-                servisiciucretliuygunparca,
-                servisicigaranti,
-                servisicioem2el,
-                servisicioes2el,
-                servisiciesdeger2el,
-                servisiciyansanayi2el,
-                servisicimyok2el,
-                servisicitoplam2el,
-                servisiciuygunparca2el,
-                servisiciucretliuygunparca2el,
-                servisicigaranti2el,
+   SELECT vts.partnercode, vts.ISORTAKAD , 
+                            stok.stok_toplam, 
+                            stok.stok_oes,
+                            stok.stok_oeM,
+                            stok.stok_essanayi,
+                            stok.stok_my,
+                            stok.stok_yansanayi,
+            dfdfdf.* FROM ( 
 
-                servisdisioem,
-                servisdisioes,
-                servisdisiesdeger,
-                servisdisimyok ,
-                servisdisitoplam,
-                servisdisiystoplam,
-                servisdisiuygunparca,
+             SELECT servisid, 
+                sum(servisicioem) servisicioem ,
+                sum(servisicioes) servisicioes ,
+                sum(servisiciesdeger) servisiciesdeger,
+                sum(servisicimyok) servisicimyok,
+                sum(servisicitoplam) servisicitoplam,
+                sum(servisiciuygunparca) servisiciuygunparca,
+                sum(servisiciucretliuygunparca) servisiciucretliuygunparca ,
+                sum(servisicigaranti) servisicigaranti,
+                sum(servisicioem2el) servisicioem2el,
+                sum(servisicioes2el) servisicioes2el,
+                sum(servisiciesdeger2el) servisiciesdeger2el ,
+                sum(servisiciyansanayi2el) servisiciyansanayi2el,
+                sum(servisicimyok2el) servisicimyok2el,
+                sum(servisicitoplam2el) servisicitoplam2el,
+                sum(servisiciuygunparca2el) servisiciuygunparca2el,
+                sum(servisiciucretliuygunparca2el) servisiciucretliuygunparca2el ,
+                sum(servisicigaranti2el) servisicigaranti2el,
 
-                servisiciyansanayi,
-                servisdisiyansanayi,
-                servisiciyansanayitoplam,
-                servisdisiyansanayitoplam,
+                sum(servisdisioem) servisdisioem,
+                sum(servisdisioes) servisdisioes,
+                sum(servisdisiesdeger) servisdisiesdeger,
+                sum(servisdisimyok) servisdisimyok ,
+                sum(servisdisitoplam) servisdisitoplam,
+                sum(servisdisiystoplam) servisdisiystoplam,
+                sum(servisdisiuygunparca) servisdisiuygunparca , 
 
-                servisiciyag,
-                servisiciyag2el,
-                servisdisiyag,
-                yagtoplam,
-                sum (NVL(servisicitoplam,0) + NVL(servisdisitoplam,0)) as yedekparcatoplami ,
-                sum (NVL(servisicitoplam,0) + NVL(servisdisitoplam,0))    as ambar,
-                BAKIMPAKETI ,
-                uukko  
+                sum(servisiciyansanayi) servisiciyansanayi,
+                sum(servisdisiyansanayi) servisdisiyansanayi,
+                sum(servisiciyansanayitoplam) servisiciyansanayitoplam,
+                sum(servisdisiyansanayitoplam) servisdisiyansanayitoplam,
+
+                sum(servisiciyag) servisiciyag,
+                sum(servisiciyag2el) servisiciyag2el,
+                sum(servisdisiyag) servisdisiyag,
+                sum(yagtoplam) yagtoplam,
+                sum(yedekparcatoplami) yedekparcatoplami ,
+                sum(ambar) ambar,
+                sum(BAKIMPAKETI) BAKIMPAKETI ,
+                sum(uukko) uukko  
                
+                 
+                FROM  sason.ypfaaliyet dsf
+              
+               
+             WHERE
+                    dsf.servisid {servisIdQuery} and                                 
+                    dsf.YEDEKPARCAFALIYETRAPORTARIHI BETWEEN '{dateQuery}' 
 
-                FROM (
-                    SELECT distinct servisid,  
-                    ---- servis içi   --  isemirtipi != 6 olanlar  burada olacak olmayanlar  asagıya eklenecek
-                        sum(NVL(servisicioem,0)) as servisicioem,
-                        sum(NVL(servisicioes,0)) as servisicioes,
-                        sum(NVL(servisiciesdeger,0)) as servisiciesdeger,
-                        sum(NVL(servisicimyok,0)) as servisicimyok,
-                        sum(NVL(servisicioem,0)+NVL(servisicioes,0)+NVL(servisiciesdeger,0)+NVL(servisiciyansanayi,0)+NVL(servisicimyok,0)) as servisicitoplam,
-                        sum(NVL(servisicioem,0)+NVL(servisicioes,0)+NVL(servisiciesdeger,0)) as servisiciuygunparca,
-                        sum (NVL(servisiciucretliuygunparca,0)) as servisiciucretliuygunparca,
-                        sum(NVL(servisicigaranti,0)) as servisicigaranti, ---- bunun içindeki  bakım pakeytiini hesapla asagıya ekle
-                         ---- servis içi 2 el   --  isemirtipi = 6 olanlar  burada olacak
-                        sum(NVL(servisicioem2el,0)) as servisicioem2el,
-                        sum(NVL(servisicioes2el,0)) as servisicioes2el,
-                        sum(NVL(servisiciesdeger2el,0)) as servisiciesdeger2el,
-                        sum(NVL(servisicimyok2el,0)) as servisiciyansanayi2el,
-                        sum(NVL(servisicimyok2el,0)) as servisicimyok2el,
-                        sum(NVL(servisicioem2el,0)+NVL(servisicioes2el,0)+NVL(servisiciesdeger2el,0)+NVL(servisiciyansanayi2el,0)+NVL(servisicimyok2el,0)) as servisicitoplam2el,
-                        sum(NVL(servisicioem2el,0)+NVL(servisicioes2el,0)+NVL(servisiciesdeger2el,0)) as servisiciuygunparca2el,
-                        sum(NVL(servisiciucretliuygunparca2el,0)) as servisiciucretliuygunparca2el,
-                        sum(NVL(servisicigaranti2el,0)) as servisicigaranti2el, ---- bunun içindeki  bakım pakeytiini hesapla asagıya ekle
-                        ---- servis dısı
-                        sum(NVL(servisdisioem,0)) as servisdisioem,
-                        sum(NVL(servisdisioes,0)) as servisdisioes,
-                        sum(NVL(servisdisiesdeger,0)) as servisdisiesdeger,
-                        sum(NVL(servisdisimyok,0)) as servisdisimyok ,
-                        sum(NVL(servisdisioem,0)+NVL(servisdisioes,0)+NVL(servisdisiesdeger,0)+NVL(servisdisiyansanayi,0)+NVL(servisdisimyok,0)) as servisdisitoplam,
-                        sum(NVL(servisdisiyansanayi,0)+NVL(servisdisimyok,0)) as servisdisiystoplam,
-                        sum(NVL(servisdisioem,0)+NVL(servisdisioes,0)+NVL(servisdisiesdeger,0)) as servisdisiuygunparca,
-                        ------ yan sanayi
-                        sum(NVL(servisiciyansanayi,0)) as servisiciyansanayi,
-                        sum(NVL(servisdisiyansanayi,0)) as servisdisiyansanayi,
-                        sum(NVL(servisiciyansanayi,0)+NVL(servisicimyok,0)) as servisiciyansanayitoplam,
-                        sum(NVL(servisdisiyansanayi,0)+NVL(servisdisimyok,0)) as servisdisiyansanayitoplam,
-                        -------- yağ
-                        sum(NVL(servisiciyag,0)) as servisiciyag,
-                        sum(NVL(servisiciyag2el,0)) as servisiciyag2el,
-                        sum(NVL(servisdisiyag,0)) as servisdisiyag,
-                        sum(NVL(servisiciyag,0)+NVL(servisdisiyag,0)) as yagtoplam,
-                     --   ,servisid
-                        sum(NVL(BAKIMPAKETI,0)) as BAKIMPAKETI  ,
-                        sum(nvl(uukko,0)) as uukko
-                   FROM (
-                        SELECT distinct servisid,
-                            SERVISSTOKTURID,
-                            case BELGETURU
-                                when 'İş Emri' then
-                                      case SERVISSTOKTURID
-                                        when 1 then
-                                             case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                         end
-                                end as servisicioem,
-                            case BELGETURU
-                                when 'İş Emri' then
-                                  case SERVISSTOKTURID
-                               --     when 7 then sum(TUTAR)
-                                    WHEN 7 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                     end
-                                end as servisicioes,
-                            case BELGETURU
-                                when 'İş Emri' then
-                                  case SERVISSTOKTURID
-                                    -- when 6 then sum(TUTAR)
-                                     WHEN 6 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                     end
-                                end as  servisiciyag,
-                            case BELGETURU
-                                when 'İş Emri' then
-                                  case SERVISSTOKTURID
-                                    --when 8 then sum(TUTAR)
-                                     WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                     end
-                                end as   servisiciesdeger,
-                            case BELGETURU
-                                when 'İş Emri' then
-                                  case SERVISSTOKTURID
-                                    -- when 9 then sum(TUTAR)
-                                     WHEN 9 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                     end
-                                end as servisiciyansanayi,
-                            case BELGETURU
-                                when 'İş Emri' then
-                                  case SERVISSTOKTURID
-                                    --when 11 then sum(TUTAR)
-                                     WHEN 11 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                     end
-                                end as servisicimyok,
-                            ---------------------
-                            case BELGETURU
-                                when 'Direk Satış' then
-                                  case SERVISSTOKTURID
-                                      when 1 then sum(TUTAR)
-                                     end
-                                end as servisdisioem,
-                            case BELGETURU
-                                when 'Direk Satış' then
-                                  case SERVISSTOKTURID
-                                    when 7 then sum(TUTAR)
-                                     end
-                                end as servisdisioes,
-                            case BELGETURU
-                                when 'Direk Satış' then
-                                  case SERVISSTOKTURID
-                                     when 6 then sum(TUTAR)
-                                     end
-                                end as  servisdisiyag,
-                            case BELGETURU
-                                when 'Direk Satış' then
-                                  case SERVISSTOKTURID
-                                     when 8 then sum(TUTAR)
-                                     end
-                                end as   servisdisiesdeger,
-                            case BELGETURU
-                                when 'Direk Satış' then
-                                  case SERVISSTOKTURID
-                                     when 9 then sum(TUTAR)
-                                     end
-                                end as   servisdisiyansanayi,
-                            case BELGETURU
-                                when 'Direk Satış' then
-                                  case SERVISSTOKTURID
-                                     when 11 then sum(TUTAR)
-                                     end
-                                end as servisdisimyok,
-
-                            ----------------------------------------------------------------------- servis içi uygun parca
-                            case AYRISTIRMATIPAD
-                                    when 'HARICI' then
-                                            case BELGETURU
-                                                when 'İş Emri' then
-                                                          case SERVISSTOKTURID
-                                                            --when 1 then sum(TUTAR)
-                                                            WHEN 1 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                            --when 7 then sum(TUTAR)
-                                                            WHEN 7 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                            -- when 8 then sum(TUTAR)
-                                                            WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-
-                                                        end
-                                            end
-                                    when 'DAHILI' then
-                                             case BELGETURU
-                                                when 'İş Emri' then
-                                                   case SERVISSTOKTURID
-                                                            --when 1 then sum(TUTAR)
-                                                            WHEN 1 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                            -- when 7 then sum(TUTAR)
-                                                            WHEN 7 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                            -- when 8 then sum(TUTAR)
-                                                            WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-
-                                                    end
-                                              end
-                                end as servisiciucretliuygunparca,
-                                 ----------------------------------------------------------------------- xxxxxxxxxxxxxxxxxxxx uukko
-                            case AYRISTIRMATIPAD
-                                    when 'HARICI' then
-                                            case BELGETURU
-                                                when 'İş Emri' then
-                                                          case SERVISSTOKTURID
-                                                            --when 1 then sum(TUTAR)
-                                                            WHEN 1 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                            --when 7 then sum(TUTAR)
-                                                            WHEN 7 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                            -- when 8 then sum(TUTAR)
-                                                            WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                            
-                                                        end
-                                            end
-                                    when 'DAHILI' then
-                                             case BELGETURU
-                                                when 'İş Emri' then
-                                                   case SERVISSTOKTURID
-                                                            --when 1 then sum(TUTAR)
-                                                            WHEN 1 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                            -- when 7 then sum(TUTAR)
-                                                            WHEN 7 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                            -- when 8 then sum(TUTAR)
-                                                            WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                            
-                                                    end
-                                              end
-                                end as uukko,
-
-                            case AYRISTIRMATIPAD
-                                    when 'HARICI' then
-                                            case BELGETURU
-                                                when 'İş Emri' then
-                                                          case SERVISSTOKTURID
-                                                            when 1 then 0
-                                                            when 7 then 0
-                                                            when 8 then 0
-                                                        end
-                                            end
-                                    when 'DAHILI' then
-                                             case BELGETURU
-                                                when 'İş Emri' then
-                                                   case SERVISSTOKTURID
-                                                            when 1 then 0
-                                                            when 7 then 0
-                                                            when 8 then 0
-                                                    end
-                                              end
-
-                                else  case BELGETURU
-                                                when 'İş Emri' then
-                                                          case SERVISSTOKTURID
-                                                           -- when 1 then sum(TUTAR)
-                                                            WHEN 1 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                            -- when 7 then sum(TUTAR)
-                                                        --    WHEN 7 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                           -- when 8 then sum(TUTAR)
-                                                        --    WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                        end
-                                            end
-                                end as servisicigaranti,
-                                     ----------------------------------------------------------------------- servis içi  garanti
-                            case AYRISTIRMATIPAD
-                                    when 'BAKIMPAKETI' then
-                                            case ISCILIK_PARCA
-                                                when 'Malzeme' then                                                     
-                                                                  case SERVISSTOKTURID                                  
-                                                                    WHEN 1 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN 0 else sum(TUTAR)  END
-                                                                 end
-
-                                              end
-                                end as BAKIMPAKETI,
-
-
-                             -------------------------------**************************
-                               case BELGETURU
-                                when 'İş Emri' then
-                                      case SERVISSTOKTURID
-                                        when 1 then
-                                             case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                         end
-
-                                end as servisicioem2el,
-                            case BELGETURU
-                                when 'İş Emri' then
-                                  case SERVISSTOKTURID
-                               --     when 7 then sum(TUTAR)
-                                    WHEN 7 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                     end
-                                end as servisicioes2el,
-                            case BELGETURU
-                                when 'İş Emri' then
-                                  case SERVISSTOKTURID
-                                    -- when 6 then sum(TUTAR)
-                                     WHEN 6 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                     end
-                                end as  servisiciyag2el,
-                            case BELGETURU
-                                when 'İş Emri' then
-                                  case SERVISSTOKTURID
-                                    --when 8 then sum(TUTAR)
-                                     WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                     end
-                                end as   servisiciesdeger2el,
-                            case BELGETURU
-                                when 'İş Emri' then
-                                  case SERVISSTOKTURID
-                                    -- when 9 then sum(TUTAR)
-                                     WHEN 9 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                     end
-                                end as   servisiciyansanayi2el,
-                            case BELGETURU
-                                when 'İş Emri' then
-                                  case SERVISSTOKTURID
-                                    --when 11 then sum(TUTAR)
-                                     WHEN 11 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                     end
-                                end as servisicimyok2el   ,
-                                  case AYRISTIRMATIPAD
-                                    when 'HARICI' then
-                                            case BELGETURU
-                                                when 'İş Emri' then
-                                                          case SERVISSTOKTURID
-                                                            --when 1 then sum(TUTAR)
-                                                            WHEN 1 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                                            --when 7 then sum(TUTAR)
-                                                            WHEN 7 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                                            -- when 8 then sum(TUTAR)
-                                                            WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                                        end
-                                            end
-                                    when 'DAHILI' then
-                                             case BELGETURU
-                                                when 'İş Emri' then
-                                                   case SERVISSTOKTURID
-                                                            --when 1 then sum(TUTAR)
-                                                            WHEN 1 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                                            -- when 7 then sum(TUTAR)
-                                                            WHEN 7 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                                            -- when 8 then sum(TUTAR)
-                                                            WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                                    end
-                                              end
-                                end as servisiciucretliuygunparca2el,
-                                  case AYRISTIRMATIPAD
-                                    when 'HARICI' then
-                                            case BELGETURU
-                                                when 'İş Emri' then
-                                                          case SERVISSTOKTURID
-                                                            when 1 then 0
-                                                            when 7 then 0
-                                                            when 8 then 0
-                                                        end
-                                            end
-                                    when 'DAHILI' then
-                                             case BELGETURU
-                                                when 'İş Emri' then
-                                                   case SERVISSTOKTURID
-                                                            when 1 then 0
-                                                            when 7 then 0
-                                                            when 8 then 0
-                                                    end
-                                              end
-
-                                else  case BELGETURU
-                                                when 'İş Emri' then
-                                                          case SERVISSTOKTURID
-                                                           -- when 1 then sum(TUTAR)
-                                                            WHEN 1 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                                            -- when 7 then sum(TUTAR)
-                                                            WHEN 7 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                                           -- when 8 then sum(TUTAR)
-                                                            WHEN 8 THEN  case ISEMIRTIPI  WHEN '2. EL ONARIM' THEN sum(TUTAR) else 0  END
-                                                        end
-                                            end
-                                end as servisicigaranti2el
-
-                          from (
-                          /*   select distinct * from sason.rptable_yedekparcadetay t */
-                                SELECT 
-                                  t.AYRISTIRMATIPAD,
-                                  t.BELGENO,
-                                  t.BELGETURU,
-                                  t.BRUTTUTAR,
-                                  t.HASHSERVISID,
-                                  t.INDIRIMORAN,
-                                  t.ISCILIK_PARCA,
-                                  t.ISEMIRTIPI,
-                                  t.KUR kur,
-                                  t.MALZEMEAD,
-                                  t.MALZEMEKOD,
-                                  t.MIKTAR,
-                                  t.MUSTERIAD,
-                                  t.ORJINALKOD,
-                                  t.ORTALAMAMALIYET,
-                                  t.SASENO,
-                                  t.SERVISAD,
-                                  t.SERVISID,
-                                  t.SERVISSTOKTURAD,
-                                  t.TARIH,
-                                  t.TRAFIGECIKISTARIHI,
-                                  t.TUTAR,
-                                  t.URETICI,
-                                  t.VERGINO,
-                                  t.SERVISSTOKTURID
-                             FROM sason.rp_yedekparcadetay t
-                             WHERE
-                                t.servisid {servisIdQuery} and                                 
-                                t.tarih BETWEEN '{dateQuery}' 
-
-                    ) rpt
-                    group by  SERVISSTOKTURID,BELGETURU,AYRISTIRMATIPAD,ISEMIRTIPI ,ISCILIK_PARCA ,servisid
-                ) ert
-            group by servisid 
-            ) dsf
-
-            inner join (
+             group by   servisid  
+                 ) dfdfdf
+                    inner join (
                select    HSERVISID,
                         sum(nvl(stok_oes,0)) as stok_oes,
                         sum(nvl(stok_oeM,0)) as stok_oeM,
                         sum(nvl(stok_essanayi,0)) as stok_essanayi,
                         sum(nvl(stok_my,0)) as stok_my,
-                        
+
                            sum(nvl(stok_yag,0)) as stok_yag,
-                        sum(nvl(stok_yansanayi,0)) as stok_yansanayi, 
+                        sum(nvl(stok_yansanayi,0)) as stok_yansanayi,
                         sum(nvl(stok_yag,0) + nvl(stok_oes,0) +nvl(stok_oeM,0) + nvl(stok_essanayi,0) + nvl(stok_my,0) +nvl(stok_yansanayi,0)) as stok_toplam
                       FROM (
-                     
-                      
-                      SELECT   asd.HSERVISID, 
-                                
-                                case asd.SERVISSTOKTURID 
-                                        when 1 then  sum(nvl(asd.ORTALAMAMALIYET,0) * asd.STOKMIKTAR)  
+
+
+                      SELECT   asd.HSERVISID,
+
+                                case asd.SERVISSTOKTURID
+                                        when 1 then  sum(nvl(asd.ORTALAMAMALIYET,0) * asd.STOKMIKTAR)
                                      end   as stok_oem,
-                                case asd.SERVISSTOKTURID 
-                                        when 6 then  sum(nvl(asd.ORTALAMAMALIYET,0)*asd.STOKMIKTAR)  
+                                case asd.SERVISSTOKTURID
+                                        when 6 then  sum(nvl(asd.ORTALAMAMALIYET,0)*asd.STOKMIKTAR)
                                      end   as stok_yag,
-                                case asd.SERVISSTOKTURID  
-                                        when 7 then  sum(nvl(asd.ORTALAMAMALIYET,0) * asd.STOKMIKTAR)                               
-                                     end   as stok_oes,  
-                                case asd.SERVISSTOKTURID  
-                                        when 8 then  sum(nvl(asd.ORTALAMAMALIYET,0)*asd.STOKMIKTAR)  
-                                     end   as stok_essanayi, 
-                                case asd.SERVISSTOKTURID  
-                                        when 9 then  sum(nvl(asd.ORTALAMAMALIYET,0)*asd.STOKMIKTAR)  
-                                     end   as stok_yansanayi,              
-                                case asd.SERVISSTOKTURID  
-                                        when 11 then sum(nvl(asd.ORTALAMAMALIYET,0) *asd.STOKMIKTAR) 
+                                case asd.SERVISSTOKTURID
+                                        when 7 then  sum(nvl(asd.ORTALAMAMALIYET,0) * asd.STOKMIKTAR)                   
+                                     end   as stok_oes,
+                                case asd.SERVISSTOKTURID
+                                        when 8 then  sum(nvl(asd.ORTALAMAMALIYET,0)*asd.STOKMIKTAR)
+                                     end   as stok_essanayi,
+                                case asd.SERVISSTOKTURID
+                                        when 9 then  sum(nvl(asd.ORTALAMAMALIYET,0)*asd.STOKMIKTAR)
+                                     end   as stok_yansanayi,
+                                case asd.SERVISSTOKTURID
+                                        when 11 then sum(nvl(asd.ORTALAMAMALIYET,0) *asd.STOKMIKTAR)
                                      end   as stok_my
-                              FROM( 
-                            
-                SELECT 
-                       a.kod tur,p.fiyat,
+                              FROM(
+
+                SELECT
+                       a.kod tur,
+                       p.fiyat,
                        p.ID,
                        p.HSERVISID,
-                       p.servisstokturid, 
+                       p.servisstokturid,
                        P.INDFIYAT EUROINDFIYAT,
                        P.FIYAT EUROLISTEFIYAT,
                        P.ORTALAMAMALIYET ORTALAMAMALIYET,
                        p.STOKMIKTAR
-                 
+
                   FROM(SELECT servisstokturid,
                                a.id,
                                a.servisid hservisid,
                                a.kod,
-                               C.STOKMIKTAR,
-                               r.ad BIRIMAD,
+                               C.STOKMIKTAR, 
                                kurlar_pkg.servisstokfiyatgetir(a.id, 2, TRUNC(SYSDATE))
                                   fiyat,
                                KURLAR_PKG.STOKFIYATINDGETIR(a.id,
@@ -566,47 +205,31 @@ namespace SasonBase.Reports.Sason.Servis
                                                              2,
                                                              1,
                                                              0)
-                                  indfiyat,
-                               kurlar_pkg.ORTALAMAMALIYET(a.id) ortalamamaliyet,
-                               d.ad SERVISDEPOAD,
-                               p.ad SERVISDEPOrafAD,
-                               a.ad
+                                  INDFIYAT,
+                               kurlar_pkg.ORTALAMAMALIYET(a.id) ORTALAMAMALIYET 
                           FROM(SELECT DISTINCT servisstokid
-                                  FROM sason.servisstokhareketdetaylar) h,
+                                  FROM sason.servisstokhareketdetaylar
+                                            ) h,
                                sason.servisstoklar a,
-                               sason.vt_genelstok c,
-                               sason.vw_birimler r,
-                               sason.servisdepolar d,
-                               sason.servisdeporaflar p
-                         WHERE     h.servisstokid = a.id
+                               sason.vt_genelstok c 
+                         WHERE  h.servisstokid = a.id
                                AND A.ID = C.SERVISSTOKID
                                AND C.STOKMIKTAR <> 0
                                AND a.servisid = c.servisid
-                               AND r.dilkod = 'Turkish'
-                               AND A.SERVISDEPOID = d.id(+)
-                               AND a.servisdeporafid = p.id(+)
-                               AND r.id = a.birimid) p,
+                       
+                               AND a.SERVISID  {servisIdQuery}
+                            ) p,
                        servisstokturler a
-                 WHERE p.servisstokturid = a.id AND p.HSERVISID {servisIdQuery} 
-                 ) asd   
-                 group by  asd.SERVISSTOKTURID ,asd.HSERVISID 
-              ) asasd 
-              group  by asasd.HSERVISID 
-            
-            
-            ) stok on  servisid = STOK.HSERVISID  
+                 WHERE p.servisstokturid = a.id
+                 ) asd
+                 group by  asd.SERVISSTOKTURID ,asd.HSERVISID
+              ) asasd
+              group  by asasd.HSERVISID
 
-  
 
-            group by   stok_oes,  stok_oeM, stok_essanayi, stok_my, stok_yansanayi, stok_toplam,
-                servisicioem,  servisicioes,  servisiciesdeger, servisicimyok,  servisicitoplam,  servisiciuygunparca,
-                servisiciucretliuygunparca, servisicigaranti,  servisicioem2el,   servisicioes2el,
-                servisiciesdeger2el,  servisiciyansanayi2el,  servisicimyok2el,
-                servisicitoplam2el,  servisiciuygunparca2el, servisiciucretliuygunparca2el,
-                servisicigaranti2el,  servisdisioem, servisdisioes,  servisdisiesdeger,
-                servisdisimyok , servisdisitoplam, servisdisiystoplam, servisdisiuygunparca,
-                servisiciyansanayi, servisdisiyansanayi, servisiciyansanayitoplam, servisdisiyansanayitoplam,
-                servisiciyag, servisiciyag2el, servisdisiyag, yagtoplam  ,BAKIMPAKETI, uukko, servisid 
+            ) 
+            stok on  servisid = STOK.HSERVISID
+            inner join vt_servisler vts on vts.servisid= dfdfdf.servisid and vts.dilkod = 'Turkish'           
 
  
  
