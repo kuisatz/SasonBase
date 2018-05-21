@@ -240,7 +240,7 @@ namespace SasonBase.Reports.Sason.Merkez
                     ARAC_TURU,
                     arizakod, 
                     count(arizakod) as adet,
-                    (SELECT vtsx.partnercode FROM vt_servisler vtsx where vtsx.servisid = SERVISID and vtsx.dilkod = 'Turkish') as partnercode
+                    (SELECT vtsx.partnercode FROM vt_servisler vtsx where vtsx.servisid = SERVISID and vtsx.dilkod = 'Turkish'  and rownum <2) as partnercode
                 FROM (
                     SELECT
                         E_SSI31_FORM.SERVISID, 
