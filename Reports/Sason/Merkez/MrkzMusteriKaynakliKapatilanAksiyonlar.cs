@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 namespace SasonBase.Reports.Sason.Merkez
 {
     /// <summary>
-    /// Merkez Açık Aksiyon İşlem Kaydı
+    /// Merkez Müşteri Kaynaklı Kapatılan Aksiyonlar Raporu
     /// </summary>
-    public class MrkzAcikAksiyonIslemKaydi : Base.SasonMerkezReporter
+    public class MrkzMusteriKaynakliKapatilanAksiyonlar : Base.SasonMerkezReporter
     {
-        public MrkzAcikAksiyonIslemKaydi()
+        public MrkzMusteriKaynakliKapatilanAksiyonlar()
         {
-            Text = "Açık Aksiyon İşlem Kaydı Raporu";
-            SubjectCode = "MrkzAcikAksiyonIslemKaydi";
+            Text = "Müşteri Kaynaklı Kapatılan Aksiyonlar Raporu";
+            SubjectCode = "MrkzMusteriKaynakliKapatilanAksiyonlar";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
@@ -24,7 +24,7 @@ namespace SasonBase.Reports.Sason.Merkez
             Disabled = false;
         }
 
-        public MrkzAcikAksiyonIslemKaydi(decimal servisId, DateTime startDate, DateTime finishDate) : this()
+        public MrkzMusteriKaynakliKapatilanAksiyonlar(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
             base.ServisId = servisId;
             this.StartDate = startDate;
@@ -94,43 +94,31 @@ namespace SasonBase.Reports.Sason.Merkez
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"   
 
-                   SELECT srv.partnercode AS servis_kodu, 
+                   SELECT srv.partnercode AS servis_kodu,
                           aks.isortakad AS servis_adi,
-                          aks.servisvarlikad AS musteri_adi, 
+                          aks.servisvarlikad AS musteri_adi,
+                          aks.aksiyonad, 
                           aks.saseno,
-                          aks.aksiyonad,
                           si.isemirno,
                           si.kayittarih,
-                          si.tamamlanmatarih,
-                          ayrtip.kod,
-                          ayr.claimno AS esagarantino,
-                          ayr.servisgarantino,
-                          ayr.garantistatus,
-                          ayr.claimstatus,
-                          ayr.pdfonaygeneltoplam,
-                          ayr.tarih AS ayristirma_tarihi,
-                          si.servisid
+                          si.tamamlanmatarih
 
                      FROM vt_aksiyonisemirler aks,
                           servisisemirler si,
-                          ayristirmalar ayr,
                           servisisemirislemler isl,
-                          vt_servisler srv,
-                          ayristirmatipler ayrtip
+                          vt_servisler srv
 
                     WHERE aks.dilkod='Turkish'
                           AND si.id=aks.servisisemirid
-                          AND ayr.isemirno(+)=aks.isemirno
                           AND isl.servisisemirid=si.id
-                          AND si.tamamlanmatarih IS NOT NULL
-                          AND isl.isemiruygulamamanedenid IS NULL
-                          AND si.tutar>0
+                          AND isl.isemiruygulamamanedenid=4
+                          AND si.teknikolaraktamamla=1
                           AND srv.servisid=si.servisid
                           AND srv.dilkod='Turkish'
-                          AND ayrtip.id(+)=ayr.ayristirmatipid
                           AND si.servisid {servisIdQuery}
                           AND si.tamamlanmatarih BETWEEN '{dateQuery}' 
-                    order by srv.partnercode,si.kayittarih DESC
+
+                    ORDER BY srv.partnercode,si.kayittarih DESC
                    
             ")
             .GetDataTable()
