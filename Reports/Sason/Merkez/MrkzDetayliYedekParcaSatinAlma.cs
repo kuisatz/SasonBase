@@ -702,8 +702,8 @@ namespace SasonBase.Reports.Sason.Merkez
 
 
                 ")
-                .Parameter("startDate", StartDate.startOfDay())
-                .Parameter("finishDate", FinishDate.endOfDay())
+             //   .Parameter("startDate", StartDate.startOfDay())
+             //   .Parameter("finishDate", FinishDate.endOfDay())
                 .GetDataTable(mr)
                 .ToModels();
               

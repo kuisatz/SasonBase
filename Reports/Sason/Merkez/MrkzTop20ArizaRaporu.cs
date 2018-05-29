@@ -287,7 +287,7 @@ namespace SasonBase.Reports.Sason.Merkez
                     arizakod,
                     SERVISID
                     ORDER BY adet DESC                     
-                       asd
+                   
  
 
                 " )

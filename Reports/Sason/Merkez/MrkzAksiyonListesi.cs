@@ -102,11 +102,11 @@ namespace SasonBase.Reports.Sason.Merkez
             decimal selectedAksiyonTuruId = AksiyonTuruIds.first().toString("0").cto<decimal>();
             string aksiyonTuruIdQuery = $" = {selectedAksiyonTuruId}";
             if (AksiyonTuruIds.isNotEmpty())
-                aksiyonTuruIdQuery = $" in ({AksiyonTuruIds.joinNumeric(",")}) ";
+                aksiyonTuruIdQuery = $"  AND a.AKSIYONTIPID   in ({AksiyonTuruIds.joinNumeric(",")}) ";
             else
             {
-                selectedAksiyonTuruId = 2;
-                aksiyonTuruIdQuery = $" in( {selectedAksiyonTuruId} )";
+              //  selectedAksiyonTuruId = 2;
+             //   aksiyonTuruIdQuery = $"  AND a.AKSIYONTIPID  in( {selectedAksiyonTuruId} )";
             }
 
 
@@ -177,7 +177,7 @@ namespace SasonBase.Reports.Sason.Merkez
                                         AND A.REFAKSIYONID = D.EXTRECALLNUM(+)
                                         AND b.dilkod = 'Turkish'
                                         AND a.bastarih between '{dateQuery}'
-                                        AND a.AKSIYONTIPID  {aksiyonTuruIdQuery} 
+                                         {aksiyonTuruIdQuery} 
                                   /*      AND a.id in (
                                             SELECT distinct dx.aksiyonid  FROM SERVISISEMIRISLEMLER dx WHERE  dx.SERVISISEMIRID in ( SELECT distinct  ex.id FROM SERVISISEMIRLER ex WHERE ex.servisid  {servisIdQuery}  ))
                                           )
@@ -188,7 +188,7 @@ namespace SasonBase.Reports.Sason.Merkez
  
                     ORDER BY ax.bastarih  , ax.bittarih 
                 
-
+ 
                 ")
               .GetDataTable(mr)
                .ToModels();
