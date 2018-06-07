@@ -92,48 +92,63 @@ namespace SasonBase.Reports.Sason.Merkez
             dateQuery = "" + StartDate.ToString("dd/MM/yyyy") + "' AND '" + FinishDate.ToString("dd/MM/yyyy") + "";
 
 
-            List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"    
-   
-                        select
-                            (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = data1.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
-                            (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = data1.servisid) as servisad, 
-                            data1.* ,
-                        (
-                           select count(z.servisid) from  servisisemirler  z where              
-                                    to_date(z.kayittarih,'dd/mm/yyyy') = to_date(data1.tar,'dd/mm/yyyy') AND  
-                                    z.servisid = data1.servisid -- x.servisid
-                             group by to_date(z.kayittarih,'dd/mm/yyyy')) ogun_acilan_emirler,
-                             (
-                           select count(z.servisid) from  servisisemirler  z where
-                                    to_date(z.kayittarih,'dd/mm/yyyy') = to_date(z.tamamlanmatarih,'dd/mm/yyyy') AND  
-                                    to_date(z.kayittarih,'dd/mm/yyyy') = to_date(data1.tar,'dd/mm/yyyy') AND  
-                                    z.servisid = data1.servisid -- x.servisid
-                             group by to_date(z.kayittarih,'dd/mm/yyyy')) ogun_kapatilan_emirler, 
-                        (
-                           select count(z.servisid) from  servisisemirler  z where
-                                    to_date(z.kayittarih,'dd/mm/yyyy') <> to_date(z.tamamlanmatarih,'dd/mm/yyyy') AND  
-                                    to_date(z.kayittarih,'dd/mm/yyyy') = to_date(data1.tar,'dd/mm/yyyy') AND  
-                                    z.servisid = data1.servisid -- x.servisid
-                             group by to_date(z.kayittarih,'dd/mm/yyyy')) ogun_kapatilmayan_emirler,
-                        (
-                           select count(z.servisid) from  servisisemirler  z where
-                                  --  to_date(z.kayittarih,'dd/mm/yyyy') <> to_date(z.tamamlanmatarih,'dd/mm/yyyy') AND  
-                                    to_date(z.kayittarih,'dd/mm/yyyy') < to_date(data1.tar,'dd/mm/yyyy') AND  
-                                    z.servisid = data1.servisid -- x.servisid
-                                    and z.teknikolaraktamamla = 0 and z.tamamlanmatarih is null   
-                             ) ogkadar_kapatilmayan_emrler  
-                         from ( 
-                           select x.servisid , count(x.servisid ) ogunden_kalan_isemirleri , to_date(x.kayittarih,'dd/mm/yyyy') tar   
-                           from servisisemirler x 
-                           where x.teknikolaraktamamla = 0 and x.tamamlanmatarih is null   
-                                and x.servisid  {servisIdQuery}
-                                and to_date(x.kayittarih,'dd/mm/yyyy') between '{dateQuery}'
-                           group by  x.servisid, to_date(x.kayittarih,'dd/mm/yyyy')   
-     
-                         ) data1                            
-   
-                             order by  servisid ,tar desc   
- 
+            List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"   
+
+                    SELECT
+                        (SELECT vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = vv.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
+                        (SELECT vtsxy.ISORTAKAD FROM vt_servisler vtsxy where  vtsxy.dilkod = 'Turkish' and vtsxy.servisid = vv.servisid) as servisad, 
+                        vv.servisid ,  
+                        tarihicin.tar ttarihh, 
+                        nvl( (
+                            SELECT count(z.servisid) from  servisisemirler  z where                                
+                                to_date(z.kayittarih,'dd/mm/yyyy') < to_date(tarihicin.tar,'dd/mm/yyyy') AND  
+                                z.servisid = vv.servisid 
+                                and z.teknikolaraktamamla = 0 and z.tamamlanmatarih is null   
+                            ),0) ogkadar_kapatilmayan_emrler, 
+                        nvl((
+                            SELECT count(z.servisid) from  servisisemirler  z where              
+                                    to_date(z.kayittarih,'dd/mm/yyyy') = to_date(tarihicin.tar,'dd/mm/yyyy') AND  
+                                    z.servisid = vv.servisid  
+                                group by to_date(z.kayittarih,'dd/mm/yyyy')),0) ogun_acilan_emirler,
+                        nvl((
+                            SELECT count(z.servisid) from  servisisemirler  z where                              
+                                    to_date(z.tamamlanmatarih,'dd/mm/yyyy') <> to_date(tarihicin.tar,'dd/mm/yyyy')  AND  
+                                    to_date(z.kayittarih,'dd/mm/yyyy') = to_date(tarihicin.tar,'dd/mm/yyyy') AND
+                                    z.servisid = vv.servisid                                 
+                             group by to_date(z.kayittarih,'dd/mm/yyyy')),0) ogun_kapatilmayan_emirler ,                               
+                       
+                        nvl((
+                            SELECT count(z.servisid) from  servisisemirler  z where
+                                    to_date(z.tamamlanmatarih,'dd/mm/yyyy') = to_date(tarihicin.tar,'dd/mm/yyyy')  AND  
+                                    to_date(z.kayittarih,'dd/mm/yyyy') = to_date(tarihicin.tar,'dd/mm/yyyy') AND  
+                                    z.servisid = vv.servisid
+                         ),0) ogun_acilankapanan_emirler,
+                        nvl((
+                            SELECT count(z.servisid) from  servisisemirler  z where
+                                    to_date(z.tamamlanmatarih,'dd/mm/yyyy') = to_date(tarihicin.tar,'dd/mm/yyyy')  AND                                    
+                                    z.servisid = vv.servisid
+                         ),0) ogun_kapatilan_emir ,
+                        nvl((
+                            SELECT count(z.servisid) from  servisisemirler  z where
+                                    to_date(z.tamamlanmatarih,'dd/mm/yyyy') <= to_date(tarihicin.tar,'dd/mm/yyyy')  AND                                    
+                                    z.servisid = vv.servisid
+                         ),0) ogune_kadarkapatilan_emir 
+                              
+                    from vt_servisler vv  
+                    left join (
+                        SELECT distinct  to_date(x.kayittarih,'dd/mm/yyyy') tar   
+                        from servisisemirler x WHERE
+                            x.kayittarih between '{dateQuery}'
+                        ) tarihicin on 1 = 1
+                   
+                  where 
+                        vv.dilkod = 'Turkish' AND  
+                        vv.servisid not in (1,134,136) AND 
+                        vv.durumid = 1 
+                        and vv.servisid  {servisIdQuery} 
+                      order by  vv.servisid  , tarihicin.tar desc
+
+  
             
             ")
             .GetDataTable()
