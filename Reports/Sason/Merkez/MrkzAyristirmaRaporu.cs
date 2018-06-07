@@ -185,8 +185,141 @@ namespace SasonBase.Reports.Sason.Merkez
                         ayristirmatipler tr,
                    /*  servisisemirler i, */
                         faturalar f,
-                        servisstokturler st,
-                        sason.rp_isemirdetay t,
+                        servisstokturler st, 
+ --     sason.rp_isemirdetay t,
+                        (
+                      SELECT z.id servisisemirid,
+          I.ID servisisemirislemid,
+          m.id referansid,
+          m.miktar,--
+          'MALZEME' TUR,
+          m.tutar bruttutar, --
+          m.indirimlitutar tutar,-- 
+          s.kod,--
+          s.ad,--
+          z.servisid,
+          Z.TAMAMLANMATARIH, 
+          1 turid, --
+           CASE WHEN o.orjinalgkod IS NULL THEN s.kod ELSE o.orjinalgkod END
+             orjinalkod,
+          isemirno --
+     FROM servisisemirislemler i,
+          servisismislemmalzemeler m, 
+            (SELECT m1.id malzemeid,
+                  m1.kod,
+                  m1.gkod,
+                  m2.kod orjinalkod,
+                  m2.gkod orjinalgkod,
+                  m1.orjinalmalzemeid
+             FROM malzemeler m1, malzemeler m2
+            WHERE m1.orjinalmalzemeid = M2.ID) o,
+          servisstoklar s, 
+          servisisemirler z 
+    WHERE     i.id = M.SERVISISEMIRISLEMID
+          AND s.id = m.servisstokid 
+          AND z.id = i.servisisemirid 
+          AND (kendigetirdi <> 1 OR kendigetirdi IS NULL)
+          AND (disaridayaptirdi <> 1 OR disaridayaptirdi IS NULL)
+          AND s.malzemeid = o.malzemeid(+)
+          AND (bakimislemynedenid IS NULL)
+          AND (   I.ISEMIRUYGULAMAMANEDENID IS NULL
+               OR I.ISEMIRUYGULAMAMANEDENID = 8)
+          AND m.durumid = 1 
+          AND kullanildi = 1
+          and z.servisid   {servisIdQuery} 
+          and z.KAYITTARIH between '{dateQuery}' 
+      
+   UNION ALL
+   SELECT z.id servisisemirid,
+          i.id servisisemirislemid,
+          s.id referansid,
+          S.MIKTAR,
+          'ISCILIK' TUR,
+          s.tutar bruttutar,
+          s.indirimlitutar tutar, 
+          NVL (NVL (c.kod, t.kod), s.aciklama) kod,
+          NVL (NVL (c.ad, t.ad), s.aciklama) ad,
+          z.servisid,
+          Z.TAMAMLANMATARIH,  
+          2 turid,  
+          NULL orjinalkod,
+          isemirno
+     FROM servisisemirislemler i,
+          servisismislemiscilikler s,
+          vw_servisiscilikler t,
+          mt_iscilikler c,
+          servisisemirler z
+    WHERE     i.id = S.SERVISISEMIRISLEMID
+          AND c.iscilikid(+) = S.ISCILIKID
+          AND z.id = i.servisisemirid
+          AND (c.dilkod = 'Turkish' OR c.dilkod IS NULL)
+          AND (disaridayaptirdi <> 1 OR disaridayaptirdi IS NULL)
+          AND (bakimislemynedenid IS NULL)
+          AND s.durumid = 1
+          AND T.DILKOD(+) = 'Turkish'
+          AND S.SERVISISCILIKID = T.ID(+)
+          AND (   I.ISEMIRUYGULAMAMANEDENID IS NULL
+               OR I.ISEMIRUYGULAMAMANEDENID = 8)
+          and z.servisid  {servisIdQuery} 
+          and z.KAYITTARIH between '{dateQuery}' 
+   UNION ALL
+   SELECT z.id servisisemirid,
+          i.id servisisemirislemid,
+          k.id referansid,
+          K.MIKTAR,
+          'DKALEM' TUR,
+          k.tutar bruttutar,
+          k.indirimlitutar tutar, 
+          REPLACE (LOWER (sason.fn_rmtr (d.ad)), ' ') kod,
+          ad,
+          z.servisid,
+          Z.TAMAMLANMATARIH, 
+          3 turid, 
+          NULL orjinalkod,
+          isemirno
+     FROM servisisemirislemler i,
+          servisismislemdkalemler k,
+          vw_digerkalemler d,
+          servisisemirler z
+    WHERE     i.id = k.SERVISISEMIRISLEMID
+          AND z.id = i.servisisemirid
+          AND d.id = K.DIGERKALEMID
+          AND dilkod = 'Turkish'
+          AND k.durumid = 1
+          AND (   I.ISEMIRUYGULAMAMANEDENID IS NULL
+               OR I.ISEMIRUYGULAMAMANEDENID = 8)
+          and z.servisid   {servisIdQuery} 
+          and z.KAYITTARIH between '{dateQuery}' 
+   UNION ALL
+   SELECT z.id servisisemirid,
+          i.id servisisemirislemid,
+          k.id referansid,
+          1 miktar,
+          'DHIZMET' TUR,
+          k.tutar bruttutar,
+          k.indirimlitutar tutar, 
+          REPLACE (LOWER (sason.fn_rmtr (d.aciklama)), ' ') kod,
+          d.aciklama ad,
+          z.servisid,
+          Z.TAMAMLANMATARIH, 
+           4 turid, 
+           NULL orjinalkod,
+          isemirno
+     FROM servisisemirislemler i,
+          servisismislemdhizmetler k,
+          servisdishizmetalimlar d,
+          servisisemirler z
+    WHERE     i.id = k.SERVISISEMIRISLEMID
+          AND z.id = i.servisisemirid
+          AND d.id = K.SERVISDISHIZMETALIMID
+          AND k.durumid = 1
+          AND (   I.ISEMIRUYGULAMAMANEDENID IS NULL
+               OR I.ISEMIRUYGULAMAMANEDENID = 8)  
+          and z.servisid   {servisIdQuery} 
+          and z.KAYITTARIH between '{dateQuery}' 
+                        ) t,
+                      
+                      
                         servisstoklar ss,
                         servisvarliklar o1,
                         servisvarliklar o2,
