@@ -10,9 +10,9 @@ namespace SasonBase.Reports.Sason.Merkez
     /// <summary>
     /// Merkez Yedek Parça Faaliyet Raporu
     /// </summary>
-    public class MrkzDetayliYedekParca : Base.SasonMerkezReporter
+    public class MrkzDetayliYedekParca2 : Base.SasonMerkezReporter
     {
-        public MrkzDetayliYedekParca()
+        public MrkzDetayliYedekParca2()
         {
             Text = "Detaylı Yedek Parça Raporu";
             SubjectCode = this.getType().Name;
@@ -20,7 +20,7 @@ namespace SasonBase.Reports.Sason.Merkez
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
-            Disabled = false;
+            Disabled = true;
         }
 
         public DateTime StartDate
@@ -129,8 +129,6 @@ namespace SasonBase.Reports.Sason.Merkez
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
 
 
-
-
                 SELECT
                         CASE
                              WHEN a.servisid IS NULL THEN a.siparisservisid
@@ -174,8 +172,6 @@ namespace SasonBase.Reports.Sason.Merkez
                                   WHERE servisid = a.servisid AND dilkod = 'Turkish')
                           END
                              musteriad,
-                          fxxx.ISLEMTARIHI faturatarihi,
-                          '' claimstatus,
                           f.KOD malzemekod,
                           CASE
                              WHEN (SELECT orjinalmalzemeid
@@ -212,14 +208,6 @@ namespace SasonBase.Reports.Sason.Merkez
                                   ELSE  KURLAR_PKG.SERVISSTOKFIYATGETIR (f.servisstokid, a.parabirimid, a.tarih) END bruttutar,
                           B.BIRIMFIYAT TUTAR,
                           C.SASENO,
-                            (
-                           select  
-                                LISTAGG(SASENO,', ') WITHIN GROUP (ORDER BY SERVISSIPARISID , MALZEMEID ASC)  saseno
-                            from servissiparissaseler 
-                            where SERVISSIPARISID = A.ID  AND  
-                            MALZEMEID = f.malzemeid
-                          ) OZELSATISSASENOLAR,
-                          
                           '' TRAFIGECIKISTARIHI,
                           KURLAR_PKG.ORTALAMAMALIYET (f.servisstokid) ortalamamaliyet,
                           '' ayristirmatipad,
@@ -328,28 +316,7 @@ namespace SasonBase.Reports.Sason.Merkez
                              FROM varliklar s
                              WHERE s.vergino IS NULL
 
-                        ) h,
-                        
-                            --  faturalar fxx,
-                            (SELECT
-                             fx.id,
-                             fx.VNO,
-                             fx.faturano,
-                             fx.ISLEMTARIHI,
-                             fx.isemirno
-                            FROM faturalar fx
-                            WHERE  FX.ISLEMTARIHI  between '{dateQuery}'
-                            and fx.faturaturid=3 and fx.servisid  {servisIdQuery}   and fx.durumid=1
-                            --and fx.isemirno in (SELECT distinct
-                              --      ixx.isemirno
-                                --  FROM servisisemirler ixx
-                                 -- WHERE  /*ix.KAYITTARIH  between '{dateQuery}'
-                                  -- AND*/ ixx.servisid   {servisIdQuery}  
-                                 --   and fx.durumid=1
-                                --   and fx.faturaturid=3  
-                                   --and fx.id =  b.faturaid 
-                              -- )
-                             ) fxxx
+                        ) h
 
                     WHERE     A.ID = b.servissiparisid
                           AND B.ISEMRINO = C.ISEMIRNO(+)
@@ -357,32 +324,30 @@ namespace SasonBase.Reports.Sason.Merkez
                           AND f.servisstokid(+) = b.servisstokid
                           AND a.servisid = g.servisid(+)
                           AND A.SERVISVARLIKID = h.servisvarlikid(+)
-                          and a.siparisservisid    {servisIdQuery}  
+                          and a.siparisservisid   {servisIdQuery} 
                           and b.servisekmaliyetid IS NULL
-                       --   and a.tarih between '{dateQuery}'  
-                                
-                          AND fxxx.id = b.faturaid                  
+                          and a.tarih between '{dateQuery}'
                           and b.faturaid in (SELECT
                              fx.id
                             FROM faturalar fx
                             WHERE  FX.ISLEMTARIHI  between '{dateQuery}'
-                            and fx.faturaturid=3 and fx.servisid  {servisIdQuery}   and fx.durumid=1
+                            and fx.faturaturid=3 and fx.servisid  {servisIdQuery}  and fx.durumid=1
                             )
-                            and b.servisstokid in
-
-                      ( SELECT sx.id
+                            and b.servisstokid in 
+                            
+                      ( SELECT sx.id  
                          FROM servisstoklar sx
-                            where
-                                sx.servisid {servisIdQuery}    and
-                                sx.kod in
-                                (select distinct stokkod from faturadetaylar
-                                where faturaid in (select id from faturalar
-                                                where
-                                                    faturaturid=3 and
-                                                    islemtarihi between '{dateQuery}' and
-                                                    servisid  {servisIdQuery}   and
+                            where 
+                                sx.servisid {servisIdQuery}   and
+                                sx.kod in 
+                                (select distinct stokkod from faturadetaylar 
+                                where faturaid in (select id from faturalar 
+                                                where 
+                                                    faturaturid=3 and 
+                                                    islemtarihi between '{dateQuery}' and 
+                                                    servisid  {servisIdQuery}  and 
                                                     durumid=1))
-                        )
+)
                        UNION ALL
 
                      SELECT r.servisid,
@@ -403,8 +368,6 @@ namespace SasonBase.Reports.Sason.Merkez
                               r.ISEMIRTIPID,
                               r.vergino,
                               r.ad musteriad,
-                              r.faturatarihi,
-                              r.claimstatus,
                               r.malzemekod,
                               CASE WHEN o.orjinalgkod IS NULL THEN '' ELSE o.orjinalgkod END orjinalkod,
                               --r.orjinalkod,
@@ -416,15 +379,13 @@ namespace SasonBase.Reports.Sason.Merkez
                               r.bruttutar,
                               r.tutar,
                               r.saseno,
-                              '' OZELSATISSASENOLAR,
                               to_char(r.FIRSTREGDATE,'dd/mm/yyyy') as TRAFIGECIKISTARIHI,
                               r.ortalamamaliyet,
                               r.ayristirmatipad,
                               r.indirimoran,
                               r.kur,
-                              r.servisstokid ,
                               servisstokturid,
-                            
+                              r.SERVISSTOKTURID ,
                               KURLAR_PKG.STOKFIYATINDGETIR (r.servisstokid,
                                                         2,
                                                         2,
@@ -443,7 +404,6 @@ namespace SasonBase.Reports.Sason.Merkez
                               a.isemirno,
                               r.sirano,
                               tr.kod ayristirmatipad,
-                              f.ISLEMTARIHI faturatarihi,
                               t.kod malzemekod,
                               t.ad malzemead,
                               D.TURID,
@@ -467,16 +427,15 @@ namespace SasonBase.Reports.Sason.Merkez
                               T.MIKTAR,
                               T.TUTAR,
                               T.BRUTTUTAR,
-                          /*    CASE
+                              CASE
                                  WHEN    (a.ayristirmatipid IN (1) AND d.faturaid IS NOT NULL)
-                                      OR a.claimstatus IN ('Z057', 'Z060', 'Z070', 'Z110')
+                                      OR a.claimstatus IN ('Z057', 'Z060', 'Z070', 'Z0110')
                                  THEN
                                     'TAMAMLANMIS'
                                  ELSE
                                     'DEVAM EDIYOR'
                               END
                                  DURUM,
-                                 */
                               St.AD SERVISSTOKTURad,
                               CASE
                                 WHEN st.id = 1 THEN 'MAN'
@@ -541,7 +500,7 @@ namespace SasonBase.Reports.Sason.Merkez
                               ax.arizakodu
                            FROM ayristirmalar ax
                            WHERE ax.durumid = 1
-                             AND ax.servisid   {servisIdQuery}  
+                             AND ax.servisid  {servisIdQuery} 
                            ) a,
                               ayristirmatipler tr,
                               -- servisisemirler i,
@@ -559,23 +518,23 @@ namespace SasonBase.Reports.Sason.Merkez
                                 ix.saseno
                               FROM servisisemirler ix
                               WHERE  /*ix.KAYITTARIH  between '{dateQuery}'
-                              AND*/ ix.servisid  {servisIdQuery}  
+                              AND*/ ix.servisid   {servisIdQuery} 
                               ) i,
 
                             --  faturalar f,
                             (SELECT
                              fx.id,
                              fx.VNO,
-                             fx.faturano,
-                             fx.ISLEMTARIHI
+                             fx.faturano
                             FROM faturalar fx
-                            WHERE -- FX.ISLEMTARIHI  between '{dateQuery}'
-                                fx.faturaturid=1 and fx.servisid  {servisIdQuery}   and fx.durumid=1 --and 
-                            /*    fx.isemirno in (SELECT distinct  
+                            WHERE  FX.ISLEMTARIHI  between '{dateQuery}'
+                            and fx.faturaturid=1 and fx.servisid  {servisIdQuery}  and fx.durumid=1
+                            and fx.isemirno in (SELECT distinct
                                 ixx.isemirno
                               FROM servisisemirler ixx
-                              WHERE  ixx.TAMAMLANMATARIH  between '{dateQuery}'
-                              AND ixx.servisid    {servisIdQuery}   */ -- )
+                              WHERE  /*ix.KAYITTARIH  between '{dateQuery}'
+                              AND*/ ixx.servisid    {servisIdQuery} 
+                              )  
                              )f,
                               vw_servisstokturler st,
                           --     sason.rp_isemirdetay t,
@@ -618,21 +577,15 @@ namespace SasonBase.Reports.Sason.Merkez
                                        OR I.ISEMIRUYGULAMAMANEDENID = 8)
                                   AND m.durumid = 1
                                   AND m.kullanildi = 1
-                                  AND z.servisid   {servisIdQuery}   
-                                  AND z.TAMAMLANMATARIH  between '{dateQuery}'
-                               /*    and z.isemirno in (
-                                                SELECT
-                                                    distinct fx.isemirno 
-                                                FROM faturalar fx
-                                                WHERE 
-                                                    fx.faturaturid=1 and fx.servisid  {servisIdQuery}   and fx.durumid=1 and 
-                                                    fx.isemirno in (SELECT distinct  
-                                                    ixx.isemirno
-                                                  FROM servisisemirler ixx
-                                                  WHERE  ixx.TAMAMLANMATARIH  between '{dateQuery}'
-                                                  AND ixx.servisid    {servisIdQuery} )
-                                              )
-                                 */        
+                                  AND   z.servisid  {servisIdQuery} 
+                                  and z.isemirno in (
+                                  SELECT distinct
+                             fx.isemirno
+                            FROM faturalar fx
+                            WHERE  FX.ISLEMTARIHI  between '{dateQuery}'
+                            and fx.faturaturid=1 and fx.servisid  {servisIdQuery}  and fx.durumid=1
+                                  )
+                        
 
                               ) t,
 
@@ -647,7 +600,7 @@ namespace SasonBase.Reports.Sason.Merkez
                               FROM servisstoklar ssx
                               WHERE
                                 ssx.durumid = 1 AND
-                                ssx.servisid   {servisIdQuery}  
+                                ssx.servisid   {servisIdQuery} 
                               ) ss,
                              -- varliklar o1,
                              (SELECT
@@ -672,27 +625,9 @@ namespace SasonBase.Reports.Sason.Merkez
                                 svx.id,
                                 svx.isortakid
                               FROM servisler svx
-                              WHERE svx.id   {servisIdQuery}  
+                              WHERE svx.id  {servisIdQuery} 
                               ) sv
                         WHERE     d.ayristirmaid = a.id
-                        
-                           AND 
-                             (  ((a.ayristirmatipid IN (1) AND d.faturaid IS NOT NULL AND 
-                             d.faturaid in (
-                                SELECT distinct
-                                                        fx.id
-                                                        FROM faturalar fx
-                                                        WHERE  --FX.ISLEMTARIHI  between '{dateQuery}' and 
-                                                         fx.faturaturid=1 and fx.servisid  {servisIdQuery}   and fx.durumid=1
-                             
-                             )
-                             
-                             
-                             
-                             
-                             ) OR  a.claimstatus IN ( 'Z110')) 
-                             )
-                             
                               AND a.isemirno = i.isemirno
                               AND a.ayristirmatipid = tr.id
                               AND f.id(+) = d.faturaid
@@ -719,9 +654,10 @@ namespace SasonBase.Reports.Sason.Merkez
                                 WHERE m1.orjinalmalzemeid = M2.ID) o
                         WHERE r.turid = b.id and
                         r.malzemekod = o.gkod(+)
-
-
-        
+ 
+            
+asd
+                
  
                      
                 ")
