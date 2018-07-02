@@ -81,124 +81,134 @@ namespace SasonBase.Reports.Sason.Servis
  
             MethodReturn mr = new MethodReturn(); 
                 List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"  
-            select * from  ( 
-                SELECT distinct   
-                  
-                        (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = a.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
-                        a.durumid,
-                        o3.ad ISORTAKAD,
-                        d.id,
-                        a.servisid,
-                        sason.hashservisid (i.servisid) hashservisid,
-                        f.faturano,
-                        a.isemirno,
-                        r.sirano,
-                        tr.kod ayristirmatipad,
-                        t.kod malzemekod,
-                        t.ad malzemead,
-                        D.TURID,
-                        a.arizakodu,
-                        to_char(I.TAMAMLANMATARIH,'dd/mm/yyyy') as TAMAMLANMATARIH,
-                        to_char(I.KAYITTARIH,'dd/mm/yyyy') as KAYITTARIH,
-                        I.KM,
-                        I.KUR,
-                        i.aractipad,
-                        i.modelno,                        
-                        to_char(i.firstregdate,'dd/mm/yyyy') as firstregdate,
-                        T.TUTAR isemirtutar,
-                        i.saseno,
-                        R.ISEMIRTIPID,
-                        A.PDFKDV,
-                        A.PDFONAYGENELTOPLAM,
-                        A.PDFMATRAH,
-                        O2.AD,
-                        a.claimstatus,
-                        d.faturaid,
-                        T.MIKTAR,
-                        T.TUTAR,
-                        T.BRUTTUTAR,
-                        CASE
-                            WHEN  (a.ayristirmatipid IN (1) AND d.faturaid IS NOT NULL)
-                                OR a.claimstatus IN ('Z057', 'Z060', 'Z070', 'Z0110')
-                            THEN
-                            'TAMAMLANMIS'
-                            ELSE
-                            'DEVAM EDIYOR'
-                        END
-                            DURUM,
-                        St.kod SERVISSTOKTURad,
-                        CASE WHEN ss.ureticivarlikid IS NULL THEN 'MAN' ELSE O1.AD END
-                            uretici,
-                        d.atutar,
-                        D.PDFISLETIMUCRETI,
-                        D.PDFITEMID,
-                        D.PDFTOPLAM,
-                        F.VNO vergino,
-                        orjinalkod,
-                        KURLAR_PKG.ORTALAMAMALIYET (ss.id) ortalamamaliyet,
-                        ROUND (
-                            (  1
-                            -   t.tutar
-                                / CASE WHEN t.bruttutar = 0 THEN NULL ELSE t.bruttutar END)
-                            * 100,
-                            2)
-                            indirimoran,
-                        IC.TFATTOPLAM,
-                        to_char(IC.ICMALTARIHI,'dd/mm/yyyy') as ICMALTARIHI,
-                         CASE  
-                                  WHEN (ic.icmaltarihi > sysdate) then  KURLAR_PKG.CAPRAZKURTARIH (2, 1, sysdate)     
-                                  WHEN (ic.icmaltarihi is null  ) then  null
-                                  ELSE  KURLAR_PKG.CAPRAZKURTARIH (2, 1, ic.icmaltarihi) END icmalkur,
-                        servisstokturid,
-                        Bx.KOD,
-                        cx.ack ,
-                        to_char(dx.ilktesciltarihi,'dd/mm/yyyy') as ilktesciltarihi,
-                        '{StartDate}' as bastar, 
-                        '{FinishDate}'  as bittar,
-                        i.id as kyttarhidsi
-                    FROM   servisisemirler i, servisisemirislemler r,
-                        servisicmaller ic,
-                        ayristirmadetaylar d,
-                        ayristirmalar a,
-                        ayristirmatipler tr,
-                   /*  servisisemirler i, */
-                        faturalar f,
-                        servisstokturler st,
-                        sason.rp_isemirdetay t,
-                        servisstoklar ss,
-                        servisvarliklar o1,
-                        servisvarliklar o2,
-                        isortaklar o3,
-                        servisler sv,
-                        sason.isemirtipler bx ,
-                        sason.lovturler cx,
-                        servisvarlikruhsatlar dx
+                                        SELECT * 
+                                 FROM( 
+                                      SELECT  DISTINCT
+                                           (SELECT vtsx.partnercode FROM vt_servisler vtsx WHERE vtsx.servisid = a.servisid  AND vtsx.dilkod = 'Turkish') AS partnercode,
+                                           a.durumid,
+                                           o3.ad isortakad,
+                                           d.id,
+                                           a.servisid,
+                                           sason.hashservisid (i.servisid) hashservisid,
+                                           f.faturano,
+                                           a.isemirno,
+                                           r.sirano,
+                                           tr.kod ayristirmatipad,
+                                           t.kod malzemekod,
+                                           t.ad malzemead,
+                                           d.turid,
+                                           a.arizakodu,
+                                           TO_CHAR(i.tamamlanmatarih,'dd/mm/yyyy') AS tamamlanmatarih,
+                                           TO_CHAR(i.kayittarih,'dd/mm/yyyy') AS kayittarih,
+                                           i.km,
+                                           i.kur,
+                                           i.aractipad,
+                                           i.modelno,                        
+                                           TO_CHAR(i.firstregdate,'dd/mm/yyyy') AS firstregdate,
+                                           t.tutar isemirtutar,
+                                           i.saseno,
+                                           r.isemirtipid,
+                                           a.pdfkdv,
+                                           a.pdfonaygeneltoplam,
+                                           a.pdfmatrah,
+                                           o2.ad,
+                                           a.claimstatus,
+                                           d.faturaid,
+                                           t.miktar,
+                                           t.tutar,
+                                           t.bruttutar,
+                                           CASE
+                                                WHEN (a.ayristirmatipid IN (1) AND d.faturaid IS NOT NULL)
+                                                     OR a.claimstatus IN ('Z0110') --('Z057', 'Z060', 'Z070', 'Z0110')
+                                                THEN
+                                                     'TAMAMLANMIS'
+                                                WHEN (a.ayristirmatipid IN (1) AND d.faturaid IS NOT NULL)
+                                                     OR a.claimstatus IN ('Z107', 'Z109', 'Z999')
+                                                THEN
+                                                     'REDDEDİLDİ'
+                                                ELSE
+                                                     'DEVAM EDIYOR'
+                                           END durum,
+                                           st.kod servisstokturad,
+                                           CASE 
+                                                WHEN ss.ureticivarlikid IS NULL THEN 'MAN' ELSE o1.ad 
+                                           END uretici,
+                                           d.atutar,
+                                           d.pdfisletimucreti,
+                                           d.pdfitemid,
+                                           d.pdftoplam,
+                                           f.vno vergino,
+                                           orjinalkod,
+                                           kurlar_pkg.ortalamamaliyet (ss.id) ortalamamaliyet,
+                                           ROUND(
+                                                (  1
+                                                -  t.tutar
+                                                    / CASE 
+                                                          WHEN t.bruttutar = 0 THEN NULL 
+                                                          ELSE t.bruttutar 
+                                                      END)
+                                                * 100,
+                                                2) indirimoran,
+                                           ic.tfattoplam,
+                                           TO_CHAR(ic.icmaltarihi,'dd/mm/yyyy') AS icmaltarihi,
+                                           CASE  
+                                                WHEN (ic.icmaltarihi > SYSDATE) 
+                                                     THEN  kurlar_pkg.caprazkurtarih (2, 1, SYSDATE)     
+                                                WHEN (ic.icmaltarihi IS NULL  ) 
+                                                     THEN  NULL
+                                                ELSE  kurlar_pkg.caprazkurtarih (2, 1, ic.icmaltarihi) 
+                                           END icmalkur,
+                                           servisstokturid,
+                                           bx.kod,
+                                           cx.ack ,
+                                           TO_CHAR(dx.ilktesciltarihi,'dd/mm/yyyy') AS ilktesciltarihi,
+                                           '{StartDate}' AS bastar, 
+                                           '{FinishDate}'  AS bittar,
+                                           i.id AS kyttarhidsi
+                                      FROM servisisemirler i, 
+                                           servisisemirislemler r,
+                                           servisicmaller ic,
+                                           ayristirmadetaylar d,
+                                           ayristirmalar a,
+                                           ayristirmatipler tr,
+                                       /*  servisisemirler i, */
+                                           faturalar f,
+                                           servisstokturler st,
+                                           sason.rp_isemirdetay t,
+                                           servisstoklar ss,
+                                           servisvarliklar o1,
+                                           servisvarliklar o2,
+                                           isortaklar o3,
+                                           servisler sv,
+                                           sason.isemirtipler bx ,
+                                           sason.lovturler cx,
+                                           servisvarlikruhsatlar dx
 
-                WHERE     d.ayristirmaid = a.id
-                        AND a.isemirno = i.isemirno
-                        AND a.ayristirmatipid = tr.id
-                        AND f.id(+) = d.faturaid
-                        AND r.id = a.servisisemirislemid
-                        AND T.REFERANSID = d.referansid
-                        AND st.id(+) = ss.servisstokturid
-                        AND t.turid = d.turid
-                        AND ss.kod(+) = T.KOD
-                        AND (ss.servisid = i.servisid OR ss.servisid IS NULL)
-                        AND ss.ureticivarlikid = O1.ID(+)
-                        AND I.SERVISVARLIKID = O2.id
-                        AND sv.id = i.servisid
-                        AND sv.isortakid = o3.id
-                        AND A.ICMALID = ic.id(+)
-                        AND a.durumid = bx.id and D.TURID = Cx.ID AND  i.saseno = dx.saseno
-                        AND a.durumid = 1
-                        and a.servisid = i.servisid
-                        and i.servisid {servisIdQuery} 
+                                      WHERE d.ayristirmaid = a.id
+                                           AND a.isemirno = i.isemirno
+                                           AND a.ayristirmatipid = tr.id
+                                           AND f.id(+) = d.faturaid
+                                           AND r.id = a.servisisemirislemid
+                                           AND t.referansid = d.referansid
+                                           AND st.id(+) = ss.servisstokturid
+                                           AND t.turid = d.turid
+                                           AND ss.kod(+) = t.kod
+                                           AND (ss.servisid = i.servisid OR ss.servisid IS NULL)
+                                           AND ss.ureticivarlikid = o1.id(+)
+                                           AND i.servisvarlikid = o2.id
+                                           AND sv.id = i.servisid
+                                           AND sv.isortakid = o3.id
+                                           AND a.icmalid = ic.id(+)
+                                           AND a.durumid = bx.id and d.turid = cx.id and  i.saseno = dx.saseno
+                                           AND a.durumid = 1               AND i.id IN (SELECT ixx.id FROM servisisemirler ixx WHERE   ixx.durumid = 1 AND ixx.servisid {servisIdQuery} 
 
-                        and i.id in (select ixx.id from servisisemirler ixx where i.durumid = 1 AND i.servisid {servisIdQuery}  and ixx.KAYITTARIH between '{dateQuery}'  AND (i.saseno = NVL ('{SaseNo}', i.saseno))   )
-                        AND a.ayristirmatipid not in (1,2)
-                        
-                        ) asd 
-                        ORDER BY SERVISID, isemirno , SERVISSTOKTURad asc  , KAYITTARIH desc  
+                                           AND a.servisid = i.servisid
+                                           AND i.servisid {servisIdQuery} 
+                                                          AND ixx.kayittarih BETWEEN '{dateQuery}'   
+                                                          AND (i.saseno = NVL ('{SaseNo}', ixx.saseno))   )
+                                          AND a.ayristirmatipid NOT IN (1,2)           
+                                 ) asd 
+                            ORDER BY servisid, isemirno, servisstokturad ASC, kayittarih DESC   
                 ")                          
                 .GetDataTable(mr)
                 .ToModels();
