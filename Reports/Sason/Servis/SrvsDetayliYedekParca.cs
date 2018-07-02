@@ -108,7 +108,50 @@ namespace SasonBase.Reports.Sason.Servis
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"   
 
-                SELECT
+                 SELECT  
+                    SERVISID  ,
+                    SIPARISSERVISID  HASHSERVISID,  
+                    (SELECT isortakad
+                       FROM vt_servisler
+                      WHERE servisid = siparisservisid AND dilkod = 'Turkish')  servisad,
+                    TARIH  ,
+                    BELGENO   ,
+                    BELGETURU  ,
+                    ISEMIRTIPI ,
+                    ISEMIRTIPID ,
+                    VERGINO  ,
+                    MUSTERIAD  ,
+                    FATURATARIHI   ,
+                    CLAIMSTATUS  ,
+                    MALZEMEKOD  ,
+                    ORJINALKOD ,
+                    URETICI   ,
+                    SERVISSTOKTURAD  ,
+                    ISCILIK_PARCA  ,
+                    MALZEMEAD  ,
+                    MIKTAR  ,
+                    BRUTTUTAR  ,
+                    TUTAR  ,
+                    SASENO  ,
+                    OZELSATISSASENOLAR  , 
+                    to_char(TRAFIGECIKISTARIHI,'dd/mm/yyyy') TRAFIGECIKISTARIHI, 
+                    KURLAR_PKG.ORTALAMAMALIYET (ORTALAMAMALIYET) ortalamamaliyet,
+                    AYRISTIRMATIPAD  ,
+                    FIYAT2  ,
+                    to_char(KUR) KUR,
+                    SERVISSTOKID  ,
+                    SERVISSTOKTURID ,
+                    EUROINDFIYAT ,  
+                     kurlar_pkg.servisstokfiyatgetir (EUROLISTEFIYAT, 2, TRUNC (SYSDATE)) EUROLISTEFIYAT 
+                FROM sason.ypdata     
+                WHERE  
+                    YEDEKPARCARAPORTARIHI  between '{dateQuery}' and 
+                    SIPARISSERVISID =  {ServisId}  
+
+                union all
+
+
+                      SELECT
                         CASE
                              WHEN a.servisid IS NULL THEN a.siparisservisid
                              ELSE a.servisid
@@ -190,13 +233,13 @@ namespace SasonBase.Reports.Sason.Servis
                           B.BIRIMFIYAT TUTAR,
                           C.SASENO,
                             (
-                           select  
+                           select
                                 LISTAGG(SASENO,', ') WITHIN GROUP (ORDER BY SERVISSIPARISID , MALZEMEID ASC)  saseno
-                            from servissiparissaseler 
-                            where SERVISSIPARISID = A.ID  AND  
+                            from servissiparissaseler
+                            where SERVISSIPARISID = A.ID  AND
                             MALZEMEID = f.malzemeid
                           ) OZELSATISSASENOLAR,
-                          
+
                           '' TRAFIGECIKISTARIHI,
                           KURLAR_PKG.ORTALAMAMALIYET (f.servisstokid) ortalamamaliyet,
                           '' ayristirmatipad,
@@ -306,7 +349,7 @@ namespace SasonBase.Reports.Sason.Servis
                              WHERE s.vergino IS NULL
 
                         ) h,
-                        
+
                             --  faturalar fxx,
                             (SELECT
                              fx.id,
@@ -315,17 +358,8 @@ namespace SasonBase.Reports.Sason.Servis
                              fx.ISLEMTARIHI,
                              fx.isemirno
                             FROM faturalar fx
-                            WHERE  FX.ISLEMTARIHI  between '{dateQuery}'
-                            and fx.faturaturid=3 and fx.servisid =  {ServisId}    and fx.durumid=1
-                            --and fx.isemirno in (SELECT distinct
-                              --      ixx.isemirno
-                                --  FROM servisisemirler ixx
-                                 -- WHERE  /*ix.KAYITTARIH  between '{dateQuery}'
-                                  -- AND*/ ixx.servisid     =  {ServisId}   
-                                 --   and fx.durumid=1
-                                --   and fx.faturaturid=3  
-                                   --and fx.id =  b.faturaid 
-                              -- )
+                            WHERE   TO_DATE(FX.ISLEMTARIHI,'DD/MM/YYYY')   = TO_DATE(sysdate,'DD/MM/YYYY')
+                            and fx.faturaturid=3 and fx.servisid  =  {ServisId}    and fx.durumid=1 
                              ) fxxx
 
                     WHERE     A.ID = b.servissiparisid
@@ -334,30 +368,30 @@ namespace SasonBase.Reports.Sason.Servis
                           AND f.servisstokid(+) = b.servisstokid
                           AND a.servisid = g.servisid(+)
                           AND A.SERVISVARLIKID = h.servisvarlikid(+)
-                          and a.siparisservisid   =  {ServisId}   
+                          and a.siparisservisid  =  {ServisId} 
                           and b.servisekmaliyetid IS NULL
-                       --   and a.tarih between '{dateQuery}'  
-                                
-                          AND fxxx.id = b.faturaid                  
+                       --   and a.tarih between '10.06.2018' AND '18.06.2018'
+
+                          AND fxxx.id = b.faturaid
                           and b.faturaid in (SELECT
                              fx.id
                             FROM faturalar fx
-                            WHERE  FX.ISLEMTARIHI  between '{dateQuery}'
-                            and fx.faturaturid=3 and fx.servisid =  {ServisId}    and fx.durumid=1
+                            WHERE  TO_DATE( FX.ISLEMTARIHI ,'DD/MM/YYYY')   = TO_DATE(sysdate,'DD/MM/YYYY')
+                            and fx.faturaturid=3 and fx.servisid  =  {ServisId}   and fx.durumid=1
                             )
                             and b.servisstokid in
 
                       ( SELECT sx.id
                          FROM servisstoklar sx
                             where
-                                sx.servisid=  {ServisId}     and
+                                sx.servisid =  {ServisId}    and
                                 sx.kod in
                                 (select distinct stokkod from faturadetaylar
                                 where faturaid in (select id from faturalar
                                                 where
                                                     faturaturid=3 and
-                                                    islemtarihi between '{dateQuery}' and
-                                                    servisid =  {ServisId}    and
+                                                    TO_DATE( islemtarihi,'DD/MM/YYYY')    = TO_DATE(sysdate,'DD/MM/YYYY')  and
+                                                    servisid =  {ServisId}   and
                                                     durumid=1))
                         )
                        UNION ALL
@@ -401,7 +435,7 @@ namespace SasonBase.Reports.Sason.Servis
                               r.kur,
                               r.servisstokid ,
                               servisstokturid,
-                            
+
                               KURLAR_PKG.STOKFIYATINDGETIR (r.servisstokid,
                                                         2,
                                                         2,
@@ -443,17 +477,7 @@ namespace SasonBase.Reports.Sason.Servis
                               d.faturaid,
                               T.MIKTAR,
                               T.TUTAR,
-                              T.BRUTTUTAR,
-                          /*    CASE
-                                 WHEN    (a.ayristirmatipid IN (1) AND d.faturaid IS NOT NULL)
-                                      OR a.claimstatus IN ('Z057', 'Z060', 'Z070', 'Z110')
-                                 THEN
-                                    'TAMAMLANMIS'
-                                 ELSE
-                                    'DEVAM EDIYOR'
-                              END
-                                 DURUM,
-                                 */
+                              T.BRUTTUTAR, 
                               St.AD SERVISSTOKTURad,
                               CASE
                                 WHEN st.id = 1 THEN 'MAN'
@@ -518,7 +542,7 @@ namespace SasonBase.Reports.Sason.Servis
                               ax.arizakodu
                            FROM ayristirmalar ax
                            WHERE ax.durumid = 1
-                             AND ax.servisid  =  {ServisId}   
+                             AND ax.servisid   =  {ServisId} 
                            ) a,
                               ayristirmatipler tr,
                               -- servisisemirler i,
@@ -535,8 +559,8 @@ namespace SasonBase.Reports.Sason.Servis
                                 ix.firstregdate,
                                 ix.saseno
                               FROM servisisemirler ix
-                              WHERE  /*ix.KAYITTARIH  between '{dateQuery}'
-                              AND*/ ix.servisid    =  {ServisId}   
+                              WHERE   
+                                ix.servisid  =  {ServisId} 
                               ) i,
 
                             --  faturalar f,
@@ -546,13 +570,8 @@ namespace SasonBase.Reports.Sason.Servis
                              fx.faturano,
                              fx.ISLEMTARIHI
                             FROM faturalar fx
-                            WHERE -- FX.ISLEMTARIHI  between '{dateQuery}'
-                                fx.faturaturid=1 and fx.servisid =  {ServisId}    and fx.durumid=1 --and 
-                            /*    fx.isemirno in (SELECT distinct  
-                                ixx.isemirno
-                              FROM servisisemirler ixx
-                              WHERE  ixx.TAMAMLANMATARIH  between '{dateQuery}'
-                              AND ixx.servisid    =  {ServisId}    */ -- )
+                            WHERE  
+                                fx.faturaturid=1 and fx.servisid =  {ServisId}   and fx.durumid=1   
                              )f,
                               vw_servisstokturler st,
                           --     sason.rp_isemirdetay t,
@@ -595,21 +614,8 @@ namespace SasonBase.Reports.Sason.Servis
                                        OR I.ISEMIRUYGULAMAMANEDENID = 8)
                                   AND m.durumid = 1
                                   AND m.kullanildi = 1
-                                  AND z.servisid =  {ServisId}   
-                                  AND z.TAMAMLANMATARIH  between '{dateQuery}'
-                               /*    and z.isemirno in (
-                                                SELECT
-                                                    distinct fx.isemirno 
-                                                FROM faturalar fx
-                                                WHERE 
-                                                    fx.faturaturid=1 and fx.servisid =  {ServisId}    and fx.durumid=1 and 
-                                                    fx.isemirno in (SELECT distinct  
-                                                    ixx.isemirno
-                                                  FROM servisisemirler ixx
-                                                  WHERE  ixx.TAMAMLANMATARIH  between '{dateQuery}'
-                                                  AND ixx.servisid   =  {ServisId}  )
-                                              )
-                                 */        
+                                  AND z.servisid  =  {ServisId} 
+                                  AND  TO_DATE(z.TAMAMLANMATARIH ,'DD/MM/YYYY')  = TO_DATE(sysdate,'DD/MM/YYYY') 
 
                               ) t,
 
@@ -624,7 +630,7 @@ namespace SasonBase.Reports.Sason.Servis
                               FROM servisstoklar ssx
                               WHERE
                                 ssx.durumid = 1 AND
-                                ssx.servisid  =  {ServisId}   
+                                ssx.servisid  =  {ServisId} 
                               ) ss,
                              -- varliklar o1,
                              (SELECT
@@ -649,27 +655,27 @@ namespace SasonBase.Reports.Sason.Servis
                                 svx.id,
                                 svx.isortakid
                               FROM servisler svx
-                              WHERE svx.id =  {ServisId}   
+                              WHERE svx.id  =  {ServisId} 
                               ) sv
                         WHERE     d.ayristirmaid = a.id
-                        
-                           AND 
-                             (  ((a.ayristirmatipid IN (1) AND d.faturaid IS NOT NULL AND 
+
+                           AND
+                             (  ((a.ayristirmatipid IN (1) AND d.faturaid IS NOT NULL AND
                              d.faturaid in (
                                 SELECT distinct
                                                         fx.id
                                                         FROM faturalar fx
-                                                        WHERE  --FX.ISLEMTARIHI  between '{dateQuery}' and 
-                                                         fx.faturaturid=1 and fx.servisid =  {ServisId}    and fx.durumid=1
-                             
+                                                        WHERE  
+                                                         fx.faturaturid=1 and fx.servisid  =  {ServisId}   and fx.durumid=1
+
                              )
-                             
-                             
-                             
-                             
-                             ) OR  a.claimstatus IN ( 'Z110')) 
+
+
+
+
+                             ) OR  a.claimstatus IN ( 'Z110'))
                              )
-                             
+
                               AND a.isemirno = i.isemirno
                               AND a.ayristirmatipid = tr.id
                               AND f.id(+) = d.faturaid
@@ -697,12 +703,6 @@ namespace SasonBase.Reports.Sason.Servis
                         WHERE r.turid = b.id and
                         r.malzemekod = o.gkod(+)
 
-
-         
- 
-                
-
-  
  
 
                         ")

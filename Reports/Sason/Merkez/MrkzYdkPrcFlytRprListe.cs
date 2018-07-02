@@ -173,7 +173,7 @@ namespace SasonBase.Reports.Sason.Merkez
 
                            sum(nvl(stok_yag,0)) as stok_yag,
                         sum(nvl(stok_yansanayi,0)) as stok_yansanayi,
-                        sum(nvl(stok_yag,0) + nvl(stok_oes,0) +nvl(stok_oeM,0) + nvl(stok_essanayi,0) + nvl(stok_my,0) +nvl(stok_yansanayi,0)) as stok_toplam
+                        sum( /* nvl(stok_yag,0) + */ nvl(stok_oes,0) +nvl(stok_oeM,0) + nvl(stok_essanayi,0) + nvl(stok_my,0) +nvl(stok_yansanayi,0)) as stok_toplam
                       FROM (
 
 

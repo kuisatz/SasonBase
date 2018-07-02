@@ -109,10 +109,13 @@ namespace SasonBase.Reports.Sason.Merkez
                     FROM 
                         servisisemirler ie,
                         vt_servisler vtsrv,
-                        aracturler ar 
+                        aracturler ar ,
+                        servisvarliklar servar
                     WHERE ie.tamamlanmatarih between  '{dateQuery}' and ie.teknikolaraktamamla=1 and ie.servisid {servisIdQuery}
                         and (ie.arackazali <> 1 or ie.arackazaaciklama is null or ie.arackazaaciklama = '')
                         and vtsrv.dilkod(+) = 'Turkish' and vtsrv.servisid(+)=ie.servisid
+                        and IE.SERVISVARLIKID=servar.id
+                        and SERVAR.VARLIKTIPID<>3
                         and ar.kod =  ie.aractipad and ar.durumid =1
                         {addSQLAracTur}
                     GROUP BY to_char(ie.tamamlanmatarih,'YYYY.MM'), ie.servisid, vtsrv.isortakad, vtsrv.partnercode {addSQLAracTurGroupBy}
@@ -130,16 +133,19 @@ namespace SasonBase.Reports.Sason.Merkez
                     FROM 
                         servisisemirler ie,
                         vt_servisler vtsrv,
-                        aracturler ar 
+                        aracturler ar ,
+                        servisvarliklar servar
                     WHERE ie.tamamlanmatarih between  '{dateQuery}' and ie.teknikolaraktamamla=1  
                         and (ie.arackazali <> 1 or ie.arackazaaciklama is null or ie.arackazaaciklama = '')
+                        and IE.SERVISVARLIKID=servar.id
+                        and SERVAR.VARLIKTIPID<>3
                         and vtsrv.dilkod(+) = 'Turkish' and vtsrv.servisid(+)=ie.servisid
                         and ar.kod =  ie.aractipad and ar.durumid =1 
                         {addSQLAracTur}
                     GROUP BY to_char(ie.tamamlanmatarih,'YYYY.MM'){addSQLAracTurGroupBy}
             )  asd 
            ORDER BY DONEM , servisid 
- 
+  
 
             ") 
             .GetDataTable()

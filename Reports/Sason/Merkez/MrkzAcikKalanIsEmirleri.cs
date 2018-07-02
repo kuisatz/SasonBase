@@ -96,29 +96,36 @@ namespace SasonBase.Reports.Sason.Merkez
             string dateQuery = "";
             string dateGunQuery1 = "";
             string dateGunQuery2 = "";
-            int MinGun1 = int.Parse(MinGun);
-            int MaxGun1 = int.Parse(MaxGun);
+            int MinGun1;
+            int MaxGun1;
 
 
-#if DEBUG
-             selectedServisId = ServisId;
-              servisIdQuery = $" in( {selectedServisId} )";
-#endif
+            if (MinGun.isNotEmpty())
+                MinGun1 = int.Parse(MinGun);
+            else 
+                MinGun1 = -1;
+            if (MaxGun.isNotEmpty())
+                  MaxGun1 = int.Parse(MaxGun);
+            else
+                MaxGun1 = -1;
 
 
             if (ServisIds.isNotEmpty())
                 servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
-            else { 
-            //    servisIdQuery = $" > 1 ";
+            else
+            {
+                //    servisIdQuery = $" > 1 ";
                 selectedServisId = ServisId;
                 servisIdQuery = $" in( {selectedServisId} )";
             }
 
-            if (MinGun1 > 0)
+
+
+            if (MinGun1 > -1)
             {
                 dateGunQuery1 = " AND acikkalmagunu >= "+ MinGun;              
             }
-            if (MaxGun1 > 0)
+            if (MaxGun1 > -1)
             {
                 dateGunQuery2 = " AND acikkalmagunu <= " + MaxGun;
             }
@@ -163,7 +170,8 @@ namespace SasonBase.Reports.Sason.Merkez
                         1=1 
                         {dateGunQuery1}
                         {dateGunQuery2}
-                    order by  ACIKKALMAGUNU desc ,kayittarihi asc
+                    order by  ACIKKALMAGUNU desc ,kayittarihi asc 
+
  
  
                 ")

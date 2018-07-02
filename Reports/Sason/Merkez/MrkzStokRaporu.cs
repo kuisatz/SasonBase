@@ -202,7 +202,7 @@ namespace SasonBase.Reports.Sason.Merkez
                        servisstokturler a
                  WHERE p.servisstokturid = a.id AND hservisid {servisIdQuery} 
                  order by  p.HSERVISID 
- 
+  
                 ")
               .GetDataTable(mr)
             .ToModels();

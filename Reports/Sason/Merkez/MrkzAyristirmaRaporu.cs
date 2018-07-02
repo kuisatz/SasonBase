@@ -22,7 +22,7 @@ namespace SasonBase.Reports.Sason.Merkez
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
-            AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
+            AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(false));
             AddParameter(new ReporterParameter() { Name = "param_sase_no", Text = "Şase No" }.CreateTextBox("İsteğe Bağlı Şase No. Girebilirsiniz"));
             Disabled = false;
         }
@@ -352,6 +352,8 @@ namespace SasonBase.Reports.Sason.Merkez
                         and i.id in (select ixx.id from servisisemirler ixx where ixx.servisid {servisIdQuery}  and ixx.KAYITTARIH between '{dateQuery}'  AND (ixx.saseno = NVL ('{SaseNo}', ixx.saseno))   )
 
                    --     ORDER BY i.servisid,  i.id  desc
+
+
  
  
                 ")
