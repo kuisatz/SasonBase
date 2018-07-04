@@ -83,37 +83,43 @@ namespace SasonBase.Reports.Sason.Servis
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"
               
-                    SELECT E.SASENO,
-                           E.KAYITTARIH,
-                           E.TAMAMLANMATARIH,
-                           E.KM,
-                           E.ENDEKS as LITRE,
-                           E.SAAT,
-                           --E.TBITISTARIHI,
-                           E.ISEMIRNO,
-                           T.ISORTAKAD,
-                           BAKIMTOPLU as BAKIM_NO,
-                           T.PARTNERCODE as YSKOD,
-                           case 
-                            when BAKIMSTATU =1 then  'TAM' 
-                            when BAKIMSTATU =0 then 'EKSIK' 
-                            else 'HATALI' end as BAKIMSTATU
+                        SELECT e.saseno,
+                               e.kayittarih,
+                               e.tamamlanmatarih,
+                               e.km,
+                               e.endeks AS litre,
+                               e.saat,
+                               --E.TBITISTARIHI,
+                               e.isemirno,
+                               t.isortakad,
+                               bakimtoplu AS bakim_no,
+                               t.partnercode AS yskod,
+                               CASE 
+                                  WHEN bakimstatu =1 THEN  'TAM' 
+                                  WHEN bakimstatu =0 THEN 'EKSIK' 
+                                  ELSE 'HATALI'
+                               END AS bakimstatu,
+                                a.esagarantino, 
+                                a.servisgarantino, 
+                                a.claimstatus
+                        FROM servisisemirler e,
+                             servisisemirislemler i,
+                             vt_servisler t,
+                             ayristirmalar a 
 
-                        FROM SERVISISEMIRLER E,
-                             SERVISISEMIRISLEMLER I,
-                             VT_SERVISLER T 
-
-                        WHERE  E.KAYITTARIH BETWEEN '{dateQuery}' 
-                            and E.ID = I.SERVISISEMIRID 
-                            and ISEMIRTIPID =1 
-                            and (E.SASENO = NVL ('{SaseNo}', E.SASENO)) 
-                            and T.SERVISID = E.SERVISID
-                            and E.SERVISID {servisIdQuery}
-                            and T.DILKOD='Turkish'
-                            and E.TAMAMLANMATARIH is not null
-                            and BAKIMTOPLU is not null
-                            and E.TEKNIKOLARAKTAMAMLA = 1
-                        ORDER BY E.SERVISID, E.KAYITTARIH desc
+                        WHERE  e.kayittarih BETWEEN '{dateQuery}'  
+                             AND e.id = i.servisisemirid 
+                             AND isemirtipid =1 
+                             AND (e.saseno = NVL ('{SaseNo}', e.saseno)) 
+                             AND t.servisid = e.servisid
+                             AND e.isemirno=a.isemirno
+                             AND e.servisid  {servisIdQuery}
+                             AND t.dilkod='Turkish'
+                             AND e.tamamlanmatarih IS NOT NULL
+                             AND bakimtoplu IS NOT NULL
+                             AND e.teknikolaraktamamla = 1
+                             AND a.servisisemirislemid = i.id
+                        ORDER BY e.servisid, e.kayittarih DESC
             
             ")
 
