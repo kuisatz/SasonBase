@@ -80,7 +80,7 @@ namespace SasonBase.Reports.Sason.Merkez
                     break;
                 case "param_ariza_kod":
                     ArizaKod = value.toString();
-                    break; 
+                    break;
                 case "param_sase_no":
                     SaseNo = value.toString();
                     break;
@@ -119,6 +119,18 @@ namespace SasonBase.Reports.Sason.Merkez
                 arizaKodQuery = "";
 
             #endregion
+
+            #region saseNo
+            string saseNoQuery = "";
+
+            if (SaseNo.isNotEmpty())
+                saseNoQuery =
+                       $" AND si.saseno = '{SaseNo}' ";
+            else
+                saseNoQuery = "";
+
+            #endregion
+
 
             StartDate = StartDate.startOfDay();
             FinishDate = FinishDate.endOfDay();
@@ -170,11 +182,11 @@ namespace SasonBase.Reports.Sason.Merkez
                                  AND a.durumid=1
                                  AND a.ayristirmatipid not in(1,2,8)
                                  AND si.tamamlanmatarih BETWEEN '{dateQuery}'
-                                 --AND (si.saseno = NVL ('{SaseNo}', si.saseno))
                                  AND a.servisid {servisIdQuery}
+                                 {saseNoQuery}
                                  {arizaKodQuery}   
                             order by servis_kodu, si.tamamlanmatarih desc                
-                               
+
                 " )
             .GetDataTable(mr)
             .ToModels();
