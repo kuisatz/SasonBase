@@ -100,7 +100,7 @@ namespace SasonBase.Reports.Sason.Merkez
                                servisid,
                                (select vtsx.partnercode from vt_servisler vtsx where vtsx.servisid = dsf.servisid  and vtsx.dilkod = 'Turkish') as partnercode,
                                (Select vtsxy.ISORTAKAD FROM vt_servisler vtsxy where vtsxy.dilkod = 'Turkish' and vtsxy.servisid = dsf.servisid) as servisad,
-                                to_char(KAYITTARIH,'dd/mm/yyyy') as  KAYITTARIH
+                                to_char(KAYITTARIH,'dd.mm.yyyy') as  KAYITTARIH
                         from
                             (SELECT count(id) acikadet,null kapanan_adet ,servisid, KAYITTARIH
                                 FROM servisisemirler

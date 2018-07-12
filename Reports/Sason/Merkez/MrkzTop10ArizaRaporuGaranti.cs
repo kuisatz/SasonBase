@@ -16,7 +16,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzTop10ArizaRaporuGaranti()
         {
-            Text = "Top 10 Arıza Listesi Raporu Garanti";
+            Text = "Top 10 Arıza Listesi Raporu (Garanti)";
             SubjectCode = "MrkzTop10ArizaRaporuGaranti";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;            

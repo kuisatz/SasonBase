@@ -70,12 +70,19 @@ namespace SasonBase.Reports.Sason.Servis
                     servisbilgi.ADRES SERVISADRES, servisbilgi.ULKE_AD SERVISADRES_ULKE, SERVISBILGI.IL_AD SERVISADRES_IL, SERVISBILGI.ILCE_AD SERVISADRES_ILCE, 
                     ISEMIR.ISEMIRNO ISEMIRNO,
                     OSUSER.FIRSTNAME USERFIRSTNAME, OSUSER.LASTNAME USERLASTNAME,
+                    isortak.vergino,                    
                     isortak.AD MUSTERI_AD, isortak.servisvarlikad MUSTERI_VARLIKAD, ISORTAK.VARLIKTIPAD MUSTERI_VARLIKTIPI, ISORTAK.VERGIDAIREAD MUSTERI_VERGIDAIRESI, ISORTAK.VERGINO MUSTERI_VERGINO, ISORTAK.VERGIDAIREILAD MUSTERI_VERGIDAIRESI_IL,
                     CASE when isortak.FILOBUYUKLUKID is null then 1 else 0 end MUSTERI_FILOBUYUKLUK,
                     --siotelfax.TELEFONNO MUSTERI_TELEFON,
                     isemir.MUSTERIAD MUSTERI_KISI_AD, isemir.MUSTERITELEFON MUSTERI_KISI_TELEFON,
                     kontak.AD KONTAK_AD, KONTAK.NO KONTAK_TELEFON, KONTAK.EPOSTA KONTAK_EPOSTA, KONTAK.SERVISISORTAKKONTAKTIPAD KONTAK_TIP, KONTAK.EPOSTAIZIN KONTAK_IZIN_EPOSTA, KONTAK.ARAMAIZIN KONTAK_IZIN_TELEFONARAMA, KONTAK.SMSIZIN KONTAK_IZIN_SMS,
                     aracbilgiler.saseno ARAC_SASENO, aracbilgiler.aractur ARAC_TUR, aracbilgiler.plaka ARAC_PLAKA,
+                    (CASE
+                         WHEN aracbilgiler.manolmayan = 0
+                             THEN ''
+                         WHEN aracbilgiler.manolmayan = 1
+                             THEN 'MAN OLMAYAN'
+                    END) AS manolmayan, 
                     (SELECT 
                       CASE bx.isemirtipid  
                         WHEN 1 then 'Evet' 
@@ -136,7 +143,7 @@ namespace SasonBase.Reports.Sason.Servis
 
                 left join (
                     select
-                        sarac.id servisaracid, sarac.saseno, aractur.kod aractur, sruhsat.plaka
+                        sarac.id servisaracid, sarac.saseno, aractur.kod aractur, sruhsat.plaka, sarac.manolmayan manolmayan
                     from
                         servisaraclar sarac, araclar arac, aracturler aractur, servisvarlikruhsatlar sruhsat 
                     where
