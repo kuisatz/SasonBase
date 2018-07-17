@@ -103,15 +103,16 @@ namespace SasonBase.Reports.Sason.Merkez
            
             #region query2
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"                 
-            SELECT vts.partnercode, vts.ISORTAKAD , 
-                            stok.stok_toplam, 
-                            stok.stok_oes,
-                            stok.stok_oeM,
-                            stok.stok_essanayi,
-                            stok.stok_my,
-                            stok.stok_yansanayi,
-            dfdfdf.* FROM ( 
-
+            SELECT 
+                    distinct vts.partnercode, vts.ISORTAKAD , 
+                    stok.stok_toplam, 
+                    stok.stok_oes,
+                    stok.stok_oeM,
+                    stok.stok_essanayi,
+                    stok.stok_my,
+                    stok.stok_yansanayi,
+                    dfdfdf.* 
+            FROM ( 
              SELECT servisid, 
                 sum(servisicioem) servisicioem ,
                 sum(servisicioes) servisicioes ,

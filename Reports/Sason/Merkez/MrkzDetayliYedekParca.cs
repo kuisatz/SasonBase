@@ -85,7 +85,7 @@ namespace SasonBase.Reports.Sason.Merkez
             MethodReturn mr = new MethodReturn();
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
 
-                SELECT  
+                SELECT  DISTINCT
                     SERVISID  ,
                     SIPARISSERVISID  HASHSERVISID,  
                     (SELECT isortakad
@@ -108,7 +108,7 @@ namespace SasonBase.Reports.Sason.Merkez
                     MALZEMEAD  ,
                     MIKTAR  ,
                     BRUTTUTAR  ,
-                    TUTAR  ,
+                    MIKTAR * TUTAR  TUTAR,
                     SASENO  ,
                     OZELSATISSASENOLAR  , 
                     to_char(TRAFIGECIKISTARIHI,'dd/mm/yyyy') TRAFIGECIKISTARIHI, 
