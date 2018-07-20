@@ -108,7 +108,9 @@ namespace SasonBase.Reports.Sason.Merkez
                     MALZEMEAD  ,
                     MIKTAR  ,
                     BRUTTUTAR  ,
-                    MIKTAR * TUTAR  TUTAR,
+                    case BELGETURU when 'Direk Satış'  THEN MIKTAR * TUTAR  
+                      ELSE   TUTAR  END 
+                        TUTAR, 
                     SASENO  ,
                     OZELSATISSASENOLAR  , 
                     to_char(TRAFIGECIKISTARIHI,'dd/mm/yyyy') TRAFIGECIKISTARIHI, 
