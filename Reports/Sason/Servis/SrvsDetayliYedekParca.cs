@@ -170,8 +170,8 @@ namespace SasonBase.Reports.Sason.Servis
                              ELSE
                                 g.isortakad
                           END
-                             servisad,
-                          A.tarih,
+                             servisad, 
+                          to_char(A.tarih,'dd/mm/yyyy') tarih , 
                           a.belgeno,
                           CASE
                              WHEN A.SERVISVARLIKID IS NULL AND siparisservisid IS NULL
@@ -193,8 +193,8 @@ namespace SasonBase.Reports.Sason.Servis
                                    FROM vt_servisler
                                   WHERE servisid = a.servisid AND dilkod = 'Turkish')
                           END
-                             musteriad,
-                          fxxx.ISLEMTARIHI faturatarihi,
+                             musteriad, 
+                           to_char(fxxx.ISLEMTARIHI,'dd/mm/yyyy') faturatarihi , 
                           '' claimstatus,
                           f.KOD malzemekod,
                           CASE
@@ -398,8 +398,8 @@ namespace SasonBase.Reports.Sason.Servis
 
                      SELECT r.servisid,
                               r.servisid hashservisid,
-                              r.isortakad servisad,
-                              r.KAYITTARIH tarih,
+                              r.isortakad servisad,  
+                              to_char(r.KAYITTARIH,'dd/mm/yyyy') tarih, 
                               r.isemirno belgeno,
                               'İş Emri' belgeturu,
                               CASE
@@ -413,8 +413,8 @@ namespace SasonBase.Reports.Sason.Servis
                                  isemirtipi,
                               r.ISEMIRTIPID,
                               r.vergino,
-                              r.ad musteriad,
-                              r.faturatarihi,
+                              r.ad musteriad, 
+                              to_char(r.faturatarihi,'dd/mm/yyyy') faturatarihi , 
                               r.claimstatus,
                               r.malzemekod,
                               CASE WHEN o.orjinalgkod IS NULL THEN '' ELSE o.orjinalgkod END orjinalkod,
