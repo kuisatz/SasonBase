@@ -174,6 +174,7 @@ namespace SasonBase.Reports.Sason.Merkez
                         and aractur.id(+)=arac.aracturid
                         and sruhsat.id(+)=sarac.servisvarlikruhsatid
                     ) aracbilgiler on aracbilgiler.servisaracid = isemir.servisaracid   
+                WHERE kontak.servisisortakkontaktipad IN( 'BASSOFOR', 'FILOYONETICISI')  
 
                 --order by servis.servisid, ISEMIR.ID
             ")
