@@ -90,15 +90,15 @@ namespace SasonBase.Reports.Sason.Merkez
                     SIPARISSERVISID  HASHSERVISID,  
                     (SELECT isortakad
                        FROM vt_servisler
-                      WHERE servisid = siparisservisid AND dilkod = 'Turkish')  servisad,
-                    TARIH  ,
+                      WHERE servisid = siparisservisid AND dilkod = 'Turkish')  servisad, 
+                    to_char(TARIH,'dd/mm/yyyy') TARIH , 
                     BELGENO   ,
                     BELGETURU  ,
                     ISEMIRTIPI ,
                     ISEMIRTIPID ,
                     VERGINO  ,
                     MUSTERIAD  ,
-                    FATURATARIHI   ,
+                    to_char(FATURATARIHI,'dd/mm/yyyy') FATURATARIHI , 
                     CLAIMSTATUS  ,
                     MALZEMEKOD  ,
                     ORJINALKOD ,

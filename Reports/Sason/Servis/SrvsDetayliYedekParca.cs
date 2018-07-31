@@ -114,14 +114,14 @@ namespace SasonBase.Reports.Sason.Servis
                     (SELECT isortakad
                        FROM vt_servisler
                       WHERE servisid = siparisservisid AND dilkod = 'Turkish')  servisad,
-                    TARIH  ,
+                     to_char(TARIH,'dd/mm/yyyy') TARIH , 
                     BELGENO   ,
                     BELGETURU  ,
                     ISEMIRTIPI ,
                     ISEMIRTIPID ,
                     VERGINO  ,
-                    MUSTERIAD  ,
-                    FATURATARIHI   ,
+                    MUSTERIAD  , 
+                    to_char(FATURATARIHI,'dd/mm/yyyy') FATURATARIHI , 
                     CLAIMSTATUS  ,
                     MALZEMEKOD  ,
                     ORJINALKOD ,
