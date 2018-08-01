@@ -62,7 +62,7 @@ namespace SasonBase.Reports.Sason.Servis
                 hizmetYeriIdQuery = $" and HIZMETYERID in ({HizmetYeriIds.joinNumeric(",")}) ";
 
             List<object> reportDataSource = AppPool.EbaTestConnector.CreateQuery($@"
-                select 
+                select distinct
     
                     servis.SERVISID, ISEMIR.ID ISEMIRID, isortak.SERVISISORTAKID,  
                     trunc(isemir.kayittarih) TARIH,
