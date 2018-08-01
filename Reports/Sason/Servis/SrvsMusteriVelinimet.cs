@@ -75,7 +75,34 @@ namespace SasonBase.Reports.Sason.Servis
                     CASE when isortak.FILOBUYUKLUKID is null then 1 else 0 end MUSTERI_FILOBUYUKLUK,
                     --siotelfax.TELEFONNO MUSTERI_TELEFON,
                     isemir.MUSTERIAD MUSTERI_KISI_AD, isemir.MUSTERITELEFON MUSTERI_KISI_TELEFON,
-                    kontak.AD KONTAK_AD, KONTAK.NO KONTAK_TELEFON, KONTAK.EPOSTA KONTAK_EPOSTA, KONTAK.SERVISISORTAKKONTAKTIPAD KONTAK_TIP, KONTAK.EPOSTAIZIN KONTAK_IZIN_EPOSTA, KONTAK.ARAMAIZIN KONTAK_IZIN_TELEFONARAMA, KONTAK.SMSIZIN KONTAK_IZIN_SMS,
+                    kontak.AD KONTAK_AD, 
+                    KONTAK.EPOSTA KONTAK_EPOSTA, KONTAK.EPOSTAIZIN KONTAK_IZIN_EPOSTA, KONTAK.ARAMAIZIN KONTAK_IZIN_TELEFONARAMA, KONTAK.SMSIZIN KONTAK_IZIN_SMS,
+                    --KONTAK.SERVISISORTAKKONTAKTIPAD KONTAK_TIP, 
+                    --KONTAK.NO KONTAK_TELEFON, 
+                    
+                    (CASE
+                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'BASSOFOR'
+                             THEN 'BASSOFOR'
+                         else ''
+                    END) AS kontak_BASSOFOR, 
+                    (CASE
+                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'BASSOFOR'
+                             THEN  KONTAK.NO
+                         else ''
+                    END) AS kontak_BASSOFOR_tel,
+
+                    (CASE
+                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'FILOYONETICISI'
+                             THEN 'FILOYONETICISI'
+                         else ''
+                    END) AS kontak_FILOYONETICISI, 
+                    (CASE
+                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'FILOYONETICISI'
+                             THEN  KONTAK.NO
+                         else ''
+                    END) AS kontak_FILOYONETICISI_tel,
+
+
                     aracbilgiler.saseno ARAC_SASENO, aracbilgiler.aractur ARAC_TUR, aracbilgiler.plaka ARAC_PLAKA,
                     (CASE
                          WHEN aracbilgiler.manolmayan = 0
