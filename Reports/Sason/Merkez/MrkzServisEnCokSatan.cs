@@ -118,7 +118,7 @@ namespace SasonBase.Reports.Sason.Merkez
                                     AND Srv.Dilkod='Turkish'                             
                                     AND Srv.Servisid  {servisIdQuery} 
                                     AND SSH.ID = SSHD.SERVISSTOKHAREKETID AND ssh.durumid = 1 
-                                    AND SSH.TARIH between {dateQuery}    
+                                    AND SSH.TARIH between '{dateQuery}'    
                     ) asd
                     GROUP BY ServisKodu,ServisAdi,Kod,Ad,  Isemirno,EuroListeFiyat,EuroIndFiyat,tarih
                     ORDER BY ServisKodu, tarih desc, Miktar DESC  
