@@ -138,54 +138,60 @@ namespace SasonBase.Reports.Sason.Merkez
 
             MethodReturn mr = new MethodReturn();
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@" 
-                            SELECT v.partnercode servis_kodu,
-                                   v.isortakad servis_adi,
-                                   a.servisgarantino,
-                                   a.claimno,
-                                   a.claimstatus,
-                                   t.kod ayristirma_tipi,
-                                   t.garantituru,
-                                   r.plaka,
-                                   r.saseno,
-                                   vm.vehiclenum kisa_sase,
-                                   vm.vehicletype arac_tipi,
-                                   vm.modelnum arac_modeli,
-                                   NVL(TO_CHAR(a.pdfkmdurumu),' ') garanti_km,
-                                   vm.schadstkl emisyon_sinifi,
-                                   sv.ad musteri_adi,
-                                   sv.vergino,
-                                   a.arizakodu,
-                                   a.gtutar ic_tutari,
-                                   a.id,
-                                   si.tamamlanmatarih ie_kapanma_tarihi,
-                                   NVL(TO_CHAR(a.pdftalepgeneltoplam),' ') oc_tutari,
-                                   v.gsad servis_garanti_sorumlusu
-       
-                            FROM vt_servisler v,
-                                 ayristirmalar a,
-                                 servisvarlikruhsatlar r,
-                                 esaaraclar ea,
-                                 vx_vis_vehiclemaster vm,
-                                 ayristirmatipler t,
-                                 servisvarliklar sv,
-                                 servisisemirler si
+                        SELECT v.partnercode servis_kodu,
+                            v.isortakad servis_adi,
+                            (CASE
+                               WHEN a.claimstatus = 'Z110' 
+                                    THEN TO_CHAR (a.sonokumazamani,'DD.MM.YYYY')
+                               ELSE NULL
+                            END) garanti_kapanma_tarihi,
+                            a.servisgarantino,
+                            a.claimno,
+                            a.claimstatus,
+                            t.kod ayristirma_tipi,
+                            t.garantituru,
+                            r.plaka,
+                            r.saseno,
+                            vm.vehiclenum kisa_sase,
+                            vm.vehicletype arac_tipi,
+                            vm.modelnum arac_modeli,
+                            a.pdfkmdurumu garanti_km,
+                            vm.schadstkl emisyon_sinifi,
+                            sv.ad musteri_adi,
+                            sv.vergino,
+                            a.arizakodu,
+                            a.gtutar ic_tutari,
+                            a.id,
+                            TO_CHAR(si.tamamlanmatarih,'DD.MM.YYYY') ie_kapanma_tarihi,
+                            a.pdftalepgeneltoplam oc_tutari,
+                            v.gsad servis_garanti_sorumlusu,
+                            v.tbsad teknik_bolge_sorumlusu
 
-                            WHERE v.dilkod = 'Turkish'
-                                 AND a.servisid = v.servisid
-                                 AND si.isemirno = a.isemirno
-                                 AND r.saseno = ea.vin
-                                 AND ea.id = vm.esaaracid
-                                 AND a.ayristirmatipid = t.id
-                                 AND sv.id = r.servisvarlikid
-                                 AND r.servisid=a.servisid
-                                 AND si.saseno=r.saseno
-                                 AND a.durumid=1
-                                 AND a.ayristirmatipid not in(1,2,8)
-                                 AND si.tamamlanmatarih BETWEEN '{dateQuery}'
-                                 AND a.servisid {servisIdQuery}
-                                 {saseNoQuery}
-                                 {arizaKodQuery}   
-                            order by servis_kodu, si.tamamlanmatarih desc                
+                        FROM vt_servisler v,
+                            ayristirmalar a,
+                            servisvarlikruhsatlar r,
+                            esaaraclar ea,
+                            vx_vis_vehiclemaster vm,
+                            ayristirmatipler t,
+                            servisvarliklar sv,
+                            servisisemirler si
+
+                        WHERE     v.dilkod = 'Turkish'
+                            AND a.servisid = v.servisid
+                            AND si.isemirno = a.isemirno
+                            AND    r.saseno = ea.vin
+                            AND ea.id = vm.esaaracid
+                            AND a.ayristirmatipid = t.id
+                            AND sv.id = r.servisvarlikid
+                            AND r.servisid=a.servisid
+                            AND si.saseno=r.saseno
+                            AND si.tamamlanmatarih BETWEEN  '{dateQuery}'
+                            AND a.durumid=1
+                            AND a.ayristirmatipid NOT IN(1,2,8)
+                            AND a.servisid {servisIdQuery}
+                            {saseNoQuery}
+                            {arizaKodQuery} 
+                        ORDER BY servis_kodu, si.tamamlanmatarih DESC               
 
                 " )
             .GetDataTable(mr)
