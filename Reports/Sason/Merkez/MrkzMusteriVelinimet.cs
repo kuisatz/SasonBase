@@ -84,7 +84,8 @@ namespace SasonBase.Reports.Sason.Merkez
                 hizmetYeriIdQuery = $" and HIZMETYERID in ({HizmetYeriIds.joinNumeric(",")}) ";
 
             List<object> reportDataSource = AppPool.EbaTestConnector.CreateQuery($@"
-                select distinct
+
+  select distinct
     
                     servis.SERVISID, ISEMIR.ID ISEMIRID, isortak.SERVISISORTAKID,  
                     trunc(isemir.kayittarih) TARIH,
@@ -250,7 +251,7 @@ namespace SasonBase.Reports.Sason.Merkez
                         FROM servisisemirler ax                  
                         LEFT JOIN servisisemirislemler bx on bx.isemirtipid in (1,5) and bx.servisisemirid = ax.id  
                             WHERE ax.isemirno = ISEMIR.ISEMIRNO and rownum <2 ) as bakimmi   
-                from (select * from servisisemirler where trunc(kayittarih) between {{startDate}} and {{finishDate}} and servisid = {ServisId} {hizmetYeriIdQuery}) isemir
+                FROM (select * from servisisemirler where trunc(kayittarih) between {{startDate}} and {{finishDate}} and servisid {servisIdQuery} {hizmetYeriIdQuery} ) isemir
                 left join vt_servisler servis on servis.dilkod = 'Turkish' and servis.servisid = isemir.servisid
                 --left join servisisemirler isemir on trunc(ISEMIR.KAYITTARIH) = tarihler.tarih and isemir.servisid = servis.servisid
                 left join osusers osuser on osuser.id = isemir.kullaniciid
@@ -315,6 +316,14 @@ namespace SasonBase.Reports.Sason.Merkez
                 --WHERE kontak.servisisortakkontaktipad IN( 'BASSOFOR', 'FILOYONETICISI')  
 
                 --order by servis.servisid, ISEMIR.ID
+
+
+
+
+
+
+
+              
             ")
             .Parameter("startDate", StartDate.startOfDay())
             .Parameter("finishDate", FinishDate.endOfDay())
