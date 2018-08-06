@@ -100,7 +100,7 @@ namespace SasonBase.Reports.Sason.Merkez
 
 
             decimal selectedAksiyonTuruId = AksiyonTuruIds.first().toString("0").cto<decimal>();
-            string aksiyonTuruIdQuery = $" = {selectedAksiyonTuruId}";
+            string aksiyonTuruIdQuery = $" ";
             if (AksiyonTuruIds.isNotEmpty())
                 aksiyonTuruIdQuery = $"  AND a.AKSIYONTIPID   in ({AksiyonTuruIds.joinNumeric(",")}) ";
             else
