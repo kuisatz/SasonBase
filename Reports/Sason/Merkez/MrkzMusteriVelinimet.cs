@@ -84,243 +84,135 @@ namespace SasonBase.Reports.Sason.Merkez
                 hizmetYeriIdQuery = $" and HIZMETYERID in ({HizmetYeriIds.joinNumeric(",")}) ";
 
             List<object> reportDataSource = AppPool.EbaTestConnector.CreateQuery($@"
-
-  select distinct
-    
-                    servis.SERVISID, ISEMIR.ID ISEMIRID, isortak.SERVISISORTAKID,  
-                    trunc(isemir.kayittarih) TARIH,
-                    servis.partnercode SERVISCODE, servis.isortakad SERVISADI, servis.varlikad SERVISVARLIKADI,
-                    servisbilgi.ADRES SERVISADRES, servisbilgi.ULKE_AD SERVISADRES_ULKE, SERVISBILGI.IL_AD SERVISADRES_IL, SERVISBILGI.ILCE_AD SERVISADRES_ILCE, 
-                    ISEMIR.ISEMIRNO ISEMIRNO,
-                    OSUSER.FIRSTNAME USERFIRSTNAME, OSUSER.LASTNAME USERLASTNAME,
-                    isortak.vergino,                    
-                    isortak.AD MUSTERI_AD, isortak.servisvarlikad MUSTERI_VARLIKAD, ISORTAK.VARLIKTIPAD MUSTERI_VARLIKTIPI, ISORTAK.VERGIDAIREAD MUSTERI_VERGIDAIRESI, ISORTAK.VERGINO MUSTERI_VERGINO, ISORTAK.VERGIDAIREILAD MUSTERI_VERGIDAIRESI_IL,
-                    CASE when isortak.FILOBUYUKLUKID is null then 1 else 0 end MUSTERI_FILOBUYUKLUK,
-                    --siotelfax.TELEFONNO MUSTERI_TELEFON,
-                    isemir.MUSTERIAD MUSTERI_KISI_AD, isemir.MUSTERITELEFON MUSTERI_KISI_TELEFON,
-                    kontak.AD KONTAK_AD, 
-                    KONTAK.EPOSTA KONTAK_EPOSTA, KONTAK.EPOSTAIZIN KONTAK_IZIN_EPOSTA, KONTAK.ARAMAIZIN KONTAK_IZIN_TELEFONARAMA, KONTAK.SMSIZIN KONTAK_IZIN_SMS,
-                    --KONTAK.SERVISISORTAKKONTAKTIPAD KONTAK_TIP, 
-                    --KONTAK.NO KONTAK_TELEFON, 
-
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'BASSOFOR'
-                             THEN 'BASSOFOR'
-                         else ''
-                    END) AS kontak_BASSOFOR, 
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'BASSOFOR'
-                             THEN  KONTAK.NO
-                         else ''
-                    END) AS kontak_BASSOFOR_tel,
-
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'FILOYONETICISI'
-                             THEN 'FILOYONETICISI'
-                         else ''
-                    END) AS kontak_FILOYONETICISI, 
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'FILOYONETICISI'
-                             THEN  KONTAK.NO
-                         else ''
-                    END) AS kontak_FILOYONETICISI_tel,
+                                SELECT DISTINCT
+                                    servis.servisid, isemir.id isemirid, isortak.servisisortakid,  
+                                    TRUNC(isemir.kayittarih) tarih,
+                                    servis.partnercode serviscode, servis.isortakad servisadi, servis.varlikad servisvarlikadi,
+                                    servisbilgi.adres servisadres, servisbilgi.ulke_ad servisadres_ulke, servisbilgi.il_ad servisadres_il, servisbilgi.ilce_ad servisadres_ilce, 
+                                    isemir.isemirno isemirno,
+                                    osuser.firstname userfirstname, osuser.lastname userlastname,
+                                    isortak.vergino,                    
+                                    isortak.ad musteri_ad, isortak.servisvarlikad musteri_varlikad, isortak.varliktipad musteri_varliktipi, isortak.vergidairead musteri_vergidairesi, isortak.vergino musteri_vergino, isortak.vergidaireilad musteri_vergidairesi_il,
+                                    CASE WHEN isortak.filobuyuklukid IS NULL THEN 1 ELSE 0 END musteri_filobuyukluk,
+                                --siotelfax.TELEFONNO MUSTERI_TELEFON,
+                                    isemir.musteriad musteri_kisi_ad, isemir.musteritelefon musteri_kisi_telefon,
+                                --KONTAK.EPOSTA KONTAK_EPOSTA, KONTAK.EPOSTAIZIN KONTAK_IZIN_EPOSTA, KONTAK.ARAMAIZIN KONTAK_IZIN_TELEFONARAMA, KONTAK.SMSIZIN KONTAK_IZIN_SMS,
+                                --KONTAK.SERVISISORTAKKONTAKTIPAD KONTAK_TIP, 
+                                --KONTAK.NO KONTAK_TELEFON, 
+                                --kontak.AD KONTAK_AD,                
+                                    kontakfirmasahibi.ad kontakfirmasahibi, 
+                                    kontakfirmasahibi.no kontakfirmasahibi_tel,
+                                    kontaksatisyetkilisi.ad kontaksatisyetkilisi, 
+                                    kontaksatisyetkilisi.no kontaksatisyetkilisi_tel,
+                                    kontakgenelmudur.ad kontakgenelmudur, 
+                                    kontakgenelmudur.no kontakgenelmudur_tel,
+                                    kontaksatissorumlusu.ad kontaksatissorumlusu, 
+                                    kontaksatissorumlusu.no kontaksatissorumlusu_tel,
+                                    kontakservismuduru.ad kontakservismuduru, 
+                                    kontakservismuduru.no kontakservismuduru_tel,
+                                    kontakfilo.ad kontakfiloyon, 
+                                    kontakfilo.no kontakfiloyon_tel,  
+                                    kontaksatinalma.ad  kontaksatinalma, 
+                                    kontaksatinalma.no   kontaksatinalma_tel,
+                                    kontaksatismuduru.ad kontaksatismuduru, 
+                                    kontaksatismuduru.no kontaksatismuduru_tel,
+                                    kontakgenelmuduryrd.ad kontakgenelmuduryrd, 
+                                    kontakgenelmuduryrd.no kontakgenelmuduryrd_tel,
+                                    kontakbolgemuduru.ad kontakbolgemuduru, 
+                                    kontakbolgemuduru.no kontakbolgemuduru_tel,
+                                    kontakbassofor.ad kontakbassofor, 
+                                    kontakbassofor.no kontakbassofor_tel,  
+                                    kontakdiger.ad  kontakdiger, 
+                                    kontakdiger.no  kontakdiger_tel,                    
                     
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'SATISSORUMLUSU'
-                             THEN 'SATISSORUMLUSU'
-                         else ''
-                    END) AS kontak_SATISSORUMLUSU, 
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'SATISSORUMLUSU'
-                             THEN  KONTAK.NO
-                         else ''
-                    END) AS kontak_SATISSORUMLUSU_tel,
+                                    aracbilgiler.saseno arac_saseno, aracbilgiler.aractur arac_tur, aracbilgiler.plaka arac_plaka,
+                                    (CASE
+                                        WHEN aracbilgiler.manolmayan = 0
+                                            THEN ''
+                                        WHEN aracbilgiler.manolmayan = 1
+                                            THEN 'MAN OLMAYAN'
+                                    END) AS manolmayan,
+                                    (SELECT 
+                                        CASE bx.isemirtipid  
+                                            WHEN 1 then 'Evet' 
+                                            WHEN 5 then 'Evet' 
+                                            ELSE 'Hayır' end    
+                                        FROM servisisemirler ax                  
+                                        LEFT JOIN servisisemirislemler bx ON bx.isemirtipid IN (1,5) AND bx.servisisemirid = ax.id  
+                                        WHERE ax.isemirno = ISEMIR.ISEMIRNO AND ROWNUM <2 ) AS bakimmi   
+                                        FROM (SELECT * FROM servisisemirler WHERE TRUNC(kayittarih)  BETWEEN {{startDate}} AND {{finishDate}} AND servisid {servisIdQuery} {hizmetYeriIdQuery} ) isemir
+                                        LEFT JOIN vt_servisler servis ON servis.dilkod = 'Turkish' AND servis.servisid = isemir.servisid
+                                        --left join servisisemirler isemir on trunc(ISEMIR.KAYITTARIH) = tarihler.tarih and isemir.servisid = servis.servisid
+                                        LEFT JOIN osusers osuser ON osuser.id = isemir.kullaniciid
+                        
+                                        LEFT JOIN sason.vw_isortakkontakbilgiler kontakfirmasahibi ON kontakfirmasahibi.servisisortakid = isemir.servisisortakid AND  kontakfirmasahibi.servisisortakkontaktipid = 1
+                                        LEFT JOIN sason.vw_isortakkontakbilgiler kontaksatisyetkilisi ON kontaksatisyetkilisi.servisisortakid = isemir.servisisortakid AND  kontaksatisyetkilisi.servisisortakkontaktipid = 2
+                                        LEFT JOIN sason.vw_isortakkontakbilgiler kontakgenelmudur ON kontakgenelmudur.servisisortakid = isemir.servisisortakid AND  kontakgenelmudur.servisisortakkontaktipid = 3
+                                        LEFT JOIN sason.vw_isortakkontakbilgiler kontaksatissorumlusu ON kontaksatissorumlusu.servisisortakid = isemir.servisisortakid AND  kontaksatissorumlusu.servisisortakkontaktipid = 4
+                                        LEFT JOIN sason.vw_isortakkontakbilgiler kontakservismuduru ON kontakservismuduru.servisisortakid = isemir.servisisortakid AND  kontakservismuduru.servisisortakkontaktipid = 5
+                                        LEFT JOIN sason.vw_isortakkontakbilgiler kontakfilo ON kontakfilo.servisisortakid = isemir.servisisortakid AND  kontakfilo.servisisortakkontaktipid = 6
+                                        LEFT JOIN sason.vw_isortakkontakbilgiler kontaksatinalma ON kontaksatinalma.servisisortakid = isemir.servisisortakid AND  kontaksatinalma.servisisortakkontaktipid = 7
+                                        LEFT JOIN sason.vw_isortakkontakbilgiler kontaksatismuduru ON kontaksatismuduru.servisisortakid = isemir.servisisortakid AND  kontaksatismuduru.servisisortakkontaktipid = 8
+                                        LEFT JOIN sason.vw_isortakkontakbilgiler kontakgenelmuduryrd ON kontakgenelmuduryrd.servisisortakid = isemir.servisisortakid AND  kontakgenelmuduryrd.servisisortakkontaktipid = 9
+                                        LEFT JOIN sason.vw_isortakkontakbilgiler kontakbolgemuduru ON kontakbolgemuduru.servisisortakid = isemir.servisisortakid AND  kontakbolgemuduru.servisisortakkontaktipid = 10
+                                        LEFT JOIN sason.vw_isortakkontakbilgiler kontakbassofor ON kontakbassofor.servisisortakid = isemir.servisisortakid AND  kontakbassofor.servisisortakkontaktipid = 11
+                                        LEFT JOIN sason.vw_isortakkontakbilgiler kontakdiger ON kontakdiger.servisisortakid = isemir.servisisortakid AND  kontakdiger.servisisortakkontaktipid = 12
+                        
+                                        LEFT JOIN vt_servisisortaklar isortak ON isortak.dilkod = 'Turkish' AND ISORTAK.servisisortakid = isemir.servisisortakid
 
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'SERVISMUDURU'
-                             THEN 'SERVISMUDURU'
-                         else ''
-                    END) AS kontak_SERVISMUDURU, 
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'SERVISMUDURU'
-                             THEN  KONTAK.NO
-                         else ''
-                    END) AS kontak_SERVISMUDURU_tel,
-                    
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'SATINALMAMUDURU'
-                             THEN 'SATINALMAMUDURU'
-                         else ''
-                    END) AS kontak_SATINALMAMUDURU, 
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'SATINALMAMUDURU'
-                             THEN  KONTAK.NO
-                         else ''
-                    END) AS kontak_SATINALMAMUDURU_tel,
-                                        
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'SATISMUDURU'
-                             THEN 'SATISMUDURU'
-                         else ''
-                    END) AS kontak_SATISMUDURU, 
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'SATISMUDURU'
-                             THEN  KONTAK.NO
-                         else ''
-                    END) AS kontak_SATISMUDURU_tel,
-                    
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'GENELMUDURYARDIMCISI'
-                             THEN 'GENELMUDURYARDIMCISI'
-                         else ''
-                    END) AS kontak_GENELMUDURYARDM, 
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'GENELMUDURYARDIMCISI'
-                             THEN  KONTAK.NO
-                         else ''
-                    END) AS kontak_GENELMUDURYARDM_tel,
-                    
-                     (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'BOLGEMUDURU'
-                             THEN 'BOLGEMUDURU'
-                         else ''
-                    END) AS kontak_BOLGEMUDURU, 
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'BOLGEMUDURU'
-                             THEN  KONTAK.NO
-                         else ''
-                    END) AS kontak_BOLGEMUDURU_tel,
-                    
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'DIGER'
-                             THEN 'DIGER'
-                         else ''
-                    END) AS kontak_DIGER, 
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'DIGER'
-                             THEN  KONTAK.NO
-                         else ''
-                    END) AS kontak_DIGER_tel,
-                    
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'FIRMASAHIBI'
-                             THEN 'FIRMASAHIBI'
-                         else ''
-                    END) AS kontak_FIRMASAHIBI, 
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'FIRMASAHIBI'
-                             THEN  KONTAK.NO
-                         else ''
-                    END) AS kontak_FIRMASAHIBI_tel,
-                    
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'SATISYETKILISI'
-                             THEN 'SATISYETKILISI'
-                         else ''
-                    END) AS kontak_SATISYETKILISI, 
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'SATISYETKILISI'
-                             THEN  KONTAK.NO
-                         else ''
-                    END) AS kontak_SATISYETKILISI_tel,
-                    
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'GENELMUDUR'
-                             THEN 'GENELMUDUR'
-                         else ''
-                    END) AS kontak_GENELMUDUR, 
-                    (CASE
-                         WHEN KONTAK.SERVISISORTAKKONTAKTIPAD = 'GENELMUDUR'
-                             THEN  KONTAK.NO
-                         else ''
-                    END) AS kontak_GENELMUDUR_tel,
-
-
-                    aracbilgiler.saseno ARAC_SASENO, aracbilgiler.aractur ARAC_TUR, aracbilgiler.plaka ARAC_PLAKA,
-                    (CASE
-                         WHEN aracbilgiler.manolmayan = 0
-                             THEN ''
-                         WHEN aracbilgiler.manolmayan = 1
-                             THEN 'MAN OLMAYAN'
-                    END) AS manolmayan, 
-                    (SELECT 
-                      CASE bx.isemirtipid  
-                        WHEN 1 then 'Evet' 
-                        WHEN 5 then 'Evet' 
-                        ELSE 'Hayır' end    
-                        FROM servisisemirler ax                  
-                        LEFT JOIN servisisemirislemler bx on bx.isemirtipid in (1,5) and bx.servisisemirid = ax.id  
-                            WHERE ax.isemirno = ISEMIR.ISEMIRNO and rownum <2 ) as bakimmi   
-                FROM (select * from servisisemirler where trunc(kayittarih) between {{startDate}} and {{finishDate}} and servisid {servisIdQuery} {hizmetYeriIdQuery} ) isemir
-                left join vt_servisler servis on servis.dilkod = 'Turkish' and servis.servisid = isemir.servisid
-                --left join servisisemirler isemir on trunc(ISEMIR.KAYITTARIH) = tarihler.tarih and isemir.servisid = servis.servisid
-                left join osusers osuser on osuser.id = isemir.kullaniciid
-                left join sason.vw_isortakkontakbilgiler kontak on kontak.servisisortakid = isemir.servisisortakid
-                left join vt_servisisortaklar isortak on isortak.dilkod = 'Turkish' and ISORTAK.servisisortakid = isemir.servisisortakid
-
-                -- SERVIS BILGILERI (adres, telefon, fax)
-                left join (
-                           select 
-                                se.id servisid, io.id isortakid, io.ad isortakad, adres.adres, ulke.ad ulke_ad, il.ad il_ad, ilce.ad ilce_ad, tel.no telefon, fax.no fax
-                           from
-                                servisler se,
-                                isortaklar io,
-                                isortakadresler ioadres,
-                                adresler adres,
-                                vw_ulkeler ulke,
-                                iller il,
-                                ilceler ilce,
-                                isortaktelefonlar tel,
-                                isortaktelefonlar fax
-                           where
-                                io.id(+) = se.isortakid
-                                and ioadres.ISORTAKID(+) = se.isortakid
-                                and ioadres.ISORTAKADRESTIPID(+) = 1
-                                and adres.id(+) = ioadres.adresid
-
-                                and ulke.dilkod(+) = 'Turkish'
-                                and ulke.id(+) = adres.ulkeid
-                
-                                and IL.ID(+) = adres.ilid
-                                and ilce.id(+) = adres.ilceid
-                
-                                and tel.isortakid(+)=io.id and tel.isortaktelefontipid(+)=1
-                                and fax.isortakid(+)=io.id and fax.isortaktelefontipid(+)=2
-                        ) servisbilgi on servisbilgi.SERVISID = servis.servisid
-                /*
-                left join (
-                            select
-                             io.id servisisortakid, tel.no telefonno, fax.no faxno
-                            from
-                                servisisortaklar io,
-                                servisisortaktelefonlar tel,
-                                servisisortaktelefonlar fax
-                            where
-                                tel.servisisortakid(+)=io.id and tel.servisisortaktelefontipid(+)=1
-                                and fax.servisisortakid(+)=io.id and fax.servisisortaktelefontipid(+)=2
-                        ) siotelfax on siotelfax.servisisortakid = isemir.servisisortakid
-                */
-
-                left join (
-                    select
-                        sarac.id servisaracid, sarac.saseno, aractur.kod aractur, sruhsat.plaka, sarac.manolmayan manolmayan
-                    from
-                        servisaraclar sarac, araclar arac, aracturler aractur, servisvarlikruhsatlar sruhsat 
-                    where
-                        --esaarac.vin(+) = SARAC.SASENO
-                        --and vm.esaaracid(+)=esaarac.id
-                        arac.saseno(+)=sarac.saseno
-                        and aractur.id(+)=arac.aracturid
-                        and sruhsat.id(+)=sarac.servisvarlikruhsatid
-                    ) aracbilgiler on aracbilgiler.servisaracid = isemir.servisaracid   
-                --WHERE kontak.servisisortakkontaktipad IN( 'BASSOFOR', 'FILOYONETICISI')  
-
-                --order by servis.servisid, ISEMIR.ID
-
-
-
-
-
+                                        -- SERVIS BILGILERI (adres, telefon, fax)
+                                        LEFT JOIN(
+                                            SELECT se.id servisid, io.id isortakid, io.ad isortakad, 
+                                                   adres.adres, ulke.ad ulke_ad, il.ad il_ad, ilce.ad ilce_ad, tel.no telefon, fax.no fax
+                                            FROM servisler se,
+                                                isortaklar io,
+                                                isortakadresler ioadres,
+                                                adresler adres,
+                                                vw_ulkeler ulke,
+                                                iller il,
+                                                ilceler ilce,
+                                                isortaktelefonlar tel,
+                                                isortaktelefonlar fax
+                                            WHERE io.id(+) = se.isortakid
+                                                AND ioadres.ISORTAKID(+) = se.isortakid
+                                                AND ioadres.ISORTAKADRESTIPID(+) = 1
+                                                AND adres.id(+) = ioadres.adresid
+                                                AND ulke.dilkod(+) = 'Turkish'
+                                                AND ulke.id(+) = adres.ulkeid             
+                                                AND il.id(+) = adres.ilid
+                                                AND ilce.id(+) = adres.ilceid                
+                                                AND tel.isortakid(+)=io.id AND tel.isortaktelefontipid(+)=1
+                                                AND fax.isortakid(+)=io.id AND fax.isortaktelefontipid(+)=2
+                                        ) servisbilgi ON servisbilgi.SERVISID = servis.servisid
+                                        /*
+                                        left join (
+                                        select
+                                        io.id servisisortakid, tel.no telefonno, fax.no faxno
+                                        from
+                                        servisisortaklar io,
+                                        servisisortaktelefonlar tel,
+                                        servisisortaktelefonlar fax
+                                        where
+                                        tel.servisisortakid(+)=io.id and tel.servisisortaktelefontipid(+)=1
+                                        and fax.servisisortakid(+)=io.id and fax.servisisortaktelefontipid(+)=2
+                                        ) siotelfax on siotelfax.servisisortakid = isemir.servisisortakid
+                                        */
+                                        LEFT JOIN(
+                                            SELECT sarac.id servisaracid, sarac.saseno, aractur.kod aractur, sruhsat.plaka, sarac.manolmayan manolmayan
+                                            FROM servisaraclar sarac, 
+                                                araclar arac, 
+                                                aracturler aractur, 
+                                                servisvarlikruhsatlar sruhsat 
+                                            WHERE
+                                                --esaarac.vin(+) = SARAC.SASENO
+                                                --and vm.esaaracid(+)=esaarac.id
+                                                arac.saseno(+)=sarac.saseno
+                                                AND aractur.id(+)=arac.aracturid
+                                                AND sruhsat.id(+)=sarac.servisvarlikruhsatid
+                                        ) aracbilgiler on aracbilgiler.servisaracid = isemir.servisaracid   
+                                        --WHERE kontak.servisisortakkontaktipad IN( 'BASSOFOR', 'FILOYONETICISI')  
+                                        --order by servis.servisid, ISEMIR.ID
+ 
 
 
               
