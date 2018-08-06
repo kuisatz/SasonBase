@@ -120,7 +120,7 @@ namespace SasonBase.Reports.Sason.Merkez
 
                     WHERE aks.dilkod='Turkish'
                           AND si.id=aks.servisisemirid
-                          AND ayr.isemirno(+)=aks.isemirno
+                          AND ayr.isemirno=aks.isemirno
                           AND isl.servisisemirid=si.id
                           AND si.tamamlanmatarih IS NOT NULL
                           AND isl.isemiruygulamamanedenid IS NULL

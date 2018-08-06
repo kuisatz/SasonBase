@@ -20,7 +20,7 @@ namespace SasonBase.Reports.Sason.Merkez
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
-            Disabled = true;
+            Disabled = false;
         }
 
         public MrkzAksiyonYazismaGecmisi(decimal servisId, DateTime startDate, DateTime finishDate) : this()
