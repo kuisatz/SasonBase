@@ -20,36 +20,36 @@ namespace SasonBase.Reports.Sason.Merkez
             SubjectCode = "MrkzAksiyonListesi";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
-            AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
-            AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
-            AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
+            //AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
+            //AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
+            //AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
             AddParameter(new ReporterParameter() { Name = "param_aksiyonturu", Text = "Aksiyon Türleri" }.CreateAksiyonTuruSelect(true));
             Disabled = false;
         }
         public MrkzAksiyonListesi(decimal servisId, decimal aksiyonTuruId, DateTime startDate, DateTime finishDate) : this()
         {
-            base.ServisId = servisId;
-            this.StartDate = startDate;
-            this.FinishDate = finishDate;
+            //base.ServisId = servisId;
+            //this.StartDate = startDate;
+            //this.FinishDate = finishDate;
         }
 
-        public DateTime StartDate
-        {
-            get { return GetParameter("param_start_date").ReporterValue.cast<DateTime>(); }
-            set { SetParameterReporterValue("param_start_date", value.startOfDay()); }
-        }
+        //public DateTime StartDate
+        //{
+        //    get { return GetParameter("param_start_date").ReporterValue.cast<DateTime>(); }
+        //    set { SetParameterReporterValue("param_start_date", value.startOfDay()); }
+        //}
 
-        public DateTime FinishDate
-        {
-            get { return GetParameter("param_finish_date").ReporterValue.cast<DateTime>(); }
-            set { SetParameterReporterValue("param_finish_date", value.endOfDay()); }
-        }
+        //public DateTime FinishDate
+        //{
+        //    get { return GetParameter("param_finish_date").ReporterValue.cast<DateTime>(); }
+        //    set { SetParameterReporterValue("param_finish_date", value.endOfDay()); }
+        //}
 
-        public List<decimal> ServisIds
-        {
-            get { return GetParameter("param_servisler").ReporterValue.cast<List<decimal>>(); }
-            set { SetParameterReporterValue("param_servisler", value); }
-        }
+        //public List<decimal> ServisIds
+        //{
+        //    get { return GetParameter("param_servisler").ReporterValue.cast<List<decimal>>(); }
+        //    set { SetParameterReporterValue("param_servisler", value); }
+        //}
 
         public List<decimal> AksiyonTuruIds
         {
@@ -62,15 +62,15 @@ namespace SasonBase.Reports.Sason.Merkez
             switch (parameterName)
             {
                 //Dışarıdan Gelen Format 20171231235959 Şeklinde Olmalıdır
-                case "param_start_date":
-                    StartDate = Convert.ToInt64(value).toDateTime();
-                    break;
-                case "param_finish_date":
-                    FinishDate = Convert.ToInt64(value).toDateTime();
-                    break;
-                case "param_servisler":
-                    ServisIds = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
-                    break;
+                //case "param_start_date":
+                //    StartDate = Convert.ToInt64(value).toDateTime();
+                //    break;
+                //case "param_finish_date":
+                //    FinishDate = Convert.ToInt64(value).toDateTime();
+                //    break;
+                //case "param_servisler":
+                //    ServisIds = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
+                //    break;
                 case "param_aksiyonturu":
                     AksiyonTuruIds = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
                     break;
@@ -80,23 +80,23 @@ namespace SasonBase.Reports.Sason.Merkez
 
         public override object ExecuteReport(MethodReturn refMr = null)
         {
-            decimal selectedServisId = ServisIds.first().toString("0").cto<decimal>();
-            string servisIdQuery = $" = {selectedServisId}";
-            string dateQuery = "";
+//            decimal selectedServisId = ServisIds.first().toString("0").cto<decimal>();
+//            string servisIdQuery = $" = {selectedServisId}";
+//            string dateQuery = "";
 
-#if DEBUG
-             selectedServisId = ServisId;
-              servisIdQuery = $" in( {selectedServisId} )";
-#endif
+//#if DEBUG
+//             selectedServisId = ServisId;
+//              servisIdQuery = $" in( {selectedServisId} )";
+//#endif
 
 
-            if (ServisIds.isNotEmpty())
-                servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
-            else { 
-            //    servisIdQuery = $" > 1 ";
-                selectedServisId = ServisId;
-                servisIdQuery = $" in ( {selectedServisId} )";
-            }
+//            if (ServisIds.isNotEmpty())
+//                servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
+//            else { 
+//            //    servisIdQuery = $" > 1 ";
+//                selectedServisId = ServisId;
+//                servisIdQuery = $" in ( {selectedServisId} )";
+//            }
 
 
             decimal selectedAksiyonTuruId = AksiyonTuruIds.first().toString("0").cto<decimal>();
@@ -110,9 +110,9 @@ namespace SasonBase.Reports.Sason.Merkez
             }
 
 
-            StartDate = StartDate.startOfDay(); 
-            FinishDate = FinishDate.endOfDay();
-            dateQuery = ""+StartDate.ToString("dd/MM/yyyy") +  "' AND '"+ FinishDate.ToString("dd/MM/yyyy")+"";
+            //StartDate = StartDate.startOfDay(); 
+            //FinishDate = FinishDate.endOfDay();
+            //dateQuery = ""+StartDate.ToString("dd/MM/yyyy") +  "' AND '"+ FinishDate.ToString("dd/MM/yyyy")+"";
             MethodReturn mr = new MethodReturn();
 
             List<object> queryResults = AppPool.EbaTestConnector.CreateQuery($@"  
@@ -176,13 +176,8 @@ namespace SasonBase.Reports.Sason.Merkez
                                         AND c.DILKOD = b.dilkod
                                         AND A.REFAKSIYONID = D.EXTRECALLNUM(+)
                                         AND b.dilkod = 'Turkish'
-                                        AND a.bastarih between '{dateQuery}'
                                          {aksiyonTuruIdQuery} 
-                                  /*      AND a.id in (
-                                            SELECT distinct dx.aksiyonid  FROM SERVISISEMIRISLEMLER dx WHERE  dx.SERVISISEMIRID in ( SELECT distinct  ex.id FROM SERVISISEMIRLER ex WHERE ex.servisid  {servisIdQuery}  ))
-                                          )
-                                  */
-
+                                
                                     )   azx 
                     ) ax 
  
