@@ -22,13 +22,13 @@ namespace SasonBase.Reports.Sason.Merkez
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());
             AddParameter(new ReporterParameter() { Name = "param_finish_date", Text = "Bitiş Tarihi" }.CreateDate());
-            AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
+            //AddParameter(new ReporterParameter() { Name = "param_servisler", Text = "Servisler" }.CreateServislerSelect(true));
             AddParameter(new ReporterParameter() { Name = "param_sase_no", Text = "Şase No" }.CreateTextBox("İsteğe Bağlı Şase No. Girebilirsiniz"));
             Disabled = false;
         }
         public MrkzModelBazindaAracGiris(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
-            base.ServisId = servisId;
+            //base.ServisId = servisId;
             this.StartDate = startDate;
             this.FinishDate = finishDate;
         }
@@ -45,11 +45,11 @@ namespace SasonBase.Reports.Sason.Merkez
             set { SetParameterReporterValue("param_finish_date", value.endOfDay()); }
         }
 
-        public List<decimal> ServisIds
-        {
-            get { return GetParameter("param_servisler").ReporterValue.cast<List<decimal>>(); }
-            set { SetParameterReporterValue("param_servisler", value); }
-        }
+        //public List<decimal> ServisIds
+        //{
+        //    get { return GetParameter("param_servisler").ReporterValue.cast<List<decimal>>(); }
+        //    set { SetParameterReporterValue("param_servisler", value); }
+        //}
         public string SaseNo
         {
             get { return GetParameter("param_sase_no").ReporterValue.toString(); }
@@ -67,9 +67,9 @@ namespace SasonBase.Reports.Sason.Merkez
                 case "param_finish_date":
                     FinishDate = Convert.ToInt64(value).toDateTime();
                     break;
-                case "param_servisler":
-                    ServisIds = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
-                    break;
+                //case "param_servisler":
+                //    ServisIds = value.toString().split(',').select(t => Convert.ToDecimal(t)).toList();
+                //    break;
                 case "param_sase_no":
                     SaseNo = value.toString();
                     break;
@@ -79,8 +79,8 @@ namespace SasonBase.Reports.Sason.Merkez
 
         public override object ExecuteReport(MethodReturn refMr = null)
         {
-            decimal selectedServisId = ServisIds.first().toString("0").cto<decimal>();
-            string servisIdQuery = $" = {selectedServisId}";
+            //decimal selectedServisId = ServisIds.first().toString("0").cto<decimal>();
+            //string servisIdQuery = $" = {selectedServisId}";
             string dateQuery = "";
 
 #if DEBUG
@@ -89,14 +89,14 @@ namespace SasonBase.Reports.Sason.Merkez
 #endif
 
 
-            if (ServisIds.isNotEmpty())
-                servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
-            else
-            {
-                //    servisIdQuery = $" > 1 ";
-                selectedServisId = ServisId;
-                servisIdQuery = $" in( {selectedServisId} )";
-            }
+            //if (ServisIds.isNotEmpty())
+            //    servisIdQuery = $" in ({ServisIds.joinNumeric(",")}) ";
+            //else
+            //{
+            //    //    servisIdQuery = $" > 1 ";
+            //    selectedServisId = ServisId;
+            //    servisIdQuery = $" in( {selectedServisId} )";
+            //}
 
             StartDate = StartDate.startOfDay();
             FinishDate = FinishDate.endOfDay();
@@ -135,7 +135,6 @@ namespace SasonBase.Reports.Sason.Merkez
                             AND av.dilkod = 'Turkish'
                             AND si.saseno=svr.saseno
                             AND si.servisid=svr.servisid
-                            AND si.servisid  {servisIdQuery}
                             AND si.kayittarih BETWEEN '{dateQuery}' 
                             AND (si.saseno = NVL ('{SaseNo}', si.saseno)) 
 
