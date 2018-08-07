@@ -585,7 +585,7 @@ namespace SasonBase.Reports
                         },
                         {
                             dataField:'KOD',
-                            caption:'Bakim Grup',
+                            caption:'Aksiyon Grup',
                             width:400
                         }
                         ],
