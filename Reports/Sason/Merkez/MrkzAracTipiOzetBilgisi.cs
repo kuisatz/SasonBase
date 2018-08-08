@@ -55,7 +55,7 @@ namespace SasonBase.Reports.Sason.Merkez
            //  if (AracTipIds.Count > 0 )
              if (AracTipIds.isNotEmpty())
                 {       
-                    AracTipIdQuery =  $" in ('{AracTipIds.joinNumeric("','")}') ";
+                    AracTipIdQuery =  $" in ({AracTipIds.joinNumeric(",")}) ";
                 }
             else
                 {
