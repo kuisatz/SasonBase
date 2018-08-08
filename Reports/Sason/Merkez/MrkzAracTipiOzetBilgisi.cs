@@ -55,7 +55,7 @@ namespace SasonBase.Reports.Sason.Merkez
            //  if (AracTipIds.Count > 0 )
              if (AracTipIds.isNotEmpty())
                 {       
-                    AracTipIdQuery =  $" in ({AracTipIds.joinNumeric(",")}) ";
+                    AracTipIdQuery =  $" in ('{AracTipIds.joinNumeric("','")}') ";
                 }
             else
                 {
@@ -225,7 +225,7 @@ namespace SasonBase.Reports.Sason.Merkez
                                               FROM servisisemirler si
                                               WHERE  si.teknikolaraktamamla = 1) 
                             ) asd
-                        where asd.arac_tipi {AracTipIdQuery} 
+                        where asd.atid {AracTipIdQuery} 
                         GROUP BY asd.atid , asd.arac_tipi
 
                 " )
