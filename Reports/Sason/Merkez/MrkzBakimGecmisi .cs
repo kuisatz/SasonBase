@@ -142,6 +142,7 @@ namespace SasonBase.Reports.Sason.Merkez
                              AND e.teknikolaraktamamla = 1
                              AND a.servisisemirislemid = i.id
                         ORDER BY e.servisid, e.kayittarih DESC
+ 
 
                 ")
             .GetDataTable(mr)
