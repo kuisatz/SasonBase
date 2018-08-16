@@ -71,14 +71,15 @@ namespace SasonBase.Reports.Sason.Merkez
                         vm.schadstkl MOTOR_NORMU, 
                         vm.vehiclekm ARAC_KM, 
                         vm.assetmanuf URETICI
-                  FROM
-                        VX_VIS_VEHICLEMASTER vm, 
-                        servisvarlikruhsatlar svr
-
-                  WHERE
+                    FROM
+                        VX_VIS_VEHICLEMASTER vm,
+                        servisvarlikruhsatlar svr,
+                        esaaraclar ea
+                    WHERE
                         vm.vin is not null and
                         vm.vin=svr.saseno and
-                       (vm.vin = NVL ('{SaseNo}', vm.vin))
+                        EA.ID=VM.ESAARACID and
+                       (ea.vin = NVL ('{SaseNo}', ea.vin))
 
                 ")
             .GetDataTable(mr)
