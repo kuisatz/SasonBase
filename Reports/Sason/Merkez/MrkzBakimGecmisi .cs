@@ -12,9 +12,9 @@ namespace SasonBase.Reports.Sason.Merkez
     /// <summary>
     /// Merkez Bakım Geçmişi Raporu
     /// </summary>
-    public class MrkzBakimGecmisi : Base.SasonMerkezReporter
+    public class MrkzBakimGecmisi__ : Base.SasonMerkezReporter
     {
-        public MrkzBakimGecmisi()
+        public MrkzBakimGecmisi__()
         {
             Text = "Bakım Geçmişi";
             SubjectCode = "MrkzBakimGecmisi";
@@ -26,7 +26,7 @@ namespace SasonBase.Reports.Sason.Merkez
             AddParameter(new ReporterParameter() { Name = "param_sase_no", Text = "Şase No" }.CreateTextBox("İsteğe Bağlı Şase No. Girebilirsiniz"));
             //Disabled = false;
         }
-        public MrkzBakimGecmisi(decimal servisId, DateTime startDate, DateTime finishDate) : this()
+        public MrkzBakimGecmisi__(decimal servisId, DateTime startDate, DateTime finishDate) : this()
         {
             base.ServisId = servisId;
             this.StartDate = startDate;
