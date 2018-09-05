@@ -69,6 +69,7 @@ namespace SasonBase.Reports.Sason.Servis
                                 AND a.isemirno not in
                                 (SELECT DISTINCT isemirno
                                 FROM ayristirmalar)
+                            ORDER BY   vt.servisid ASC,  a.tamamlanmatarih DESC
                 ")
               .GetDataTable(mr)
                .ToModels();
