@@ -16,7 +16,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzYdkPrcFlytRpr()
         {
-            Text = "[YP-11] Yedek Parça Faliyet Raporu (Liste)";
+            Text = "Yedek Parça Faliyet Raporu";
             SubjectCode = "MrkzYdkPrcFlytRpr";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
