@@ -11,7 +11,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzDownTime()
         {
-            Text = "Down Time (Liste)";
+            Text = "[Srv-4] Down Time (Liste)";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());

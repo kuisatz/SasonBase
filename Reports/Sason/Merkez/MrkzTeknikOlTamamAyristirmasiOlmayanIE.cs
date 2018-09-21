@@ -14,7 +14,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzTeknikOlTamamAyristirmasiOlmayanIE()
         {
-            Text = "Teknik Olarak Tamamlanmış Ayrıştırması Yapılmamış İş Emri Raporu";
+            Text = "[İE-8] Teknik Olarak Tamamlanmış Ayrıştırması Yapılmamış İş Emri Raporu";
             SubjectCode = "MrkzTeknikOlTamamAyristirmasiOlmayanIE";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;

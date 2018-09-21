@@ -17,7 +17,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzAktifOlmayanAksiyonRaporu()
         {
-            Text = "Açılmamış Aksiyon Raporu";
+            Text = "Aktif Olmayan Aksiyon Raporu";
             SubjectCode = "MrkzAktifOlmayanAksiyonRaporu";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;

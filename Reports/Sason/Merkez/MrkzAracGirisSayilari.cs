@@ -11,7 +11,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzAracGirisSayilari()
         {
-            Text = "Araç Giriş Sayıları (Liste)";
+            Text = "[Srv-1] Araç Giriş Sayıları (günlük)";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());

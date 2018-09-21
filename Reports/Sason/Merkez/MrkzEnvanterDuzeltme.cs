@@ -16,7 +16,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzEnvanterDuzeltme()
         {
-            Text = "Envanter Düzeltme Raporu";
+            Text = "[YP-3] Envanter Düzeltme Raporu";
             SubjectCode = "MrkzEnvanterDuzeltme";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;

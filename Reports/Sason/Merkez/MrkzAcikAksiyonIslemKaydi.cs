@@ -14,7 +14,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzAcikAksiyonIslemKaydi()
         {
-            Text = "Açık Aksiyon İşlem Kaydı Raporu";
+            Text = "[SI-1] Açık Aksiyon İşlem Kaydı Raporu";
             SubjectCode = "MrkzAcikAksiyonIslemKaydi";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;

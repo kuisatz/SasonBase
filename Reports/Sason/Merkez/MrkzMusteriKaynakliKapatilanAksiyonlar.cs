@@ -14,7 +14,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzMusteriKaynakliKapatilanAksiyonlar()
         {
-            Text = "Müşteri Kaynaklı Kapatılan Aksiyonlar Raporu";
+            Text = "[SI-6] Müşteri Kaynaklı Kapatılan Aksiyonlar Raporu";
             SubjectCode = "MrkzMusteriKaynakliKapatilanAksiyonlar";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;

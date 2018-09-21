@@ -14,7 +14,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzDetayliYedekParca()
         {
-            Text = "Detaylı Yedek Parça Raporu";
+            Text = "[YP-2] Detaylı Yedek Parça Raporu";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());

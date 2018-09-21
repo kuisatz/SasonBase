@@ -11,7 +11,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzMusteriVelinimet()
         {
-            Text = "Müşteri Velinimetimizdir (Liste)";
+            Text = "[Srv-6] Müşteri Velinimetimizdir (Liste)";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;
             AddParameter(new ReporterParameter() { Name = "param_start_date", Text = "Başlangıç Tarihi" }.CreateDate());

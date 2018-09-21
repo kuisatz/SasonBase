@@ -16,7 +16,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzReceteBulunabilirlik()
         {
-            Text = "Reçete Bulunabilirlik Raporu";
+            Text = "[YP-7] Reçete Bulunabilirlik Raporu";
             SubjectCode = "MrkzReceteBulunabilirlik";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;

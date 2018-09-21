@@ -16,7 +16,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzDisHizmetAlimRaporu()
         {
-            Text = "Dış Hizmet Alım Raporu";
+            Text = "[İE-6] Dış Hizmet Alım Raporu";
             SubjectCode = "MrkzDisHizmetAlimRaporu";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;

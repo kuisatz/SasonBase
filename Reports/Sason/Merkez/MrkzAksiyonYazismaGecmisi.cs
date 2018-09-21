@@ -14,7 +14,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzAksiyonYazismaGecmisi()
         {
-            Text = "Aksiyon Yazışma Geçmişi";
+            Text = "[SI-5] Aksiyon Yazışma Geçmişi";
             SubjectCode = "MrkzAksiyonYazismaGecmisi";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;

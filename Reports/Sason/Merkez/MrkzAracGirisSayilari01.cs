@@ -11,7 +11,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzAracGirisSayilari01()
         {
-            Text = "Araç Giriş Sayıları (R01)";
+            Text = "[Srv-2] Araç Giriş Sayıları (Yıl/Ay bazında)";
         }
     }
 }

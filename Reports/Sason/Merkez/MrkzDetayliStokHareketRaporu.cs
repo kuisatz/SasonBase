@@ -16,7 +16,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzDetayliStokHareketRaporu()
         {
-            Text = "Detaylı İş Emri Listesi Raporu";
+            Text = "Merkez Detaylı Stok Hareket Raporu";
             SubjectCode = "MrkzDetayliStokHareketRaporu";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;

@@ -11,7 +11,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzAracGirisSayilari02()
         {
-            Text = "Araç Giriş Sayıları (R02)";
+            Text = "[Srv-3] Araç Giriş Sayıları (aylık)";
         }
 
         public override object ExecuteReport(MethodReturn refMr = null)

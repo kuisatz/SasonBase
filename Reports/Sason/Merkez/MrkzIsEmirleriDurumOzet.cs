@@ -14,7 +14,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzIsEmirleriDurumOzet()
         {
-            Text = "İş Emri Durum Özet Raporu";
+            Text = "[İE-7] İş Emri Durum Özet Raporu";
             SubjectCode = "MrkzIsEmirleriDurumOzet"; 
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;

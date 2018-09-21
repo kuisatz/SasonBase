@@ -16,7 +16,7 @@ namespace SasonBase.Reports.Sason.Merkez
     {
         public MrkzTop10ArizaRaporuGaranti()
         {
-            Text = "Top 10 Arıza Listesi Raporu (Garanti)";
+            Text = "[Grn-6] Top 10 Arıza Listesi Raporu (Garanti)";
             SubjectCode = "MrkzTop10ArizaRaporuGaranti";
             SubjectCode = this.getType().Name;
             ReportFileCode = this.getType().Name;            
@@ -141,7 +141,7 @@ namespace SasonBase.Reports.Sason.Merkez
                         SELECT v.partnercode servis_kodu,
                             v.isortakad servis_adi,
                             (CASE
-                               WHEN a.claimstatus = 'Z110' 
+                               WHEN a.claimstatus = 'Z110'
                                     THEN TO_CHAR (a.sonokumazamani,'DD.MM.YYYY')
                                ELSE NULL
                             END) garanti_kapanma_tarihi,
@@ -165,7 +165,10 @@ namespace SasonBase.Reports.Sason.Merkez
                             TO_CHAR(si.tamamlanmatarih,'DD.MM.YYYY') ie_kapanma_tarihi,
                             a.pdftalepgeneltoplam oc_tutari,
                             v.gsad servis_garanti_sorumlusu,
-                            v.tbsad teknik_bolge_sorumlusu
+                            v.tbsad teknik_bolge_sorumlusu,
+                            SI.ISEMIRNO,
+                            ss.kod ARZ_NDN_MLZ_KOD,
+                            ss.ad ARZ_NDN_MLZ_AD
 
                         FROM vt_servisler v,
                             ayristirmalar a,
@@ -174,24 +177,35 @@ namespace SasonBase.Reports.Sason.Merkez
                             vx_vis_vehiclemaster vm,
                             ayristirmatipler t,
                             servisvarliklar sv,
-                            servisisemirler si
+                            servisisemirler si,
+                            servisisemirislemler sisl,
+                            servisstoklar ss
 
-                        WHERE     v.dilkod = 'Turkish'
+                        WHERE v.dilkod = 'Turkish'
                             AND a.servisid = v.servisid
                             AND si.isemirno = a.isemirno
-                            AND    r.saseno = ea.vin
+                            AND r.saseno = ea.vin
                             AND ea.id = vm.esaaracid
                             AND a.ayristirmatipid = t.id
                             AND sv.id = r.servisvarlikid
                             AND r.servisid=a.servisid
                             AND si.saseno=r.saseno
-                            AND si.tamamlanmatarih BETWEEN  '{dateQuery}'
-                            AND a.durumid=1
+                            AND si.tamamlanmatarih BETWEEN '{dateQuery}'
+                            AND a.durumid = 1
+                            AND a.servisid=SI.SERVISID
+                            AND sisl.id = a.servisisemirislemid
+                            AND SISL.ARIZANEDENMALZEMEID = ss.malzemeid
+                            AND SS.SERVISID=A.SERVISID
                             AND a.ayristirmatipid NOT IN(1,2,8)
                             AND a.servisid {servisIdQuery}
+                            AND SS.SERVISID {servisIdQuery}
+                            AND V.SERVISID {servisIdQuery}
+                            AND R.SERVISID {servisIdQuery}
+                            and SV.SERVISID {servisIdQuery}
+                            and SI.SERVISID {servisIdQuery}
                             {saseNoQuery}
                             {arizaKodQuery} 
-                        ORDER BY servis_kodu, si.tamamlanmatarih DESC               
+                        ORDER BY servis_kodu, si.tamamlanmatarih DESC             
 
                 " )
             .GetDataTable(mr)
